@@ -1,0 +1,10 @@
+{
+  "description": "Tracks and analyzes healthcare data to improve patient outcomes and streamline care management for providers and caregivers.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
