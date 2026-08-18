@@ -1,7 +1,8 @@
-import { useState, lazy, Suspense } from 'react'
+import { useState, Suspense } from 'react'
+import dynamic from 'next/dynamic'
 import { STAFF_LOCATIONS } from '../data/staffLocations'
 
-const StaffLocationMap = lazy(() => import('../components/StaffLocationMap'))
+const StaffLocationMap = dynamic(() => import('../components/StaffLocationMap'), { ssr: false })
 
 const HOUSES = ['Sunrise House', 'Oaklands Service', 'Riverside Lodge', 'Cedar Hill']
 

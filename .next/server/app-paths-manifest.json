@@ -1,0 +1,13 @@
+{
+  "/login/page": "app/login/page.js",
+  "/(manager)/reports/page": "app/(manager)/reports/page.js",
+  "/(manager)/notifications/page": "app/(manager)/notifications/page.js",
+  "/(manager)/administration/page": "app/(manager)/administration/page.js",
+  "/(employee)/employee/dashboard/page": "app/(employee)/employee/dashboard/page.js",
+  "/(employee)/employee/roster/page": "app/(employee)/employee/roster/page.js",
+  "/(employee)/employee/attendance/page": "app/(employee)/employee/attendance/page.js",
+  "/(employee)/employee/leave/page": "app/(employee)/employee/leave/page.js",
+  "/(employee)/employee/clients/page": "app/(employee)/employee/clients/page.js",
+  "/(employee)/employee/notifications/page": "app/(employee)/employee/notifications/page.js",
+  "/(employee)/employee/profile/page": "app/(employee)/employee/profile/page.js"
+}

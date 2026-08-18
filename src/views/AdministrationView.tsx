@@ -73,7 +73,7 @@ export default function AdministrationView() {
       {activeTab === 'roles' && (
         <div>
           <p style={{ fontSize: 14, color: 'var(--color-ink-muted)', marginBottom: 20, lineHeight: 1.5 }}>
-            Roles determine what each user can see and do in CareMetrics. Users are assigned a role when their account is created. Contact Anthropic support to create custom roles.
+            Roles determine what each user can see and do in CareMetrics. Users are assigned a role when their account is created. Contact your CAREMetrics administrator to request a custom role.
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {ROLES.map(role => (

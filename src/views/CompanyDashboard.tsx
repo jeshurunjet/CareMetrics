@@ -1,6 +1,7 @@
-import { useState, lazy, Suspense } from 'react'
+import { useState, Suspense } from 'react'
+import dynamic from 'next/dynamic'
 
-const ClockInMap = lazy(() => import('../components/ClockInMap'))
+const ClockInMap = dynamic(() => import('../components/ClockInMap'), { ssr: false })
 
 interface Props {
   onNavigate: (view: string) => void

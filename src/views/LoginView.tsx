@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { Role } from '../App'
+import type { Role } from '../types/domain'
 
 type Screen = 'login' | 'forgot' | 'reset' | 'expired'
 

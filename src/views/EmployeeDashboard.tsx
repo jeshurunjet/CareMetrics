@@ -1,6 +1,7 @@
-import { useState, lazy, Suspense } from 'react'
+import { useState, Suspense } from 'react'
+import dynamic from 'next/dynamic'
 
-const MyLocationMap = lazy(() => import('../components/MyLocationMap'))
+const MyLocationMap = dynamic(() => import('../components/MyLocationMap'), { ssr: false })
 
 export default function EmployeeDashboard({ onNavigate }: { onNavigate?: (v: string) => void }) {
   const [clockedIn, setClockedIn] = useState(false)

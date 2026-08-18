@@ -1,0 +1,125 @@
+{
+  "pages": {
+    "/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/layout.css",
+      "static/chunks/app/layout.js"
+    ],
+    "/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/page.js"
+    ],
+    "/login/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/login/page.js"
+    ],
+    "/(manager)/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(manager)/layout.js"
+    ],
+    "/(manager)/dashboard/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(manager)/dashboard/page.js"
+    ],
+    "/(manager)/employees/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(manager)/employees/page.js"
+    ],
+    "/(manager)/attendance/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(manager)/attendance/page.js"
+    ],
+    "/(manager)/leave/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(manager)/leave/page.js"
+    ],
+    "/(manager)/rostering/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(manager)/rostering/page.js"
+    ],
+    "/(manager)/houses/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(manager)/houses/page.js"
+    ],
+    "/(manager)/clients/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(manager)/clients/page.js"
+    ],
+    "/(manager)/care-records/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(manager)/care-records/page.js"
+    ],
+    "/(manager)/care-management/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(manager)/care-management/page.js"
+    ],
+    "/(manager)/reports/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(manager)/reports/page.js"
+    ],
+    "/(manager)/notifications/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(manager)/notifications/page.js"
+    ],
+    "/(manager)/administration/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(manager)/administration/page.js"
+    ],
+    "/(employee)/employee/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(employee)/employee/layout.js"
+    ],
+    "/(employee)/employee/dashboard/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(employee)/employee/dashboard/page.js"
+    ],
+    "/(employee)/employee/roster/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(employee)/employee/roster/page.js"
+    ],
+    "/(employee)/employee/attendance/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(employee)/employee/attendance/page.js"
+    ],
+    "/(employee)/employee/leave/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(employee)/employee/leave/page.js"
+    ],
+    "/(employee)/employee/clients/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(employee)/employee/clients/page.js"
+    ],
+    "/(employee)/employee/notifications/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(employee)/employee/notifications/page.js"
+    ],
+    "/(employee)/employee/profile/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(employee)/employee/profile/page.js"
+    ]
+  }
+}
