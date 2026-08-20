@@ -1,13 +1,18 @@
 {
   "/login/page": "app/login/page.js",
-  "/(manager)/reports/page": "app/(manager)/reports/page.js",
-  "/(manager)/notifications/page": "app/(manager)/notifications/page.js",
-  "/(manager)/administration/page": "app/(manager)/administration/page.js",
   "/(employee)/employee/dashboard/page": "app/(employee)/employee/dashboard/page.js",
   "/(employee)/employee/roster/page": "app/(employee)/employee/roster/page.js",
   "/(employee)/employee/attendance/page": "app/(employee)/employee/attendance/page.js",
   "/(employee)/employee/leave/page": "app/(employee)/employee/leave/page.js",
-  "/(employee)/employee/clients/page": "app/(employee)/employee/clients/page.js",
-  "/(employee)/employee/notifications/page": "app/(employee)/employee/notifications/page.js",
-  "/(employee)/employee/profile/page": "app/(employee)/employee/profile/page.js"
+  "/(manager)/dashboard/page": "app/(manager)/dashboard/page.js",
+  "/(manager)/employees/page": "app/(manager)/employees/page.js",
+  "/(manager)/attendance/page": "app/(manager)/attendance/page.js",
+  "/(manager)/leave/page": "app/(manager)/leave/page.js",
+  "/(manager)/rostering/page": "app/(manager)/rostering/page.js",
+  "/(manager)/houses/page": "app/(manager)/houses/page.js",
+  "/(manager)/clients/page": "app/(manager)/clients/page.js",
+  "/(manager)/care-records/page": "app/(manager)/care-records/page.js",
+  "/(manager)/care-management/page": "app/(manager)/care-management/page.js",
+  "/(manager)/reports/page": "app/(manager)/reports/page.js",
+  "/(manager)/notifications/page": "app/(manager)/notifications/page.js"
 }
