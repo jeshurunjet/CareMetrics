@@ -46,7 +46,7 @@ export default function ChoiceField({
     >
       {options.map((o, i) => {
         const active = multiple
-          ? Array.isArray(value) && value.includes(o.value)
+          ? Array.isArray(value) && value.some((v) => v === o.value)
           : String(value) === o.value
         return (
           <button
@@ -83,9 +83,19 @@ export default function ChoiceField({
             onClick={() =>
               onChange(
                 multiple
-                  ? Array.isArray(value) && value.includes(o.value)
-                    ? value.filter((v) => v !== o.value)
-                    : [...(Array.isArray(value) ? value : []), o.value]
+                  ? Array.isArray(value) && value.some((v) => v === o.value)
+                    ? value.filter(
+                        (v): v is string =>
+                          typeof v === "string" && v !== o.value,
+                      )
+                    : [
+                        ...(Array.isArray(value)
+                          ? value.filter(
+                              (v): v is string => typeof v === "string",
+                            )
+                          : []),
+                        o.value,
+                      ]
                   : scale
                     ? Number(o.value)
                     : o.value,

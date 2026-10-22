@@ -144,7 +144,13 @@ export interface DiaryEntry extends DiarySubject {
   status: "draft" | "submitted" | "corrected"
   offShiftReason?: string
 }
+export interface CorrectionTarget {
+  fieldId: string
+  rowId?: string
+  columnId?: string
+}
 export interface CorrectionRequest {
+  targets?: readonly CorrectionTarget[]
   recordType?: "diary" | "care"
   id: string
   recordId: string

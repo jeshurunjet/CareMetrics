@@ -36,3 +36,23 @@
 .cm-app .cm-category .cm-row-actions { flex-wrap: wrap; margin-top: .75rem; }
 .cm-app .cm-subheader .cm-row-between { flex-wrap: wrap; gap: .75rem; }
 .cm-app [data-diary-editor] .cm-form-actions .cm-btn { white-space: normal; }
+
+/* Phase 1C.3 source-derived table containment, wrapping and focus. */
+.cm-app .cm-configured-table { width: 100%; min-width: 0; }
+.cm-app .cm-configured-table .cm-repeat-cell, .cm-app .cm-configured-table .cm-field { min-width: 0; }
+.cm-app .cm-configured-table .cm-choice-row { flex-wrap: wrap; }
+.cm-app .cm-table-row-heading { grid-column: 1 / -1; font-size: .8rem; }
+.cm-app .cm-table-wrap { max-width: 100%; min-width: 0; }
+.cm-app .cm-table td { overflow-wrap: anywhere; white-space: normal; }
+.cm-app .cm-table th[scope="row"] { padding: .75rem .9rem; text-align: left; font-weight: 600; }
+.cm-app .cm-chart-history .cm-table { min-width: 54rem; }
+.cm-app .cm-table-wrap:focus-visible, .cm-app summary:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 3px; }
+.cm-app .cm-bars .cm-bar small { font-size: .58rem; overflow-wrap: anywhere; }
+.cm-app .cm-dl-full { min-width: 0; }
+
+.cm-app .cm-table th[scope="row"] { background: white; color: var(--color-ink); font-size: .82rem; text-transform: none; letter-spacing: normal; }
+.cm-app .cm-configured-table .cm-field { gap: .25rem; }
+.cm-app .cm-configured-table .cm-field > label { font-size: .72rem; color: var(--color-ink-muted); }
+.cm-app .cm-configured-table .cm-field:not(.cm-field--error) .cm-input { border-color: var(--color-border); }
+/* Keep absolutely positioned screen-reader labels inside the table scroller. */
+.cm-app .cm-table-wrap { position: relative; }

@@ -3,9 +3,9 @@ import type {
   FormValues,
   FormFieldDefinition,
 } from "./types"
-import { visibleFields, initialFormValues } from "./engine"
+import { visibleFields, initialFormValues, isTableRows } from "./engine"
 import { formatDateTime, formatDateOnly } from "../../lib/time"
-function display(
+export function display(
   field: FormFieldDefinition,
   value: FormValues[string] | undefined,
 ): string {
@@ -38,7 +38,9 @@ function display(
     return (Array.isArray(value) ? value : [String(value)])
       .map((v) => field.options.find((o) => o.value === v)?.label ?? v)
       .join(", ")
-  return Array.isArray(value) ? value.join(", ") : String(value)
+  return Array.isArray(value)
+    ? value.filter((v) => typeof v === "string").join(", ")
+    : String(value)
 }
 export default function ReadOnlyFormValues({
   version,
@@ -62,10 +64,63 @@ export default function ReadOnlyFormValues({
             <h3 className="cm-h3">{section.title}</h3>
             <dl className="cm-dl">
               {fields.map((field) => (
-                <div key={field.id}>
+                <div
+                  key={field.id}
+                  className={
+                    field.type === "repeatingTable" ? "cm-dl-full" : undefined
+                  }
+                >
                   <dt>{field.label}</dt>
                   <dd className="cm-diary-text">
-                    {display(field, values[field.id])}
+                    {field.type === "repeatingTable" ? (
+                      <div>
+                        <p className="cm-hint">
+                          Read-only rows. Scroll the table horizontally to see
+                          all columns.
+                        </p>
+                        <div
+                          className="cm-table-wrap"
+                          role="region"
+                          aria-label={`${field.label} submitted rows`}
+                          tabIndex={0}
+                        >
+                          <table className="cm-table">
+                            <caption className="sr-only">
+                              {field.label} · original version {version.version}
+                            </caption>
+                            <thead>
+                              <tr>
+                                <th scope="col">Row</th>
+                                {field.columns.map((c) => (
+                                  <th scope="col" key={c.id}>
+                                    {c.label}
+                                  </th>
+                                ))}
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {isTableRows(values[field.id]) &&
+                                (values[
+                                  field.id
+                                ] as import("./types").CareTableRow[]).map(
+                                  (row, i) => (
+                                    <tr key={row.id}>
+                                      <th scope="row">{i + 1}</th>
+                                      {field.columns.map((c) => (
+                                        <td key={c.id}>
+                                          {display(c, row.values[c.id])}
+                                        </td>
+                                      ))}
+                                    </tr>
+                                  ),
+                                )}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    ) : (
+                      display(field, values[field.id])
+                    )}
                   </dd>
                 </div>
               ))}

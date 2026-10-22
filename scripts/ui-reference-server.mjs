@@ -18,6 +18,7 @@ const sources = [
   "src/modules/staff/data/development-mock-adapter.ts",
   "src/modules/staff/care/adapter.ts",
   "src/modules/staff/care/seed.ts",
+  "src/modules/staff/charting/seed.ts",
   "src/modules/forms/engine.ts",
   "src/lib/time.ts",
 ]
@@ -73,6 +74,11 @@ const fixture = {
       v.sections.flatMap((section) =>
         section.fields.map((f) => ({
           ...f,
+          type: f.type === "repeatingTable" ? "table" : f.type,
+          columns: f.columns?.map((c) => ({
+            ...c,
+            options: c.options?.map((o) => o.label),
+          })),
           section: section.id,
           options: f.options?.map((o) => o.label),
           showIf:
@@ -87,6 +93,8 @@ const fixture = {
       )
     return {
       ...t,
+      tableColumns: t.history?.columns,
+      chartField: t.history?.chart?.fieldId,
       version: current.version,
       published: true,
       status: "Published",
@@ -108,6 +116,14 @@ const fixture = {
   }),
   records: snapshot.careRecords.map((r) => ({
     ...r,
+    values: Object.fromEntries(
+      Object.entries(r.values).map(([key, value]) => [
+        key,
+        Array.isArray(value) && value.length && typeof value[0] === "object"
+          ? value.map((row) => row.values)
+          : value,
+      ]),
+    ),
     author: snapshot.staff.find((e) => e.id === r.authorId)?.name,
     submittedAt: r.submittedAt ?? r.createdAt,
   })),

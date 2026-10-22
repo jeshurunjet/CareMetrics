@@ -94,4 +94,21 @@ Form breadcrumbs return to the actual subject and Diary. Cancel and completion r
 
 These implement the already-planned `sub`/`item` profile queries and records/new path. No competing record URL hierarchy is introduced. Categories reflect only active client assignments to published Care Plan versions. Unassigned/unknown client/template URLs return server HTTP 404; wrong-client, wrong-template, missing record and another author's draft return generic unavailable content inside an authorised profile (HTTP 200), matching the session-only diary pattern. Seeded records survive refresh; session-created IDs become unavailable on reload.
 
-Client → Care Plan → category history → new assessment → draft/details/submission → correction is connected. Details retain the record's own published template version; draft editing retains its version even if the current assignment changes. Breadcrumbs, return-to-history, browser Back and refresh use the same Staff shell. Assessment creation and corrections reuse its unsaved-change confirmations. No production authentication or organisation/role/house service is implemented; all previews still fail closed in production. Charting and Gallery remain placeholders.
+Client → Care Plan → category history → new assessment → draft/details/submission → correction is connected. Details retain the record's own published template version; draft editing retains its version even if the current assignment changes. Breadcrumbs, return-to-history, browser Back and refresh use the same Staff shell. Assessment creation and corrections reuse its unsaved-change confirmations. No production authentication or organisation/role/house service is implemented; all previews still fail closed in production. At the Phase 1C.2 checkpoint, Charting and Gallery remained placeholders; Charting is implemented below.
+
+## Phase 1C.3 Charting routes
+
+Charting uses the same planned profile queries and records/new path as Care Plan. No competing route hierarchy is introduced.
+
+| Destination | URL |
+| --- | --- |
+| Assigned charts | `/clients/[id]?tab=charting` |
+| Chart history | `/clients/[id]?tab=charting&sub=[templateId]` |
+| Submitted/draft details | `/clients/[id]?tab=charting&sub=[templateId]&item=[recordId]` |
+| New entry | `/clients/[id]/records/new?templateId=[templateId]` |
+| Resume own draft | `/clients/[id]/records/new?templateId=[templateId]&draft=[recordId]` |
+| Request correction | `/clients/[id]?tab=charting&sub=[templateId]&item=[recordId]&action=correction` |
+
+The server validates the fixed fictional employee's client assignment and the expected care/chart template kind before rendering profile history. The shared form route resolves the assigned template kind; breadcrumbs, draft/submission returns and correction returns preserve that area. Unknown/unassigned clients/templates and a chart template opened under Care Plan (or vice versa) return HTTP 404. Invalid/wrong-client/wrong-template/other-author record IDs show a generic unavailable view within an authorised profile (HTTP 200). Session-created IDs reset on reload; seeded links can refresh.
+
+Chart history rows navigate using explicit links. Search, author/date filters and six-record pagination remain view state. Submitted cells are read-only; repeating editable rows exist only inside the shared form. Cancel, Back and ordinary in-app navigation preserve the existing unsaved-change prompts. Staff can save a draft before navigating and resume it within the same provider session. No browser record storage or authenticated service has been introduced. Production continues to reject all preview routes.

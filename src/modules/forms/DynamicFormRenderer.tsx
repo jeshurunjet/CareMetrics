@@ -16,6 +16,20 @@ export default function DynamicFormRenderer({
   const visible = new Set(visibleFields(version, values).map((f) => f.id))
   return (
     <div className="cm-form" aria-label="Assessment questions">
+      {version.reference && (
+        <div
+          className="cm-bristol"
+          role="group"
+          aria-label={version.reference.label}
+        >
+          {version.reference.items.map((o) => (
+            <span key={o.value}>
+              <b>{o.value}</b>
+              {o.label}
+            </span>
+          ))}
+        </div>
+      )}
       {version.sections.map((section) => {
         const fields = section.fields.filter((f) => visible.has(f.id))
         if (!fields.length) return null
@@ -40,6 +54,7 @@ export default function DynamicFormRenderer({
                     )
                   }
                   error={errors[field.id]}
+                  errors={errors}
                 />
               </div>
             ))}

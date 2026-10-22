@@ -6,6 +6,11 @@ import {
   getClientContacts,
   searchStaff,
 } from "./queries"
+import {
+  chartTemplates,
+  chartAssignments,
+  seedChartRecords,
+} from "../charting/seed"
 import { careQueries } from "../care/adapter"
 import { careTemplates, careAssignments, seedCareRecords } from "../care/seed"
 import { diaryQueries } from "./diary-adapter"
@@ -229,12 +234,22 @@ export const developmentMockAdapter = {
           assignedBy: "Mere Walker (demo)",
         },
       ],
-      careTemplates,
-      careAssignments,
-      careRecords: seedCareRecords(now),
+      careTemplates: [...careTemplates, ...chartTemplates],
+      careAssignments: [...careAssignments, ...chartAssignments],
+      careRecords: [...seedCareRecords(now), ...seedChartRecords(now)],
       diary: seedDiary(now),
       diaryCategories,
       corrections: [
+        {
+          id: "chart-correction",
+          recordType: "care",
+          recordId: "chart-exercise-2",
+          requestingEmployeeId: "s1",
+          reason: "Fictional duration wording review",
+          proposed: "duration → 25 minutes",
+          requestedAt: at(-1),
+          status: "pending",
+        },
         {
           id: "care-correction-1",
           recordType: "care",
@@ -327,11 +342,14 @@ export const developmentMockAdapter = {
         clients.some((c) => c.id === a.clientId),
       ),
       careTemplates: s.careTemplates.filter((t) =>
-        clients.some((c) => careQueries.getAssignedCareTemplate(s, c.id, t.id)),
+        clients.some((c) =>
+          careQueries.getAssignedCareTemplate(s, c.id, t.id, t.kind),
+        ),
       ),
       careRecords: clients.flatMap((c) =>
         careQueries
-          .getAssignedCareTemplates(s, c.id)
+          .getAssignedCareTemplates(s, c.id, "care")
+          .concat(careQueries.getAssignedCareTemplates(s, c.id, "chart"))
           .flatMap((t) => careQueries.getCareRecords(s, c.id, t.template.id)),
       ),
       corrections: s.corrections.filter((c) =>

@@ -60,6 +60,14 @@ try {
     "/clients/c1/records/new?templateId=t1&draft=care-c1-skin-8",
     "/clients/c2/records/new?templateId=t2",
     "/clients/c4/records/new?templateId=t-private",
+    "/clients/c1?tab=charting",
+    "/clients/c1?tab=charting&sub=t4",
+    "/clients/c1?tab=charting&sub=t6&item=chart-equipment-1",
+    "/clients/c1?tab=charting&sub=t6&item=chart-equipment-1&action=correction",
+    "/clients/c1/records/new?templateId=t6",
+    "/clients/c1/records/new?templateId=t6&draft=chart-equipment-draft",
+    "/clients/c2/records/new?templateId=t6",
+    "/clients/c4?tab=charting&sub=chart-private",
   ]
   for (const path of paths) {
     const res = await fetch(`http://localhost:8556${path}`)
@@ -79,6 +87,9 @@ try {
       "House handover",
       "Legacy fictional observation",
       "Unassigned assessment content",
+      "Unassigned chart content",
+      "Fictional exercise session",
+      "Demo walking frame",
     ])
       assert.ok(!body.includes(marker), "no fictional data exposed")
   }

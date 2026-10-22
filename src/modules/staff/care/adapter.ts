@@ -1,4 +1,4 @@
-import type { StaffSnapshot } from "../data/types"
+import type { StaffSnapshot, CorrectionTarget } from "../data/types"
 import type { CareRecordInput, CareRecord } from "./types"
 import { getClient } from "../data/queries"
 import { isDemoOnShift } from "../data/diary-adapter"
@@ -6,18 +6,24 @@ import {
   validateForm,
   normalizeFormValues,
   initialFormValues,
+  allFields,
+  isTableRows,
 } from "../../forms/engine"
 import {
   canRequestRecordCorrection,
   appendCorrectionRequest,
 } from "../data/correction-service"
-export function getAssignedCareTemplates(s: StaffSnapshot, clientId: string) {
+export function getAssignedCareTemplates(
+  s: StaffSnapshot,
+  clientId: string,
+  kind: "care" | "chart" = "care",
+) {
   if (!getClient(s, clientId)) return []
   return s.careAssignments
     .filter((a) => a.clientId === clientId && a.status === "active")
     .flatMap((a) => {
       const template = s.careTemplates.find(
-          (t) => t.id === a.templateId && t.kind === "care",
+          (t) => t.id === a.templateId && t.kind === kind,
         ),
         version = template?.versions.find(
           (v) => v.version === a.version && v.published,
@@ -29,8 +35,9 @@ export const getAssignedCareTemplate = (
   s: StaffSnapshot,
   clientId: string,
   templateId: string,
+  kind: "care" | "chart" = "care",
 ) =>
-  getAssignedCareTemplates(s, clientId).find(
+  getAssignedCareTemplates(s, clientId, kind).find(
     (t) => t.template.id === templateId,
   )
 export function getCareRecords(
@@ -38,7 +45,12 @@ export function getCareRecords(
   clientId: string,
   templateId: string,
 ) {
-  const assigned = getAssignedCareTemplate(s, clientId, templateId)
+  const assigned = getAssignedCareTemplate(
+    s,
+    clientId,
+    templateId,
+    s.careTemplates.find((t) => t.id === templateId)?.kind,
+  )
   if (!assigned) return []
   return s.careRecords
     .filter(
@@ -107,7 +119,12 @@ export function validateCareInput(
   input: CareRecordInput,
   status: "draft" | "submitted",
 ) {
-  const assigned = getAssignedCareTemplate(s, clientId, templateId),
+  const assigned = getAssignedCareTemplate(
+      s,
+      clientId,
+      templateId,
+      s.careTemplates.find((t) => t.id === templateId)?.kind,
+    ),
     version = assigned?.template.versions.find(
       (v) => v.version === versionNumber && v.published,
     )
@@ -138,7 +155,12 @@ export function saveCareRecord(
   now: string,
   draftId?: string,
 ): StaffSnapshot {
-  const assigned = getAssignedCareTemplate(s, clientId, templateId)
+  const assigned = getAssignedCareTemplate(
+    s,
+    clientId,
+    templateId,
+    s.careTemplates.find((t) => t.id === templateId)?.kind,
+  )
   if (!assigned) throw new Error("Assessment unavailable")
   const existing = draftId
     ? getCareRecord(s, clientId, templateId, draftId)
@@ -197,10 +219,30 @@ export function requestCareCorrection(
   proposed: string,
   requestId: string,
   now: string,
+  target?: CorrectionTarget,
 ) {
   const record = getCareRecord(s, clientId, templateId, id)
   if (!record || !canRequestCareCorrection(s, record))
     throw new Error("Correction unavailable")
+  if (target) {
+    const template = s.careTemplates.find((t) => t.id === templateId)!
+    const version = template.versions.find(
+      (v) => v.version === record.templateVersion,
+    )!
+    const field = allFields(version).find((f) => f.id === target.fieldId)
+    const rows = field && record.values[field.id]
+    if (
+      !field ||
+      ((target.rowId || target.columnId) &&
+        (field.type !== "repeatingTable" ||
+          !target.rowId ||
+          !target.columnId ||
+          !isTableRows(rows) ||
+          !rows.some((r) => r.id === target.rowId) ||
+          !field.columns.some((c) => c.id === target.columnId)))
+    )
+      throw new Error("Correction target unavailable")
+  }
   return appendCorrectionRequest(
     s,
     "care",
@@ -209,6 +251,7 @@ export function requestCareCorrection(
     proposed,
     requestId,
     now,
+    target ? [target] : undefined,
   )
 }
 export const careQueries = {

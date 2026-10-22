@@ -17,10 +17,11 @@ export default async function Page({
     (draft !== undefined && typeof draft !== "string")
   )
     notFound()
-  loadPreviewCareTemplate(id, templateId)
+  const assigned = loadPreviewCareTemplate(id, templateId)
   return (
     <AssessmentForm
       key={`${id}-${templateId}-${draft ?? "new"}`}
+      kind={assigned.template.kind}
       clientId={id}
       templateId={templateId}
       draftId={draft}

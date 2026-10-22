@@ -19,9 +19,13 @@ export default async function Page({
   const query = await searchParams
   const tab = query.tab ?? "overview"
   if (!isClientTab(tab)) notFound()
-  if (tab === "care" && query.sub !== undefined) {
+  if ((tab === "care" || tab === "charting") && query.sub !== undefined) {
     if (typeof query.sub !== "string") notFound()
-    loadPreviewCareTemplate(id, query.sub)
+    loadPreviewCareTemplate(
+      id,
+      query.sub,
+      tab === "charting" ? "chart" : "care",
+    )
   }
   return <ClientProfile key={id} id={id} tab={tab} />
 }

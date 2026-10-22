@@ -16,7 +16,11 @@ export function loadPreviewRecord(kind: "house" | "client", id: string) {
   return record
 }
 
-export function loadPreviewCareTemplate(clientId: string, templateId: string) {
+export function loadPreviewCareTemplate(
+  clientId: string,
+  templateId: string,
+  kind?: "care" | "chart",
+) {
   requirePreview()
   const s = developmentMockAdapter.getSnapshot(
     "s1",
@@ -26,6 +30,7 @@ export function loadPreviewCareTemplate(clientId: string, templateId: string) {
     s,
     clientId,
     templateId,
+    kind ?? s.careTemplates.find((t) => t.id === templateId)?.kind,
   )
   if (!assigned) notFound()
   return assigned

@@ -1,4 +1,8 @@
-import type { StaffSnapshot, CorrectionRequest } from "./types"
+import type {
+  StaffSnapshot,
+  CorrectionRequest,
+  CorrectionTarget,
+} from "./types"
 export type CorrectionRecordType = "diary" | "care"
 export const recordCorrections = (
   s: StaffSnapshot,
@@ -30,6 +34,7 @@ export function appendCorrectionRequest(
   proposed: string,
   id: string,
   now: string,
+  targets?: readonly CorrectionTarget[],
 ): StaffSnapshot {
   if (!reason.trim() || !proposed.trim())
     throw new Error("Reason and proposed correction are required.")
@@ -43,6 +48,7 @@ export function appendCorrectionRequest(
     throw new Error("Correction already pending")
   const request: CorrectionRequest = {
     id,
+    targets,
     recordType,
     recordId,
     requestingEmployeeId: s.meId,

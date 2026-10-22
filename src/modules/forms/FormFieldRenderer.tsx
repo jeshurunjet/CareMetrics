@@ -2,6 +2,7 @@
 import type { ReactElement } from "react"
 import type { FormFieldDefinition, FormValue } from "./types"
 import FormField from "../staff/ui/FormField"
+import RepeatingTableField from "./RepeatingTableField"
 import ChoiceField from "./ChoiceField"
 import Icon from "@/components/Icon"
 export default function FormFieldRenderer({
@@ -9,10 +10,12 @@ export default function FormFieldRenderer({
   value,
   onChange,
   error,
+  errors,
 }: {
   field: FormFieldDefinition
   value: FormValue | undefined
   onChange: (value: FormValue) => void
+  errors?: Record<string, string>
   error?: string
 }) {
   const id = `f-${field.id}`,
@@ -102,6 +105,16 @@ export default function FormFieldRenderer({
           onChange={(e) =>
             onChange(e.target.value === "" ? "" : Number(e.target.value))
           }
+        />
+      )
+      break
+    case "repeatingTable":
+      control = (
+        <RepeatingTableField
+          field={f}
+          value={value}
+          onChange={onChange}
+          errors={errors}
         />
       )
       break

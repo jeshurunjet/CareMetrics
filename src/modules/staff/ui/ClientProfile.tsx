@@ -18,6 +18,7 @@ import {
 } from "./index"
 import Tabs from "./Tabs"
 import ClientContacts from "./ClientContacts"
+import Charting from "../charting/Charting"
 import CarePlan from "../care/CarePlan"
 import { getAssignedCareTemplates } from "../care/adapter"
 import DiaryHistoryList from "../diary/DiaryHistoryList"
@@ -150,7 +151,12 @@ export default function ClientProfile({
             icon: "clipboard",
             count: getAssignedCareTemplates(s, id).length,
           },
-          { id: "charting", label: "Charting", icon: "chart", count: 0 },
+          {
+            id: "charting",
+            label: "Charting",
+            icon: "chart",
+            count: getAssignedCareTemplates(s, id, "chart").length,
+          },
           { id: "files", label: "Gallery", icon: "image" },
         ]}
       />
@@ -203,7 +209,12 @@ export default function ClientProfile({
                     "Care Plan",
                     `${getAssignedCareTemplates(s, id).length} assessments`,
                   ],
-                  ["charting", "chart", "Charting", "Client charts"],
+                  [
+                    "charting",
+                    "chart",
+                    "Charting",
+                    `${getAssignedCareTemplates(s, id, "chart").length} charts`,
+                  ],
                   ["files", "image", "Gallery", "Photos & documents"],
                 ].map(([section, icon, label, sub]) => (
                   <Card
@@ -261,9 +272,7 @@ export default function ClientProfile({
           <DiaryHistoryList subject={{ scope: "client", targetId: id }} />
         )}
         {tab === "care" && <CarePlan clientId={id} />}
-        {tab === "charting" && (
-          <FeaturePlaceholder title="Client charting" icon="chart" />
-        )}
+        {tab === "charting" && <Charting clientId={id} />}
         {tab === "files" && (
           <FeaturePlaceholder title="Client gallery & documents" icon="image" />
         )}

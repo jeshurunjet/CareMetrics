@@ -4,6 +4,13 @@ export interface CareTemplate {
   kind: "care" | "chart"
   name: string
   description: string
+  history?: {
+    columns: readonly string[]
+    chart?: {
+      fieldId: string
+      unit: string
+    }
+  }
   documentationOnly?: boolean
   versions: readonly ConfigurableFormVersion[]
 }

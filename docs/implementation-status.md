@@ -1,49 +1,52 @@
-# Implementation status — Phase 1C.2
+# Implementation status — Phase 1C.3
 
-Care Plan/Assessments now joins the existing Staff Application as a **development-only UI migration**. Forms are configuration-driven and records retain their original template version. No backend feature is connected or production-ready. Earlier checkpoints: [Phase 1C.1](history/phase-1c1-status.md), [Phase 1B](history/phase-1b-status.md), [Phase 1A](history/phase-1a-status.md).
+Staff Charting and repeating editable tables extend the existing development-only UI. Care Plan and Charting remain separate staff tabs over one typed form, assignment and record model. No production backend feature is connected. Earlier status: [Phase 1C.2](history/phase-1c2-status.md), [Phase 1C.1](history/phase-1c1-status.md).
 
-Git checkpoint: `9cecc8b` on `main`. Its existing checks were rerun successfully before changes (33 unit tests, 120 browser cases, lint/typecheck/format/build and 20 production-isolation URLs). Only pre-existing duplicate screenshots were untracked; they remain untouched. Phase 1C.2 is checkpointed locally on branch `phase-1c2`; `main` remains at Phase 1C.1. Nothing has been pushed for this phase.
+Checkpoint `6a5c939` on `phase-1c2` passed all existing checks before changes: lint/typecheck/format, 49 unit tests, 175 browser cases, build and 27 production-isolation URLs. Current work is on local branch `phase-1c3`; `main` remains at `9cecc8b`. No reset, discard or remote push. Pre-existing duplicate screenshots remain untouched.
 
-Statuses: `original` = source retained; `ported` = adapted; `UI-matched` = inspected against rendered source with documented differences; `tested` = relevant checks pass; `backend-connected` = authorised persistent services; `blocked` = external integration/decision required. Visual review is not independent design approval.
+Statuses: `original` = preserved source; `ported` = adapted UI; `UI-matched` = inspected source comparisons with documented extensions; `tested` = relevant checks pass; `backend-connected` = authorised persistent services; `blocked` = external prerequisite. Visual matching is not independent design approval.
 
-| Area | Status | Evidence and limits |
+| Area | Status | Evidence and boundary |
 | --- | --- | --- |
-| Previous Staff screens and Diary | ported, tested | All previous functional browser cases retained. Shared correction/metadata components now support diary/care discrimination. Login, My Shifts, Dashboard and Admin screen source unchanged. |
-| Care Plan category list | ported, UI-matched, tested | Only active client-assigned published templates; descriptions, counts/latest dates, assigned version, history/new actions and exact no-assignment empty state. |
-| Assessment history/details | ported, UI-matched, tested | Scoped category records, newest first, search/date filters, six-record pages, expandable answers and details. Read-only answers use the record's original version, including a v1 historical fixture alongside current v2. |
-| Configurable forms | ported, UI-matched, tested | Eleven supported field types with sections, help, requirements, defaults, options, basic validation and declarative field/section visibility. No category-name-specific form component. |
-| Drafts/submission/off-shift | ported, UI-matched, tested | Own incomplete drafts, resume/edit/submit, separate timestamps, retained author/version, submission feedback, unsaved-change prompts and shared demo-attendance state. All changes reset on reload. |
-| Corrections | ported, UI-matched, tested | Shared request form/model/helpers; original answers preserved, field/value proposals in text, separate Pending Review status, no staff approval/rejection or submitted edit/delete operation. |
-| Development model | ported, tested | Existing snapshot/provider extended with typed templates, versions, sections/fields/options, client assignments and care records. No independent store or real API introduced. |
-| Source/style integrity | original, tested | Original archive/extraction and three active source CSS copies unchanged. Scoped bootstrap additions only. No dependency/font-binary additions. |
-| Preview boundary | ported, tested | Production refuses 27 URLs with preview explicitly enabled, including assessment forms, details/corrections and unassigned subjects. Server fixed-demo-client/template lookups remain development demonstrations. |
-| Charting, repeating tables, Gallery, Admin builder | original / placeholders | Outside this phase. Reserved photo/file/table controls explicitly unavailable; no upload picker or pretend file persistence. |
-| Auth.js / Prisma / Neon / secure files / GPS / audit / deployment | blocked, not implemented | No production identity, organisation/role/house permission service, persistence, private files, location verification, durable audit or deployment approval. Fictional data only. |
+| Previous Staff, Diary and Care Plan | ported, tested | Existing routes/workflows retained; shared renderer/lifecycle reused. All earlier regression cases included in verification. |
+| Charting categories | ported, UI-matched, tested | Client assignments drive names/descriptions/counts/latest dates/version/history/new actions; exact no-assignment state. Three chart categories for c1, one for c2, none for c3. |
+| Chart history | ported, UI-matched, tested | Configured read-only history columns, client/category scope, newest-first, search/date/author filters, six-row pagination and explicit details links. Equipment row-count summaries open full details. |
+| Shared repeating form field | ported, UI-matched, tested | Stable field/column/row IDs; configured scalar controls, min/max/required/cell validation, Add Row/Remove Draft Row, focus and responsive source row grid. No Charting-only form engine. |
+| Chart drafts/submissions | ported, UI-matched, tested | Shared author-only incomplete drafts, row-value/ID/order retention, version retention, separate timestamps, off-shift reason, discard prompts and session-only success. |
+| Submitted versioned tables | ported, UI-matched, tested | Original-version columns/values in accessible read-only scroll regions; historical v1 and assigned v2 fixtures. No submitted row edits/removal. |
+| Numeric chart | ported, UI-matched, tested | Source CSS bars for configured numeric duration with units, actual submitted values, zero/missing/empty handling and semantic table alternative. No clinical interpretation. |
+| Corrections | ported, UI-matched, tested | Shared requests plus optional original field/row/column target, validated and stored separately. Original unchanged; staff cannot approve/reject. |
+| Original design/styles | original | All 51 extracted source files and three active original CSS copies unchanged; scoped bootstrap additions only. No new dependencies or font binaries. |
+| Production preview isolation | tested | 35 URLs refused with flag enabled; login inert and fictional content absent. Fixed-demo lookup is not production authorisation. |
+| Gallery/remaining Staff/Admin builder/backend | original / placeholders / blocked | Not implemented in this phase. Real identity, organisation/role/house enforcement, persistence, GPS, secure files, corrected-version review, audit and deployment remain future work. |
 
 ## Verification
 
 | Check | Result |
 | --- | --- |
 | `pnpm lint` | PASS, zero warnings |
-| `pnpm typecheck` | PASS, strict source/tests and canonical generated route types |
+| `pnpm typecheck` | PASS, strict source/tests and generated routes |
 | `pnpm format:check` | PASS |
-| `pnpm test` | PASS, 49 unit tests across five files |
-| `pnpm test:e2e` | PASS, 175 cases (35 × five widths), including all 120 earlier regression cases |
-| Focused comparison run | PASS, five capture cases rerun after screenshot positioning/display review |
-| `pnpm build` | PASS, production webpack build including `/clients/[id]/records/new` and unchanged Admin routes |
-| `pnpm test:production` | PASS, 27 preview paths refused with flag enabled and no fixture-content exposure |
-| Source integrity | PASS, all 51 extracted files and all three original CSS copies byte-identical |
-| Visual evidence | 120 raw captures and 20 paired boards at 375, 390, 768, 1280 and 1440px; findings documented in migration notes |
+| `pnpm test` | PASS, 63 unit tests across six files |
+| `pnpm test:e2e` | PASS, 225 cases (45 × five widths), including all 175 earlier regression cases |
+| Focused containment regression | PASS, all 10 Charting cases at 768px |
+| `pnpm build` | PASS, production webpack build |
+| `pnpm test:production` | PASS, 35 preview paths fail closed with flag enabled; login inert |
+| Local smoke checks | PASS, Charting history and shared Equipment form HTTP 200 on existing port 8443 |
+| Source integrity | PASS, 51 extracted source files and three original active CSS copies byte-identical |
+| Visual evidence | 90 raw captures and 15 paired boards at 375, 390, 768, 1280 and 1440px |
+| `git diff --check` | PASS |
 
-Unit tests cover required/option/numeric/date/time validation, all field types in configuration, conditional sections/fields, hidden-value removal, missing/cyclic dependencies, unsupported required controls, assignment/publication scope, author-only drafts, historical version retention, off-shift/demo-active states, pagination/filter/search and unchanged originals on correction. Browser cases cover the user-facing workflows, long text, keyboard choices, invalid/wrong-client/template/draft URLs, versioned details, Cancel/navigation confirmation, responsive controls and source comparisons. Existing Admin desktop gating remains tested.
+Unit tests cover all seven supported table cell kinds, configured structures, required/min/max rows, unique IDs, malformed values, number/date/time/options, hidden/unknown cell clearing, scope, author-only drafts, row/order/value/version retention, off-shift rules, numeric chart values including zero/missing data, separate validated correction targets and unchanged submitted originals. Browser cases cover category/empty states, search/date/author/pagination, history/details/form routes, stable-ID add/remove/focus/max, cell/off-shift validation, partial draft/resume/submit, active demo attendance, old-version tables, targeted corrections, invalid/unassigned/private IDs, unsaved navigation and responsive bounds/source captures. All previous Staff/Diary/Care Plan and Admin desktop-gate cases remain passing.
 
-## Limits and next step
+Final visual review corrected crowded bar-date ticks, semantic row-heading contrast and inherited whole-table error borders. A subsequent 768px check found absolutely positioned screen-reader link labels escaping their scroll container; a relative positioning context contains those labels while preserving their accessible content. The final full suite passes after this fix, including all five captures with no collected pageerror events. No unintended page-level overflow or action overlap remains in the tested states. Original table/modal limitations and intentional workflow differences are documented; exact pixel parity is not claimed.
 
-- Drafts, submissions, corrections and demo attendance live only in the Staff React session. Reload/remount resets them; seeded direct links resolve again and session-created IDs show unavailable. The UI explains this before data entry.
-- Unknown/unassigned client/template routes return server HTTP 404. Invalid care record IDs within an authorised profile show generic unavailable content with HTTP 200. The fixed fictional employee's scoped snapshot is serialised for the preview; no authenticated access-control service exists.
-- Published configurations have no editing operation in this phase and submitted records are read-only in the staff UI. Database immutability, review decisions, corrected versions, durable audit, concurrency and server-enforced permissions remain future work.
-- Forms are fictional demonstration configurations, not clinical assessment standards. Medication receipt is documentation only. Advanced clinical validation, medication administration/prescribing, calculations and recommendations are excluded.
-- Reference details are inline and correction is modal; full-page views extend the same source design. Added actions/version/status/metadata and safety copy change height. Exact visual parity, physical-device/mobile-keyboard testing, Safari/Firefox and exhaustive accessibility certification are not claimed.
-- Host verification uses Node 25.9.0/pnpm 10.15.1; Node 22 LTS CI verification remains outstanding. External font/photo/tile availability/licensing/privacy review and production operational acceptance remain later work.
+## Remaining limitations and next step
 
-See [configurable form model](configurable-forms.md), [route map](route-map.md), [UI migration notes](ui-migration-notes.md) and [visual evidence](ui-comparisons/phase-1c2/). No Phase 1C.2 implementation blocker remains for review. Recommended next: review this phase, then a bounded **Phase 1C.3 Charting and repeating editable table UI migration**. Do not automatically begin backend or Admin CMS implementation.
+All records and attendance are fictional development-session state; reload/remount resets changes. No browser record storage was added to conceal that limitation. New IDs become unavailable after reload; seeded deep links resolve. Unknown/unassigned clients/templates and area/template mismatches return HTTP 404; invalid/wrong-client/private draft record IDs within an authorised profile show generic unavailable UI with HTTP 200. This is not authenticated server access enforcement.
+
+Only one structured correction target can be selected; the text proposal may describe more. Approval, corrected versions, concurrency, published schema authoring/validation and durable audit remain unimplemented. Photo/file fields/cells and old table placeholders without configured columns remain explicitly unavailable. Nested tables, table-row reordering, advanced chart configurations, clinical validation and real uploads are excluded.
+
+Host Node 25.9.0/pnpm 10.15.1; Node 22 is not installed and intended-runtime CI remains outstanding. Chromium viewport emulation does not certify physical-device keyboards, Safari/Firefox, exhaustive accessibility, external asset availability/licensing/privacy or exact visual parity.
+
+Review Phase 1C.3, then agree a bounded next Staff UI migration (for example Gallery with real files deferred). No Phase 1C.3 implementation blocker remains for review. Changes are uncommitted on `phase-1c3`; nothing was pushed. No Phase 1C.4, Admin, backend or deployment work has started automatically. See [routes](route-map.md), [form contracts](configurable-forms.md), [migration notes](ui-migration-notes.md) and [visual evidence](ui-comparisons/phase-1c3/).

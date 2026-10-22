@@ -2,7 +2,7 @@
 import { useState, type ReactNode } from "react"
 import { useRouter } from "next/navigation"
 import { useStaffData, useUpdateStaffData } from "../data/context"
-import type { StaffSnapshot } from "../data/types"
+import type { StaffSnapshot, CorrectionTarget } from "../data/types"
 import { Banner, Btn, Card } from "../ui"
 import FormField from "../ui/FormField"
 import useUnsavedChanges from "../diary/use-unsaved-changes"
@@ -14,7 +14,12 @@ export default function RecordCorrectionForm({
   returnHref,
   onRequest,
   proposalHelp,
+  targets,
 }: {
+  targets?: readonly {
+    label: string
+    target: CorrectionTarget
+  }[]
   title: string
   original: ReactNode
   allowed: boolean
@@ -26,18 +31,20 @@ export default function RecordCorrectionForm({
     proposed: string,
     id: string,
     now: string,
+    target?: CorrectionTarget,
   ) => StaffSnapshot
   proposalHelp?: string
 }) {
   const s = useStaffData(),
     update = useUpdateStaffData(),
     router = useRouter()
+  const [target, setTarget] = useState("")
   const [reason, setReason] = useState(""),
     [proposed, setProposed] = useState(""),
     [tried, setTried] = useState(false),
     [error, setError] = useState(""),
     [saved, setSaved] = useState(false)
-  const dirty = !!(reason || proposed) && !saved
+  const dirty = !!(reason || proposed || target) && !saved
   useUnsavedChanges(dirty)
   if (!allowed) return unavailable
   const cancel = () => {
@@ -77,6 +84,7 @@ export default function RecordCorrectionForm({
               proposed,
               crypto.randomUUID(),
               new Date().toISOString(),
+              targets?.find((t) => JSON.stringify(t.target) === target)?.target,
             )
             setSaved(true)
             update(next)
@@ -86,6 +94,30 @@ export default function RecordCorrectionForm({
           }
         }}
       >
+        {!!targets?.length && (
+          <FormField
+            label="Affected field or table cell (optional)"
+            htmlFor="cr-target"
+            help="Select a stable reference, then describe the intended value below."
+          >
+            <select
+              id="cr-target"
+              className="cm-input"
+              value={target}
+              onChange={(e) => setTarget(e.target.value)}
+            >
+              <option value="">Describe changes in text</option>
+              {targets.map((t) => (
+                <option
+                  key={JSON.stringify(t.target)}
+                  value={JSON.stringify(t.target)}
+                >
+                  {t.label}
+                </option>
+              ))}
+            </select>
+          </FormField>
+        )}
         <FormField
           label="Reason for correction"
           required

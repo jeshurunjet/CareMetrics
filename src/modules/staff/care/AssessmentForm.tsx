@@ -21,15 +21,17 @@ export default function AssessmentForm({
   clientId,
   templateId,
   draftId,
+  kind = "care",
 }: {
   clientId: string
   templateId: string
+  kind?: "care" | "chart"
   draftId?: string
 }) {
   const s = useStaffData(),
     update = useUpdateStaffData(),
     router = useRouter()
-  const assigned = getAssignedCareTemplate(s, clientId, templateId),
+  const assigned = getAssignedCareTemplate(s, clientId, templateId, kind),
     existing = draftId
       ? getCareRecord(s, clientId, templateId, draftId)
       : undefined
@@ -66,11 +68,11 @@ export default function AssessmentForm({
         existing.status !== "draft" ||
         existing.authorId !== s.meId))
   )
-    return <UnavailableAssessment clientId={clientId} />
+    return <UnavailableAssessment clientId={clientId} kind={kind} />
   const offShift = !isDemoOnShift(s) || !!errors.offShiftReason
   const leave = () => {
     setSaved(true)
-    router.replace(careHistoryHref(clientId, templateId))
+    router.replace(careHistoryHref(clientId, templateId, kind))
   }
   function save(status: "draft" | "submitted") {
     if (!version) return
@@ -112,7 +114,7 @@ export default function AssessmentForm({
       setSaved(true)
       update(next)
       router.replace(
-        careDetailHref(clientId, templateId, id) +
+        careDetailHref(clientId, templateId, id, false, kind) +
           (status === "submitted" ? "&result=submitted" : ""),
       )
     } catch (e) {
@@ -123,7 +125,9 @@ export default function AssessmentForm({
     <>
       <PageHeader
         back
-        eyebrow="Care Plan / Assessment"
+        eyebrow={
+          kind === "chart" ? "Charting / Entry" : "Care Plan / Assessment"
+        }
         title={
           existing
             ? `Continue draft — ${assigned.template.name}`
@@ -133,19 +137,29 @@ export default function AssessmentForm({
         crumbs={[
           { label: client.name, route: { page: "client", id: clientId } },
           {
-            label: "Care Plan",
-            route: { page: "client", id: clientId, tab: "care" },
+            label: kind === "chart" ? "Charting" : "Care Plan",
+            route: {
+              page: "client",
+              id: clientId,
+              tab: kind === "chart" ? "charting" : "care",
+            },
           },
           {
             label: assigned.template.name,
             route: {
               page: "client",
               id: clientId,
-              tab: "care",
+              tab: kind === "chart" ? "charting" : "care",
               sub: templateId,
             },
           },
-          { label: existing ? "Continue draft" : "New assessment" },
+          {
+            label: existing
+              ? "Continue draft"
+              : kind === "chart"
+                ? "Add entry"
+                : "New assessment",
+          },
         ]}
       />
       <div data-diary-editor>
@@ -170,7 +184,7 @@ export default function AssessmentForm({
                 </span>
               </div>
             </div>
-            <AssessmentPreviewNotice />
+            <AssessmentPreviewNotice kind={kind} />
             {assigned.template.documentationOnly && (
               <Banner tone="info">
                 Documentation only. This record does not replace the medication
@@ -261,7 +275,7 @@ export default function AssessmentForm({
               Save draft
             </Btn>
             <Btn type="submit" icon="check" disabled={saved}>
-              Submit assessment
+              {kind === "chart" ? "Submit entry" : "Submit assessment"}
             </Btn>
           </div>
         </form>
