@@ -18,3 +18,18 @@ logs/
 # beside it.
 /.plugins/
 /.opencode-skills/
+
+.next/
+.next-build/
+.next-e2e/
+playwright-report/
+test-results/
+coverage/
+.DS_Store
+!.env.example
+
+.next-local/
+.ui-reference/
+
+# Local Figma export and previous implementation snapshots.
+/reference/

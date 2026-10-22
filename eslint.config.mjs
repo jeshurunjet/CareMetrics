@@ -1,0 +1,18 @@
+import { defineConfig, globalIgnores } from "eslint/config"
+import nextVitals from "eslint-config-next/core-web-vitals"
+import nextTypescript from "eslint-config-next/typescript"
+export default defineConfig([
+  ...nextVitals,
+  ...nextTypescript,
+  globalIgnores([
+    "reference/**",
+    ".ui-reference/**",
+    ".next*/**",
+    "node_modules/**",
+    "next-env.d.ts",
+    "vite.config.ts",
+    "playwright-report/**",
+    "test-results/**",
+    "coverage/**",
+  ]),
+])

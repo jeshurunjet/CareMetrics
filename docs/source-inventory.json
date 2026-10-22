@@ -1,0 +1,1308 @@
+{
+  "archiveSha256": "f1cb330a9205e3352b13aef7c42991d1ca7ff698d52c57ecf9a66ab6cb7fc471",
+  "reachable": [
+    "App.tsx",
+    "admin/AdminApp.tsx",
+    "admin/LocationPicker.tsx",
+    "admin/admin.css",
+    "admin/core.tsx",
+    "admin/pages/Builder.tsx",
+    "admin/pages/Dashboard.tsx",
+    "admin/pages/Docs.tsx",
+    "admin/pages/Governance.tsx",
+    "admin/pages/People.tsx",
+    "admin/pages/Places.tsx",
+    "admin/pages/Roster.tsx",
+    "index.css",
+    "main.tsx",
+    "staff/ShiftMap.tsx",
+    "staff/StaffApp.tsx",
+    "staff/pages/Client.tsx",
+    "staff/pages/ClockIn.tsx",
+    "staff/pages/Forms.tsx",
+    "staff/pages/Home.tsx",
+    "staff/pages/Houses.tsx",
+    "staff/pages/Other.tsx",
+    "staff/pages/Shared.tsx",
+    "staff/staff.css",
+    "staff/store.ts",
+    "staff/ui.tsx",
+    "views/LoginView.tsx"
+  ],
+  "unreachable": [
+    "components/ClockInMap.tsx",
+    "components/MyLocationMap.tsx",
+    "components/StaffLocationMap.tsx",
+    "data/staffLocations.ts",
+    "imports/pasted_text/caremetrics-ui-instructions.md",
+    "imports/pasted_text/company-leave-management.md",
+    "views/AdministrationView.tsx",
+    "views/AttendanceView.tsx",
+    "views/CareManagementView.tsx",
+    "views/CareRecordsView.tsx",
+    "views/ClientsView.tsx",
+    "views/CompanyDashboard.tsx",
+    "views/EmployeeDashboard.tsx",
+    "views/EmployeesView.tsx",
+    "views/HousesView.tsx",
+    "views/LeaveManagementView.tsx",
+    "views/MyAttendanceView.tsx",
+    "views/MyLeaveView.tsx",
+    "views/MyProfileView.tsx",
+    "views/MyRosterView.tsx",
+    "views/NotificationsView.tsx",
+    "views/ReportsView.tsx",
+    "views/RosteringView.tsx",
+    "vite-env.d.ts"
+  ],
+  "missingLocalImports": [],
+  "files": [
+    {
+      "file": "App.tsx",
+      "lines": 15,
+      "imports": [
+        "react",
+        "./views/LoginView",
+        "./staff/StaffApp",
+        "./admin/AdminApp"
+      ],
+      "exports": [
+        "Role",
+        "App"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "admin/AdminApp.tsx",
+      "lines": 159,
+      "imports": [
+        "react",
+        "../staff/staff.css",
+        "./admin.css",
+        "../staff/store",
+        "../staff/ui",
+        "./core",
+        "./pages/Dashboard",
+        "./pages/People",
+        "./pages/Places",
+        "./pages/Roster",
+        "./pages/Docs",
+        "./pages/Builder",
+        "./pages/Governance"
+      ],
+      "exports": [
+        "AdminApp"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 1,
+        "mutation": 2,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "admin/LocationPicker.tsx",
+      "lines": 17,
+      "imports": [
+        "leaflet/dist/leaflet.css",
+        "react-leaflet",
+        "react"
+      ],
+      "exports": [
+        "LocationPicker"
+      ],
+      "urls": [
+        "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+      ],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "admin/admin.css",
+      "lines": 479,
+      "imports": [],
+      "exports": [],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "admin/core.tsx",
+      "lines": 113,
+      "imports": [
+        "react",
+        "../staff/store",
+        "../staff/ui"
+      ],
+      "exports": [
+        "ARoute",
+        "DrawerState",
+        "AdminContext",
+        "useAdmin",
+        "can",
+        "useCan",
+        "adminUser",
+        "act",
+        "Pill",
+        "sectionOf",
+        "sectionLabel",
+        "PageHead",
+        "Panel",
+        "SubTabs",
+        "Stat",
+        "KV",
+        "Locked",
+        "Drawer",
+        "Timeline",
+        "Col",
+        "DataTable",
+        "Filters",
+        "useLoading",
+        "nameOf",
+        "shortDate",
+        "dt",
+        "tm",
+        "attendanceStatus"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "admin/pages/Builder.tsx",
+      "lines": 287,
+      "imports": [
+        "react",
+        "../../staff/store",
+        "../../staff/ui",
+        "../core"
+      ],
+      "exports": [
+        "TemplateEditor"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 4,
+        "mutation": 6,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "admin/pages/Dashboard.tsx",
+      "lines": 68,
+      "imports": [
+        "../../staff/store",
+        "../../staff/ui",
+        "../core"
+      ],
+      "exports": [
+        "Dashboard"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "admin/pages/Docs.tsx",
+      "lines": 281,
+      "imports": [
+        "react",
+        "../../staff/store",
+        "../../staff/ui",
+        "../core"
+      ],
+      "exports": [
+        "DocsPage",
+        "DiaryTable",
+        "RecordDetail",
+        "CorrectionReview"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 5,
+        "mutation": 6,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "admin/pages/Governance.tsx",
+      "lines": 392,
+      "imports": [
+        "react",
+        "../../staff/store",
+        "../../staff/ui",
+        "../core"
+      ],
+      "exports": [
+        "FilesPage",
+        "AdminGallery",
+        "FileDrawer",
+        "NoticesPage",
+        "NoticeForm",
+        "RelatedNotices",
+        "ConcernReview",
+        "LeavePage",
+        "LeaveDrawer",
+        "ReportsPage",
+        "SettingsPage"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 13,
+        "mutation": 11,
+        "random": 0,
+        "file": 4,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "admin/pages/People.tsx",
+      "lines": 213,
+      "imports": [
+        "react",
+        "../../staff/store",
+        "../../staff/ui",
+        "../core"
+      ],
+      "exports": [
+        "ROLES",
+        "accessFor",
+        "EmployeeDirectory",
+        "HousePicker",
+        "AssignHouses",
+        "EmployeeForm",
+        "EmployeeDetail"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 6,
+        "mutation": 3,
+        "random": 0,
+        "file": 2,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "admin/pages/Places.tsx",
+      "lines": 331,
+      "imports": [
+        "react",
+        "../../staff/store",
+        "../../staff/ui",
+        "../core",
+        "./People",
+        "./Docs",
+        "./Governance",
+        "../LocationPicker"
+      ],
+      "exports": [
+        "HouseDirectory",
+        "HouseForm",
+        "HouseDetail",
+        "ClientDirectory",
+        "ContactsEditor",
+        "ClientForm",
+        "ClientDetail"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 12,
+        "mutation": 7,
+        "random": 0,
+        "file": 4,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "admin/pages/Roster.tsx",
+      "lines": 190,
+      "imports": [
+        "react",
+        "../../staff/store",
+        "../../staff/ui",
+        "../core"
+      ],
+      "exports": [
+        "RosterPage",
+        "ShiftDrawer"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 5,
+        "mutation": 3,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "components/ClockInMap.tsx",
+      "lines": 153,
+      "imports": [
+        "react",
+        "leaflet/dist/leaflet.css",
+        "leaflet"
+      ],
+      "exports": [
+        "ClockInMap"
+      ],
+      "urls": [
+        "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+        "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+        "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+        "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+      ],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "components/MyLocationMap.tsx",
+      "lines": 117,
+      "imports": [
+        "react",
+        "leaflet/dist/leaflet.css",
+        "leaflet"
+      ],
+      "exports": [
+        "MyLocationMap"
+      ],
+      "urls": [
+        "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+      ],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "components/StaffLocationMap.tsx",
+      "lines": 119,
+      "imports": [
+        "react",
+        "leaflet/dist/leaflet.css",
+        "leaflet",
+        "../data/staffLocations"
+      ],
+      "exports": [
+        "StaffLocationMap"
+      ],
+      "urls": [
+        "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+      ],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "data/staffLocations.ts",
+      "lines": 10,
+      "imports": [],
+      "exports": [
+        "STAFF_LOCATIONS"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "imports/pasted_text/caremetrics-ui-instructions.md",
+      "lines": 695,
+      "imports": [],
+      "exports": [],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "imports/pasted_text/company-leave-management.md",
+      "lines": 386,
+      "imports": [],
+      "exports": [],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "index.css",
+      "lines": 456,
+      "imports": [],
+      "exports": [],
+      "urls": [
+        "https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap"
+      ],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "main.tsx",
+      "lines": 10,
+      "imports": [
+        "react",
+        "react-dom/client",
+        "./App",
+        "./index.css"
+      ],
+      "exports": [],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "staff/ShiftMap.tsx",
+      "lines": 14,
+      "imports": [
+        "leaflet/dist/leaflet.css",
+        "react-leaflet",
+        "./store"
+      ],
+      "exports": [
+        "ShiftMap"
+      ],
+      "urls": [
+        "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+      ],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "staff/StaffApp.tsx",
+      "lines": 129,
+      "imports": [
+        "react",
+        "./staff.css",
+        "./ui",
+        "./store",
+        "./pages/ClockIn",
+        "./pages/Home",
+        "./pages/Houses",
+        "./pages/Client",
+        "./pages/Forms",
+        "./pages/Other"
+      ],
+      "exports": [
+        "StaffApp"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "staff/pages/Client.tsx",
+      "lines": 211,
+      "imports": [
+        "react",
+        "../store",
+        "../ui",
+        "./Shared"
+      ],
+      "exports": [
+        "ClientProfile"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 3,
+        "mutation": 2,
+        "random": 0,
+        "file": 2,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "staff/pages/ClockIn.tsx",
+      "lines": 162,
+      "imports": [
+        "react",
+        "../store",
+        "../ui",
+        "../ShiftMap"
+      ],
+      "exports": [
+        "shiftStatus",
+        "ClockIn",
+        "ShiftDetail"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 2,
+        "mutation": 3,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "staff/pages/Forms.tsx",
+      "lines": 112,
+      "imports": [
+        "react",
+        "../store",
+        "../ui",
+        "./Shared"
+      ],
+      "exports": [
+        "NewDiary",
+        "NewRecord"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 5,
+        "mutation": 2,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "staff/pages/Home.tsx",
+      "lines": 99,
+      "imports": [
+        "react",
+        "../store",
+        "../ui",
+        "./ClockIn"
+      ],
+      "exports": [
+        "staffAudienceOk",
+        "noticeVisible",
+        "Home"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 1,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "staff/pages/Houses.tsx",
+      "lines": 58,
+      "imports": [
+        "react",
+        "../store",
+        "../ui",
+        "./Shared"
+      ],
+      "exports": [
+        "HouseList",
+        "HouseProfile"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "staff/pages/Other.tsx",
+      "lines": 197,
+      "imports": [
+        "react",
+        "../store",
+        "../ui",
+        "./ClockIn",
+        "./Shared",
+        "./Home"
+      ],
+      "exports": [
+        "Search",
+        "Roster",
+        "LeavePage",
+        "Notifications",
+        "Profile",
+        "Settings"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 5,
+        "mutation": 5,
+        "random": 0,
+        "file": 2,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "staff/pages/Shared.tsx",
+      "lines": 103,
+      "imports": [
+        "react",
+        "../store",
+        "../ui"
+      ],
+      "exports": [
+        "DiaryList",
+        "ConcernDialog",
+        "ConcernList",
+        "Restricted"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 1,
+        "mutation": 1,
+        "random": 0,
+        "file": 1,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "staff/staff.css",
+      "lines": 506,
+      "imports": [],
+      "exports": [],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "staff/store.ts",
+      "lines": 316,
+      "imports": [
+        "react"
+      ],
+      "exports": [
+        "FieldType",
+        "ColumnType",
+        "Column",
+        "Condition",
+        "Field",
+        "Section",
+        "TemplateVersion",
+        "TemplateDraft",
+        "Assignment",
+        "Template",
+        "Values",
+        "CareRecord",
+        "DiaryEntry",
+        "Correction",
+        "House",
+        "Contact",
+        "Client",
+        "Shift",
+        "Attendance",
+        "Notice",
+        "Concern",
+        "FileItem",
+        "Leave",
+        "PermRole",
+        "Staff",
+        "DiaryCategory",
+        "AuditEntry",
+        "ProfileField",
+        "Org",
+        "State",
+        "uid",
+        "update",
+        "useStore",
+        "getState",
+        "activeCategories",
+        "isPublished",
+        "fieldsFor",
+        "sectionsFor",
+        "logAudit",
+        "me",
+        "myHouses",
+        "myClients",
+        "myShifts",
+        "isCurrent",
+        "activeAttendance",
+        "highlightedShift",
+        "fmtDate",
+        "fmtTime",
+        "fmtDateTime",
+        "toLocalInput"
+      ],
+      "urls": [
+        "https://images.unsplash.com/${id}?auto=format&fit=crop&w=1080&q=75"
+      ],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 2,
+        "random": 1,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "staff/ui.tsx",
+      "lines": 367,
+      "imports": [
+        "react",
+        "./store"
+      ],
+      "exports": [
+        "Route",
+        "NavContext",
+        "useNav",
+        "Icon",
+        "Btn",
+        "Card",
+        "Tone",
+        "Status",
+        "Avatar",
+        "PageHeader",
+        "SectionTitle",
+        "Tabs",
+        "SearchInput",
+        "Select",
+        "Pagination",
+        "Empty",
+        "Spinner",
+        "Skeleton",
+        "Banner",
+        "Modal",
+        "ConfirmDialog",
+        "FormField",
+        "CorrectionDialog",
+        "CorrectionStatus",
+        "conditionMet",
+        "visibleFields",
+        "validate",
+        "FormRenderer",
+        "RepeatTable",
+        "ValueView",
+        "useOffShift",
+        "OffShiftField",
+        "HistoryItem",
+        "FileGallery"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 5,
+        "mutation": 2,
+        "random": 0,
+        "file": 4,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "views/AdministrationView.tsx",
+      "lines": 188,
+      "imports": [
+        "react"
+      ],
+      "exports": [
+        "AdministrationView"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "views/AttendanceView.tsx",
+      "lines": 157,
+      "imports": [
+        "react"
+      ],
+      "exports": [
+        "AttendanceView"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "views/CareManagementView.tsx",
+      "lines": 449,
+      "imports": [
+        "react"
+      ],
+      "exports": [
+        "CareManagementView"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "views/CareRecordsView.tsx",
+      "lines": 67,
+      "imports": [
+        "react"
+      ],
+      "exports": [
+        "CareRecordsView"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "views/ClientsView.tsx",
+      "lines": 232,
+      "imports": [
+        "react"
+      ],
+      "exports": [
+        "ClientsView"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "views/CompanyDashboard.tsx",
+      "lines": 277,
+      "imports": [
+        "react",
+        "../components/ClockInMap"
+      ],
+      "exports": [
+        "CompanyDashboard"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "views/EmployeeDashboard.tsx",
+      "lines": 151,
+      "imports": [
+        "react",
+        "../components/MyLocationMap"
+      ],
+      "exports": [
+        "EmployeeDashboard"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "views/EmployeesView.tsx",
+      "lines": 183,
+      "imports": [
+        "react",
+        "../data/staffLocations",
+        "../components/StaffLocationMap"
+      ],
+      "exports": [
+        "EmployeesView"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "views/HousesView.tsx",
+      "lines": 387,
+      "imports": [
+        "react"
+      ],
+      "exports": [
+        "HousesView"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "views/LeaveManagementView.tsx",
+      "lines": 148,
+      "imports": [
+        "react"
+      ],
+      "exports": [
+        "LeaveManagementView"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 3,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "views/LoginView.tsx",
+      "lines": 200,
+      "imports": [
+        "react",
+        "../App"
+      ],
+      "exports": [
+        "LoginView"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "views/MyAttendanceView.tsx",
+      "lines": 105,
+      "imports": [
+        "react"
+      ],
+      "exports": [
+        "MyAttendanceView"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "views/MyLeaveView.tsx",
+      "lines": 90,
+      "imports": [
+        "react"
+      ],
+      "exports": [
+        "MyLeaveView"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "views/MyProfileView.tsx",
+      "lines": 189,
+      "imports": [
+        "react"
+      ],
+      "exports": [
+        "MyProfileView"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "views/MyRosterView.tsx",
+      "lines": 58,
+      "imports": [],
+      "exports": [
+        "MyRosterView"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "views/NotificationsView.tsx",
+      "lines": 118,
+      "imports": [
+        "react"
+      ],
+      "exports": [
+        "NotificationsView"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "views/ReportsView.tsx",
+      "lines": 40,
+      "imports": [],
+      "exports": [
+        "ReportsView"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "views/RosteringView.tsx",
+      "lines": 125,
+      "imports": [
+        "react"
+      ],
+      "exports": [
+        "RosteringView"
+      ],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    },
+    {
+      "file": "vite-env.d.ts",
+      "lines": 1,
+      "imports": [],
+      "exports": [],
+      "urls": [],
+      "signals": {
+        "alerts": 0,
+        "toast": 0,
+        "mutation": 0,
+        "random": 0,
+        "file": 0,
+        "storage": 0,
+        "fetch": 0
+      }
+    }
+  ]
+}

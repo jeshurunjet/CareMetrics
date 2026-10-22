@@ -1,0 +1,108 @@
+{
+  "fonts": [
+    {
+      "family": "DM Mono",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Mono",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Mono",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Mono",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "loaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "loaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "loaded"
+    },
+    {
+      "family": "DM Serif Display",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Serif Display",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Serif Display",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Serif Display",
+      "status": "loaded"
+    }
+  ],
+  "vars": {
+    "display": "'DM Serif Display', Georgia, serif",
+    "sans": "'DM Sans', system-ui, sans-serif"
+  },
+  "items": [
+    {
+      "selector": ".cm-page-title h1",
+      "font": "\"DM Serif Display\", Georgia, serif",
+      "weight": "400",
+      "size": "28px",
+      "width": "306.031px",
+      "border": "0px"
+    },
+    {
+      "selector": ".cm-mobile-brand",
+      "font": "\"DM Serif Display\", Georgia, serif",
+      "weight": "400",
+      "size": "18px",
+      "width": "136.641px",
+      "border": "0px"
+    },
+    null,
+    null
+  ]
+}

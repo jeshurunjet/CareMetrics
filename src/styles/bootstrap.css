@@ -1,0 +1,5 @@
+.ad-nav-group > a { display: flex; align-items: center; gap: .7rem; color: inherit; text-decoration: none; padding: .65rem .8rem; border-radius: .5rem; font-size: .85rem; }
+.ad-nav-group > a.active { background: var(--color-brand); color: white; }
+.ad-nav-group > a:hover { background: rgba(255,255,255,.08); }
+.ad-nav-group > a.active:hover { background: var(--color-brand); }
+.cm-app .cm-map-failure { position: absolute; z-index: 401; left: .5rem; right: .5rem; bottom: 1.5rem; margin: 0; padding: .5rem; border-radius: .5rem; background: white; color: var(--color-ink-muted); font-size: .75rem; }

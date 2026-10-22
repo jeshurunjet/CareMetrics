@@ -1,0 +1,115 @@
+{
+  "fonts": [
+    {
+      "family": "DM Mono",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Mono",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Mono",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Mono",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "loaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "loaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "loaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "loaded"
+    },
+    {
+      "family": "DM Serif Display",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Serif Display",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Serif Display",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Serif Display",
+      "status": "loaded"
+    }
+  ],
+  "vars": {
+    "display": "'DM Serif Display', Georgia, serif",
+    "sans": "'DM Sans', system-ui, sans-serif"
+  },
+  "items": [
+    {
+      "selector": ".cm-page-title h1",
+      "font": "\"DM Serif Display\", Georgia, serif",
+      "weight": "400",
+      "size": "32px",
+      "width": "296.422px",
+      "border": "0px"
+    },
+    {
+      "selector": ".cm-mobile-brand",
+      "font": "\"DM Serif Display\", Georgia, serif",
+      "weight": "400",
+      "size": "18px",
+      "width": "auto",
+      "border": "0px"
+    },
+    null,
+    {
+      "selector": ".cm-house-mini",
+      "font": "\"DM Sans\", system-ui, sans-serif",
+      "weight": "400",
+      "size": "16px",
+      "width": "186.75px",
+      "border": "16px"
+    }
+  ]
+}

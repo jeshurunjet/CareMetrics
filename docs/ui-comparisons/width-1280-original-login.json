@@ -1,0 +1,101 @@
+{
+  "fonts": [
+    {
+      "family": "DM Mono",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Mono",
+      "status": "loaded"
+    },
+    {
+      "family": "DM Mono",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Mono",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "loaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "loaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Sans",
+      "status": "loaded"
+    },
+    {
+      "family": "DM Serif Display",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Serif Display",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Serif Display",
+      "status": "unloaded"
+    },
+    {
+      "family": "DM Serif Display",
+      "status": "loaded"
+    }
+  ],
+  "vars": {
+    "display": "'DM Serif Display', Georgia, serif",
+    "sans": "'DM Sans', system-ui, sans-serif"
+  },
+  "items": [
+    null,
+    null,
+    {
+      "selector": ".login-card h2",
+      "font": "\"DM Serif Display\", Georgia, serif",
+      "weight": "400",
+      "size": "28px",
+      "width": "318px",
+      "border": "0px"
+    },
+    null
+  ]
+}
