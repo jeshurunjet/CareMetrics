@@ -53,6 +53,13 @@ try {
     "/houses/h1/diary/new?draft=house-h1-8",
     "/clients/c4/diary/new",
     "/houses/h3/diary/new",
+    "/clients/c1?tab=care&sub=t1",
+    "/clients/c1?tab=care&sub=t1&item=care-c1-skin-1",
+    "/clients/c1?tab=care&sub=t1&item=care-c1-skin-1&action=correction",
+    "/clients/c1/records/new?templateId=t1",
+    "/clients/c1/records/new?templateId=t1&draft=care-c1-skin-8",
+    "/clients/c2/records/new?templateId=t2",
+    "/clients/c4/records/new?templateId=t-private",
   ]
   for (const path of paths) {
     const res = await fetch(`http://localhost:8556${path}`)
@@ -70,6 +77,8 @@ try {
       "Restricted Contact",
       "Fictional diary note",
       "House handover",
+      "Legacy fictional observation",
+      "Unassigned assessment content",
     ])
       assert.ok(!body.includes(marker), "no fictional data exposed")
   }

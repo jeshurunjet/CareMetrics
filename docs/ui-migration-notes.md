@@ -172,3 +172,62 @@ Captured **100 raw images** and inspected **15 paired boards** at the five reque
 Phase 1C.1 has no implementation blocker for review. Remaining limitations are session-only data and the unimplemented backend, identity, management review/version/audit and secure files. No new phase was started and no commit/push was performed.
 
 Final type verification encountered sync-style generated duplicates (`routes.d 2.ts`, `cache-life.d 2.ts`) under `.next-build/types`, causing conflicting declarations after earlier successful checks. TypeScript now excludes only space-containing generated `.next-build` TypeScript filenames; canonical generated routes and all source/tests remain checked. No user source or duplicate screenshot was deleted. Typecheck and formatting passed again with this narrow cache exclusion.
+
+## Phase 1C.2 — Care Plan / Assessments
+
+Checkpoint: `9cecc8b` on `main`, containing completed Phase 1C.1. Before changes, all existing checks passed: lint, strict typecheck, formatting, 33 unit tests, 120 browser cases, build and 20 production-isolation URLs. Only the pre-existing duplicate `… 2.png` screenshots were untracked; they were left untouched. This phase has not been committed or pushed.
+
+### Scope and source reuse
+
+Migrated the original Client.tsx CategoryList, SubHeader, TemplateHistory and RecordValues patterns; Forms.tsx NewRecord/ContextBar; and ui.tsx FormRenderer, field controls, ValueView, HistoryItem, off-shift and correction presentation. The existing Staff shell, Client profile/tabs, Avatar, Banner, Card, Btn, Icon, FormField, SearchInput, Select, Pagination, Modal and diary unsaved-change handling are reused. Shared RecordMetadata/RecordStatus accept the metadata shape used by both record types. The correction form and pure request helpers are shared between Diary and Assessments, with a record-type discriminator preventing ID collisions.
+
+Care Plan now shows only assigned published categories, their descriptions, record counts/latest dates, assignment versions and explicit View records/Add entry actions. Scoped category history supports search, covered-date ranges, newest-first order, six-record pages, expandable answers, details and own drafts. Full-page assessment forms support save/resume draft, validation, off-shift reasons, session submission feedback, immutable submitted UI and separate pending correction requests. Seeded direct URLs, Back, breadcrumbs and refresh work; newly created records reset on reload as visibly explained.
+
+No original reference file or source CSS was edited. Admin CMS, Login, My Shifts and Dashboard screen implementations remain unchanged. No dependency or font binary was added. Only bootstrap CSS contains scoped wrapping/focus/section/action extensions.
+
+### Configurable model and rendering policy
+
+The shared foundation is documented in [configurable-forms.md](configurable-forms.md). `src/modules/forms` separates types, pure visibility/validation/normalisation, DynamicFormRenderer, FormFieldRenderer, ChoiceField and read-only answers. It branches on configured field types, never on assessment names. Templates contain published versions → sections → fields → stable option values. Active client assignments select the version used for new entries; every care record retains client, author and template version. Old drafts and historical answers use their own published version, not a silently upgraded configuration.
+
+Supported controls: text, textarea, number, yes/no, dropdown, radio, multiple choice, date, time, datetime and scale. Labels, help, required state, options, bounds/steps and defaults come from the configuration. Basic validation rejects missing visible requirements, invalid options, non-finite/out-of-range numbers, invalid dates/times and ambiguous/missing NZ DST wall times. Datetime fields display Pacific/Auckland and save valid answers as UTC ISO; calendar date/time fields retain their separate semantics. Covered, created and submitted metadata remain distinct.
+
+Section/field rules use field ID, equals/not-equals/includes and a scalar value; no template code executes. Dependencies must exist and be visible/non-empty. Missing controllers and cycles fail closed. Policy: clear hidden values immediately and exclude them again from saved drafts/submissions, along with unknown IDs and unsupported file/table values. Hidden required fields never prevent submission. Tests cover hiding/revealing answers and conditional sections.
+
+Fictional fixtures include Skin Integrity, Medical Cares Record and Medication Receipt Record; a client with multiple assignments, one with none, scoped submitted records, own/other-author drafts, a pending correction and Skin Integrity v1 history alongside current v2. Templates/records are added to the existing typed adapter snapshot/provider, not a second store. Medication Receipt is documentation only, with no prescribing, administration, dosage calculation or clinical recommendations. Numeric ranges and scales are demonstration configuration, not clinical standards.
+
+### Access, lifecycle and corrections
+
+The server preview gate remains unchanged. The planned records/new route and Care Plan `sub` routes validate client assignment against the fixed fictional employee before rendering. Unknown/unassigned subjects/templates return HTTP 404. Missing, wrong-client, wrong-template, submitted-as-draft and another-author record IDs show generic unavailable content within an authorised profile (HTTP 200); session-only IDs lost on reload use the same state. The scoped snapshot filters unpublished/unassigned templates, inaccessible records and other authors' drafts before serialisation. This is a development demonstration, not production authentication or organisation/role permission enforcement.
+
+The adapter checks scope, draft ownership, published version, visible-field validity and off-shift reason. A scheduled shift alone does not count as attendance; forms use the same explicit demo attendance state as Diary. Drafts can remain incomplete; submission records author/timestamps/version and makes the record read-only. The existing provider retains changes only during client-side navigation. No API, database, localStorage assessment store or upload service was introduced.
+
+Corrections use the existing request array with `recordType: care | diary` (missing type remains diary-compatible). Shared helpers retain request author/reason/proposal/time/status and prevent duplicate pending requests. Assessment correction shows original structured answers; proposals identify affected fields and intended values in text. It never replaces original values or offers staff approve/reject controls. Review, corrected-version creation and durable audit remain future work.
+
+### Intentional differences and comparison limits
+
+- The existing development warning plus a session-reset/fictional-form banner add height. Categories add required explicit actions and the assigned version; source styling remains intact.
+- Source history pins drafts first. Migrated history follows the requested newest submission/creation-first order, with six records per page. Submitted badges, submission metadata, Created time, date filtering and details links extend the source presentation.
+- Original submitted details are expanded cards, and correction is a modal without original answers. Full-page details/correction extend the same card/field styles, retaining mobile usability and displaying the original structured record.
+- Source sections/fields are adapted from the same fictional typed configuration for comparison, rather than using real or original seeded care content. Conditional body-area/findings/device questions, date/time fields and defaults demonstrate the requested renderer capabilities.
+- Photo/file/table variants display explicitly unavailable source-styled controls. No file chooser or editable table is active. The source's Medical Cares table remains visible in its reference rendering; the migration uses clearly labelled table deferral and configured numeric observations. Repeating tables are Phase 1C.3.
+- Configured defaults (pressure-area demonstration value 1 and delivery reference DEMO-) are applied to new forms; the original new-form implementation did not apply its configuration defaults.
+- Radio/scale controls add roving focus and arrow/Home/End support, multi-choice exposes pressed state, and errors/help are associated with controls. Long labels wrap. The longer Submit assessment label wraps within the preserved mobile action row.
+
+The original renderer still copies the export to ignored `.ui-reference` and adapts only fictional data. Its pure mock modules now compile into isolated ESM files. Trace inspection identified repeated reference hot reloads during captures; the test-only server now uses an isolated dependency cache, prebundled dependencies and disabled file watching/HMR for a static comparison snapshot. This does not change the source archive or application. External photos/tiles are deterministic test substitutes, fonts remain the original remote stylesheet, and captures do not certify remote assets or clinical content. Focused screenshot scrolling resets outer hidden ancestors so headers are not displaced by automation.
+
+### Changed files and remaining boundary
+
+- `src/modules/forms/*`: shared typed renderer, choices, read-only answers and pure form engine.
+- `src/modules/staff/care/*`: fictional template/record model and seed, scoped adapter, category/history/card/details/form components and URL helpers.
+- `src/modules/staff/data/{types,development-mock-adapter,record-loader,diary-adapter,correction-service}`: single snapshot extension, server preview lookup and shared correction operations.
+- `src/modules/staff/documentation/RecordCorrectionForm.tsx`, diary correction wrapper/status/metadata/details: shared workflow and record-type separation.
+- `src/app/(staff)/clients/[id]/page.tsx`, planned `records/new/page.tsx`, Staff navigation `sub` support, ClientProfile Care Plan count/content and bootstrap CSS.
+- `tests/unit/care.test.ts`, `tests/e2e/care.spec.ts`, updated prior placeholder expectations, reference/production scripts, README, route/status/history/model docs and comparison evidence. No dependency changes.
+
+No Charting, Admin builder, backend integration, real files/GPS, advanced clinical validation or production audit storage was started. After review, Phase 1C.3 can reuse the configurable foundation for Charting and repeating editable table UI in another bounded migration.
+
+### Final verification and visual findings
+
+The final implementation passes lint, strict typecheck, formatting, all 49 unit tests, all 175 browser cases (including 120 prior regression cases), the production build and all 27 production preview-isolation checks. The full browser run was repeated after the final scale-value and date/time-help display adjustments. Original source integrity checks confirm all 51 extracted files and the three active source CSS copies remain byte-identical.
+
+Evidence contains 120 raw screenshots and 20 paired comparison boards across 375, 390, 768, 1280 and 1440px. Review covered category/history cards, all supported field types across the three examples, conditional questions/sections, draft editing, submitted answers and corrections. Typography, colours, navigation, card and input treatment follow the export. No unintended document overflow or action overlap was found in the reviewed states; automated bounds checks also pass at every width. The added metadata, warnings, defaults, unavailable controls and full-page workflows account for the documented differences above. These comparisons support fidelity with those extensions, not exact pixel parity or independent design approval.

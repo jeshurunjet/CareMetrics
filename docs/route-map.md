@@ -15,7 +15,7 @@ Statuses: `original` = reference retained, `ported` = code adapted, `UI-matched`
 | client | `/clients/[clientId]?tab=…&sub=…&item=…` | ported, UI-matched, tested; overview, contacts and diary; other documentation tabs are placeholders |
 | new-diary (house) | `/houses/[houseId]/diary/new?draft=…` | ported; development draft/create/submit form |
 | new-diary (client) | `/clients/[clientId]/diary/new?draft=…` | ported; development draft/create/submit form |
-| new-record | `/clients/[clientId]/records/new?templateId=…` | original; planned |
+| new-record | `/clients/[clientId]/records/new?templateId=…&draft=…` | ported; configurable assessment create/draft form, development only |
 | search | `/search?q=…` | ported, UI-matched, tested; scoped house/client query |
 | roster | `/roster?tab=…` | original; routed placeholder |
 | leave | `/leave` | original; routed placeholder |
@@ -80,3 +80,18 @@ These use the already-planned diary/new paths and profile item query rather than
 Unknown/unassigned subjects fail server validation with HTTP 404. A missing, wrong-subject, unassigned or other-author diary entry shows a generic unavailable state within the authorised profile (HTTP 200); it reveals none of that entry's content. This also covers session-only IDs lost on reload. Seeded authorised entry links survive reload; newly created entries survive only client-side navigation. The preview layout serialises only the fixed fictional employee's scoped snapshot, including their authorised diary data; it is not an authenticated service. Production refuses every preview route.
 
 Form breadcrumbs return to the actual subject and Diary. Cancel and completion return to that subject's history. Unsaved changes require confirmation on Cancel, navigation and Back; reload/tab-close use the browser's before-unload prompt when supported. A same-URL history guard keeps the editor mounted when Back is declined. Editor completion replaces the guard location. Filters/pagination are view state and reset on a fresh visit.
+
+## Phase 1C.2 Care Plan routes
+
+| Destination | URL |
+| --- | --- |
+| Assigned category list | `/clients/[id]?tab=care` |
+| Category history | `/clients/[id]?tab=care&sub=[templateId]` |
+| Assessment details | `/clients/[id]?tab=care&sub=[templateId]&item=[recordId]` |
+| New assessment | `/clients/[id]/records/new?templateId=[templateId]` |
+| Continue own draft | `/clients/[id]/records/new?templateId=[templateId]&draft=[recordId]` |
+| Request correction | `/clients/[id]?tab=care&sub=[templateId]&item=[recordId]&action=correction` |
+
+These implement the already-planned `sub`/`item` profile queries and records/new path. No competing record URL hierarchy is introduced. Categories reflect only active client assignments to published Care Plan versions. Unassigned/unknown client/template URLs return server HTTP 404; wrong-client, wrong-template, missing record and another author's draft return generic unavailable content inside an authorised profile (HTTP 200), matching the session-only diary pattern. Seeded records survive refresh; session-created IDs become unavailable on reload.
+
+Client → Care Plan → category history → new assessment → draft/details/submission → correction is connected. Details retain the record's own published template version; draft editing retains its version even if the current assignment changes. Breadcrumbs, return-to-history, browser Back and refresh use the same Staff shell. Assessment creation and corrections reuse its unsaved-change confirmations. No production authentication or organisation/role/house service is implemented; all previews still fail closed in production. Charting and Gallery remain placeholders.

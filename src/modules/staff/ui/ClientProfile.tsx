@@ -18,6 +18,8 @@ import {
 } from "./index"
 import Tabs from "./Tabs"
 import ClientContacts from "./ClientContacts"
+import CarePlan from "../care/CarePlan"
+import { getAssignedCareTemplates } from "../care/adapter"
 import DiaryHistoryList from "../diary/DiaryHistoryList"
 import FeaturePlaceholder from "./FeaturePlaceholder"
 import PreviewActionDialog from "./PreviewActionDialog"
@@ -142,7 +144,12 @@ export default function ClientProfile({
         tabs={[
           { id: "overview", label: "Overview", icon: "user" },
           { id: "diary", label: "Diary", icon: "book" },
-          { id: "care", label: "Care Plan", icon: "clipboard", count: 0 },
+          {
+            id: "care",
+            label: "Care Plan",
+            icon: "clipboard",
+            count: getAssignedCareTemplates(s, id).length,
+          },
           { id: "charting", label: "Charting", icon: "chart", count: 0 },
           { id: "files", label: "Gallery", icon: "image" },
         ]}
@@ -190,7 +197,12 @@ export default function ClientProfile({
               <div className="cm-doc-shortcuts">
                 {[
                   ["diary", "book", "Diary", "Progress notes & appointments"],
-                  ["care", "clipboard", "Care Plan", "Assessments"],
+                  [
+                    "care",
+                    "clipboard",
+                    "Care Plan",
+                    `${getAssignedCareTemplates(s, id).length} assessments`,
+                  ],
                   ["charting", "chart", "Charting", "Client charts"],
                   ["files", "image", "Gallery", "Photos & documents"],
                 ].map(([section, icon, label, sub]) => (
@@ -248,12 +260,7 @@ export default function ClientProfile({
         {tab === "diary" && (
           <DiaryHistoryList subject={{ scope: "client", targetId: id }} />
         )}
-        {tab === "care" && (
-          <FeaturePlaceholder
-            title="Care Plan / Assessments"
-            icon="clipboard"
-          />
-        )}
+        {tab === "care" && <CarePlan clientId={id} />}
         {tab === "charting" && (
           <FeaturePlaceholder title="Client charting" icon="chart" />
         )}

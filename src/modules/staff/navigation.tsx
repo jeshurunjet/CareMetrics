@@ -4,6 +4,7 @@ export interface StaffRoute {
   page: string
   id?: string
   tab?: string
+  sub?: string
   item?: string
 }
 export function staffHref(r: StaffRoute): string {
@@ -19,6 +20,7 @@ export function staffHref(r: StaffRoute): string {
             : `/${r.page}`
   const q = new URLSearchParams()
   if (r.tab) q.set("tab", r.tab)
+  if (r.sub) q.set("sub", r.sub)
   if (r.item) q.set("item", r.item)
   return path + (q.size ? `?${q}` : "")
 }

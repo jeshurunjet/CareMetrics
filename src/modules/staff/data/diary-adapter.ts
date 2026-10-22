@@ -1,3 +1,7 @@
+import {
+  canRequestRecordCorrection,
+  appendCorrectionRequest,
+} from "./correction-service"
 import type {
   DiaryEntry,
   DiarySubject,
@@ -122,9 +126,12 @@ export function canRequestCorrection(s: StaffSnapshot, entry: DiaryEntry) {
   return (
     canAccessDiary(s, entry) &&
     entry.status !== "draft" &&
-    entry.authorId === s.meId &&
-    !s.corrections.some(
-      (c) => c.recordId === entry.id && c.status === "pending",
+    canRequestRecordCorrection(
+      s,
+      "diary",
+      entry.id,
+      entry.authorId,
+      entry.status,
     )
   )
 }
@@ -140,25 +147,15 @@ export function requestCorrection(
   const entry = getDiaryEntry(s, subject, recordId)
   if (!entry || !canRequestCorrection(s, entry))
     throw new Error("Correction unavailable")
-  if (!reason.trim() || !proposed.trim())
-    throw new Error("Reason and proposed correction are required.")
-  if (s.corrections.some((c) => c.id === id))
-    throw new Error("Duplicate correction ID")
-  return {
-    ...s,
-    corrections: [
-      {
-        id,
-        recordId,
-        requestingEmployeeId: s.meId,
-        reason: reason.trim(),
-        proposed: proposed.trim(),
-        requestedAt: now,
-        status: "pending",
-      },
-      ...s.corrections,
-    ],
-  }
+  return appendCorrectionRequest(
+    s,
+    "diary",
+    recordId,
+    reason,
+    proposed,
+    id,
+    now,
+  )
 }
 /** No staff approval or submitted-record editing operation is exposed. */
 export const diaryQueries = {

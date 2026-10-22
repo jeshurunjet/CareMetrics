@@ -1,6 +1,6 @@
 # CareMetrics
 
-Phase 1C.1 Staff Diary UI migration on the Next.js foundation for a New Zealand disability-support care/workforce application. This is a UI-only development preview, with no real authentication, persistence, GPS verification or file services. Use fictional data only.
+Phase 1C.2 Care Plan / Assessments UI migration on the Next.js foundation for a New Zealand disability-support care/workforce application. This is a UI-only development preview, with no real authentication, persistence, GPS verification or file services. Use fictional data only.
 
 ## Run locally
 
@@ -40,6 +40,6 @@ Playwright starts its own dev server on port 8555 with isolated output and ficti
 - `tests/`: unit boundary/time checks and browser smoke flows.
 - `docs/`: [source audit](docs/source-audit.md), [route map](docs/route-map.md), [status](docs/implementation-status.md), [decisions](docs/architecture-decisions.md), complete file/dependency inventory.
 
-Next.js/React/TypeScript are active. Auth.js, Prisma, Neon PostgreSQL, private Vercel Blob and Vercel are approved future integrations, not configured services. No backend feature is production-ready. Login, My Shifts, Dashboard, Houses, House/Client Profiles, Contacts/NOK and Search reuse the approved Staff interface. Client and House Diary history, drafts, submission and correction requests now work in the development session and reset on reload. Care Plan, Charting and Gallery remain explicit placeholders. The next task is a bounded Care Plan/Assessments UI migration after diary review. See docs/ui-migration-notes.md for visual comparisons and limitations.
+Next.js/React/TypeScript are active. Auth.js, Prisma, Neon PostgreSQL, private Vercel Blob and Vercel are approved future integrations, not configured services. No backend feature is production-ready. Login, My Shifts, Dashboard, Houses, House/Client Profiles, Contacts/NOK and Search reuse the approved Staff interface. Client and House Diary history, drafts, submission and correction requests now work in the development session and reset on reload. Care Plan now supports client-assigned versioned templates, configurable forms, drafts, submitted details and correction requests in the same development session. Charting and Gallery remain placeholders. The next task after review is Phase 1C.3 Charting UI; see docs/configurable-forms.md for the shared renderer foundation. See docs/ui-migration-notes.md for visual comparisons and limitations.
 
 `reference/` is local-only and excluded from Git. Fresh clones run all functional browser checks and migrated-screen captures; original-export comparisons run additionally when the local reference is present. Set `CAREMETRICS_SKIP_REFERENCE=true` to verify the no-reference path explicitly. Historical docs describe the locally retained originals.

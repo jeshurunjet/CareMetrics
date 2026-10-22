@@ -1,3 +1,8 @@
+import type {
+  CareTemplate,
+  ClientCareTemplateAssignment,
+  CareRecord,
+} from "../care/types"
 export interface Employee {
   id: string
   name: string
@@ -73,6 +78,9 @@ export interface StaffSnapshot {
   clients: Client[]
   shifts: Shift[]
   notices: Notice[]
+  careTemplates: CareTemplate[]
+  careAssignments: ClientCareTemplateAssignment[]
+  careRecords: CareRecord[]
   diary: DiaryEntry[]
   diaryCategories: DiaryCategory[]
   corrections: CorrectionRequest[]
@@ -137,6 +145,7 @@ export interface DiaryEntry extends DiarySubject {
   offShiftReason?: string
 }
 export interface CorrectionRequest {
+  recordType?: "diary" | "care"
   id: string
   recordId: string
   requestingEmployeeId: string

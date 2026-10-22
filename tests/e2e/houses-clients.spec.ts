@@ -155,8 +155,9 @@ test("record tabs navigate to bounded placeholders with back and keyboard suppor
   page,
 }) => {
   await client(page)
+  await page.getByRole("tab", { name: /Care Plan/ }).click()
+  await expect(page.locator(".cm-category")).toHaveCount(3)
   for (const [label, tab, title] of [
-    ["Care Plan", "care", "Care Plan / Assessments"],
     ["Charting", "charting", "Client charting"],
     ["Gallery", "files", "Client gallery & documents"],
   ]) {

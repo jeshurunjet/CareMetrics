@@ -1,21 +1,31 @@
 // Test-only original-export renderer. Never imported by the application or included in deployment.
 import { cp, mkdir, readFile, writeFile } from "node:fs/promises"
-import { resolve, join } from "node:path"
+import { resolve, join, dirname } from "node:path"
 import { createRequire } from "node:module"
 import { pathToFileURL } from "node:url"
 import ts from "typescript"
 const root = resolve(".ui-reference")
 await mkdir(root, { recursive: true })
 await cp("reference/figma-export", root, { recursive: true })
-for (const name of [
-  "types",
-  "selectors",
-  "queries",
-  "diary-adapter",
-  "diary-seed",
-  "development-mock-adapter",
-]) {
-  const source = await readFile(`src/modules/staff/data/${name}.ts`, "utf8")
+// Compile the pure mock graph into isolated ESM files, preserving no application import.
+const sources = [
+  "src/modules/staff/data/types.ts",
+  "src/modules/staff/data/selectors.ts",
+  "src/modules/staff/data/queries.ts",
+  "src/modules/staff/data/diary-adapter.ts",
+  "src/modules/staff/data/diary-seed.ts",
+  "src/modules/staff/data/correction-service.ts",
+  "src/modules/staff/data/development-mock-adapter.ts",
+  "src/modules/staff/care/adapter.ts",
+  "src/modules/staff/care/seed.ts",
+  "src/modules/forms/engine.ts",
+  "src/lib/time.ts",
+]
+const compiled = new Map(
+  sources.map((path, i) => [resolve(path), join(root, `mock-${i}.mjs`)]),
+)
+for (const sourcePath of sources) {
+  const source = await readFile(sourcePath, "utf8")
   const js = ts
     .transpileModule(source, {
       compilerOptions: {
@@ -23,14 +33,21 @@ for (const name of [
         target: ts.ScriptTarget.ES2022,
       },
     })
-    .outputText.replace(
-      /from ['"]\.\/(selectors|queries|diary-adapter|diary-seed)['"]/g,
-      'from "./$1.mjs"',
-    )
-  await writeFile(join(root, `${name}.mjs`), js)
+    .outputText.replace(/from ["']([^"']+)["']/g, (full, spec) => {
+      const input = spec.startsWith("@/")
+        ? resolve("src", spec.slice(2) + ".ts")
+        : resolve(dirname(sourcePath), spec + ".ts")
+      const output = compiled.get(input)
+      return output
+        ? `from ${JSON.stringify(pathToFileURL(output).href)}`
+        : full
+    })
+  await writeFile(compiled.get(resolve(sourcePath)), js)
 }
 const { developmentMockAdapter } = await import(
-  pathToFileURL(join(root, "development-mock-adapter.mjs"))
+  pathToFileURL(
+    compiled.get(resolve("src/modules/staff/data/development-mock-adapter.ts")),
+  )
 )
 const snapshot = developmentMockAdapter.getSnapshot(
   "s1",
@@ -45,8 +62,55 @@ const fixture = {
       .map((a) => a.houseId),
   })),
   attendance: [],
-  templates: [],
-  records: [],
+  templates: snapshot.careTemplates.map((t) => {
+    const assigned = snapshot.careAssignments.filter(
+      (a) => a.templateId === t.id && a.status === "active",
+    )
+    const current =
+      t.versions.find((v) => v.version === assigned[0]?.version) ??
+      t.versions.at(-1)
+    const fields = (v) =>
+      v.sections.flatMap((section) =>
+        section.fields.map((f) => ({
+          ...f,
+          section: section.id,
+          options: f.options?.map((o) => o.label),
+          showIf:
+            (f.showIf ?? section.showIf)
+              ? {
+                  field: (f.showIf ?? section.showIf).fieldId,
+                  equals: String((f.showIf ?? section.showIf).value),
+                  op: (f.showIf ?? section.showIf).op,
+                }
+              : undefined,
+        })),
+      )
+    return {
+      ...t,
+      version: current.version,
+      published: true,
+      status: "Published",
+      assigned: assigned.map((a) => a.clientId),
+      assignments: Object.fromEntries(
+        assigned.map((a) => [
+          a.clientId,
+          { version: a.version, status: "Active" },
+        ]),
+      ),
+      sections: current.sections.map((s) => ({ id: s.id, title: s.title })),
+      fields: fields(current),
+      versions: t.versions.map((v) => ({
+        version: v.version,
+        sections: v.sections.map((s) => ({ id: s.id, title: s.title })),
+        fields: fields(v),
+      })),
+    }
+  }),
+  records: snapshot.careRecords.map((r) => ({
+    ...r,
+    author: snapshot.staff.find((e) => e.id === r.authorId)?.name,
+    submittedAt: r.submittedAt ?? r.createdAt,
+  })),
   diary: snapshot.diary.map((d) => ({
     ...d,
     author: snapshot.staff.find((e) => e.id === d.authorId)?.name,
@@ -57,7 +121,17 @@ const fixture = {
     ...c,
     status: c.active ? "Active" : "Inactive",
   })),
-  corrections: [],
+  corrections: snapshot.corrections.map((c) => ({
+    ...c,
+    status:
+      c.status === "pending"
+        ? "Pending"
+        : c.status === "approved"
+          ? "Approved"
+          : "Rejected",
+    submittedAt: c.requestedAt,
+    by: snapshot.staff.find((e) => e.id === c.requestingEmployeeId)?.name,
+  })),
   concerns: [],
   files: [],
   leave: [],
@@ -92,8 +166,14 @@ const { default: tailwind } = await import("@tailwindcss/postcss")
 const server = await createServer({
   root,
   configFile: false,
+  cacheDir: join(root, ".vite-cache"),
+  optimizeDeps: {
+    include: ["react", "react-dom/client", "leaflet", "react-leaflet"],
+  },
   server: {
     host: "127.0.0.1",
+    watch: null,
+    hmr: false,
     port: 8557,
     strictPort: true,
     fs: { allow: [resolve(".")] },

@@ -6,12 +6,15 @@ import {
   getClientContacts,
   searchStaff,
 } from "./queries"
+import { careQueries } from "../care/adapter"
+import { careTemplates, careAssignments, seedCareRecords } from "../care/seed"
 import { diaryQueries } from "./diary-adapter"
 import { seedDiary, diaryCategories } from "./diary-seed"
 import { myHouses, myClients, visibleNotices } from "./selectors"
 /** FICTIONAL DEVELOPMENT DATA ONLY. Not an API, database, identity or permission control. */
 export const developmentMockAdapter = {
   ...diaryQueries,
+  ...careQueries,
   getHouses: myHouses,
   getHouse,
   getClients: myClients,
@@ -226,9 +229,23 @@ export const developmentMockAdapter = {
           assignedBy: "Mere Walker (demo)",
         },
       ],
+      careTemplates,
+      careAssignments,
+      careRecords: seedCareRecords(now),
       diary: seedDiary(now),
       diaryCategories,
-      corrections: [],
+      corrections: [
+        {
+          id: "care-correction-1",
+          recordType: "care",
+          recordId: "care-c1-medical-1",
+          requestingEmployeeId: "s1",
+          reason: "Fictional wording review",
+          proposed: "Observations → replace with reviewed fictional wording",
+          requestedAt: at(-1),
+          status: "pending",
+        },
+      ],
       demoAttendance: null,
       notices: [
         {
@@ -306,6 +323,26 @@ export const developmentMockAdapter = {
       shifts: s.shifts.filter((sh) => houses.some((h) => h.id === sh.houseId)),
       notices: visibleNotices(s),
       diary: diaryQueries.getHistory(s, undefined),
+      careAssignments: s.careAssignments.filter((a) =>
+        clients.some((c) => c.id === a.clientId),
+      ),
+      careTemplates: s.careTemplates.filter((t) =>
+        clients.some((c) => careQueries.getAssignedCareTemplate(s, c.id, t.id)),
+      ),
+      careRecords: clients.flatMap((c) =>
+        careQueries
+          .getAssignedCareTemplates(s, c.id)
+          .flatMap((t) => careQueries.getCareRecords(s, c.id, t.template.id)),
+      ),
+      corrections: s.corrections.filter((c) =>
+        c.recordType === "care"
+          ? s.careRecords.some(
+              (r) =>
+                r.id === c.recordId &&
+                careQueries.getCareRecord(s, r.clientId, r.templateId, r.id),
+            )
+          : diaryQueries.getHistory(s).some((d) => d.id === c.recordId),
+      ),
     }
   },
 }

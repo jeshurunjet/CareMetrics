@@ -27,3 +27,12 @@
  .cm-app [data-diary-editor] .cm-form-actions { grid-template-columns: auto minmax(0, 1fr) minmax(0, 1.4fr); }
  .cm-app [data-diary-editor] .cm-form-actions .cm-btn { min-width: 0; padding-inline: .75rem; }
 }
+/* Configured assessment fields retain the exported field/choice/category styles. */
+.cm-app .cm-assessment-section { display: grid; gap: 1rem; min-width: 0; }
+.cm-app .cm-assessment-section .cm-form-section { margin-bottom: 0; }
+.cm-app .cm-choice-row { flex-wrap: wrap; }
+.cm-app .cm-choice-row button { white-space: normal; overflow-wrap: anywhere; }
+.cm-app .cm-choice-row button:focus-visible, .cm-app .cm-scale button:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 3px; }
+.cm-app .cm-category .cm-row-actions { flex-wrap: wrap; margin-top: .75rem; }
+.cm-app .cm-subheader .cm-row-between { flex-wrap: wrap; gap: .75rem; }
+.cm-app [data-diary-editor] .cm-form-actions .cm-btn { white-space: normal; }

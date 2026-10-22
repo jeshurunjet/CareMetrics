@@ -1,5 +1,6 @@
 "use client"
 import Link from "next/link"
+import { recordCorrections } from "../data/correction-service"
 import { formatDateTime } from "@/lib/time"
 import { useStaffData } from "../data/context"
 import type { DiarySubject } from "../data/types"
@@ -29,7 +30,7 @@ export default function DiaryEntryDetails({
     return (
       <CorrectionRequestForm subject={subject} entry={entry} key={entry.id} />
     )
-  const requests = s.corrections.filter((c) => c.recordId === entry.id)
+  const requests = recordCorrections(s, "diary", entry.id)
   return (
     <div className="cm-stack">
       <Link href={diaryHistoryHref(subject)}>Back to diary history</Link>

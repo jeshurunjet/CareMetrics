@@ -15,3 +15,18 @@ export function loadPreviewRecord(kind: "house" | "client", id: string) {
   if (!record) notFound()
   return record
 }
+
+export function loadPreviewCareTemplate(clientId: string, templateId: string) {
+  requirePreview()
+  const s = developmentMockAdapter.getSnapshot(
+    "s1",
+    process.env.CAREMETRICS_DEMO_NOW || new Date().toISOString(),
+  )
+  const assigned = developmentMockAdapter.getAssignedCareTemplate(
+    s,
+    clientId,
+    templateId,
+  )
+  if (!assigned) notFound()
+  return assigned
+}

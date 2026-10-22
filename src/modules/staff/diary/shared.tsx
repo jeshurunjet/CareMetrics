@@ -1,4 +1,5 @@
 "use client"
+import { recordCorrections } from "../data/correction-service"
 import { useStaffData } from "../data/context"
 import type { DiaryEntry, DiarySubject } from "../data/types"
 import { getClient, getHouse } from "../data/queries"
@@ -25,10 +26,16 @@ export function DiaryPreviewNotice() {
     </Banner>
   )
 }
-export function RecordStatus({ entry }: { entry: DiaryEntry }) {
+export function RecordStatus({
+  entry,
+  recordType = "diary",
+}: {
+  entry: Pick<DiaryEntry, "id" | "status" | "offShiftReason">
+  recordType?: "diary" | "care"
+}) {
   const s = useStaffData()
-  const pending = s.corrections.some(
-    (c) => c.recordId === entry.id && c.status === "pending",
+  const pending = recordCorrections(s, recordType, entry.id).some(
+    (c) => c.status === "pending",
   )
   return (
     <>
@@ -50,7 +57,11 @@ export function RecordStatus({ entry }: { entry: DiaryEntry }) {
     </>
   )
 }
-export function RecordMetadata({ entry }: { entry: DiaryEntry }) {
+export function RecordMetadata({
+  entry,
+}: {
+  entry: Pick<DiaryEntry, "coveredAt" | "createdAt" | "submittedAt" | "authorId" | "offShiftReason">
+}) {
   const s = useStaffData()
   return (
     <dl className="cm-dl cm-dl--inline">
