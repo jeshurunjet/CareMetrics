@@ -12,9 +12,9 @@ Statuses: `original` = reference retained, `ported` = code adapted, `UI-matched`
 | home | `/dashboard` | ported, tested; full source-derived dashboard |
 | houses | `/houses` | ported, UI-matched, tested; all assigned houses |
 | house | `/houses/[houseId]?tab=…` | ported, UI-matched, tested; overview and contacts where applicable; documentation tabs are Phase 1C placeholders |
-| client | `/clients/[clientId]?tab=…&sub=…&item=…` | tested scoped detail placeholder; original content planned |
-| new-diary (house) | `/houses/[houseId]/diary/new` | original; planned |
-| new-diary (client) | `/clients/[clientId]/diary/new` | original; planned |
+| client | `/clients/[clientId]?tab=…&sub=…&item=…` | ported, UI-matched, tested; overview, contacts and diary; other documentation tabs are placeholders |
+| new-diary (house) | `/houses/[houseId]/diary/new?draft=…` | ported; development draft/create/submit form |
+| new-diary (client) | `/clients/[clientId]/diary/new?draft=…` | ported; development draft/create/submit form |
 | new-record | `/clients/[clientId]/records/new?templateId=…` | original; planned |
 | search | `/search?q=…` | ported, UI-matched, tested; scoped house/client query |
 | roster | `/roster?tab=…` | original; routed placeholder |
@@ -62,3 +62,21 @@ The prior `/employee/*`, `/rostering`, `/care-records`, `/care-management`, `/at
 - Invalid/unassigned IDs and unknown tab values return not-found without record details. Detail pages validate before streaming. Listing loading boundaries live in a route group, preserving `/houses` while avoiding the streamed HTTP 200 that a shared loading boundary would otherwise cause for rejected detail URLs.
 
 Dashboard → Houses → House → Client, Dashboard → Client, Search → either profile, Client → related House, house switching, breadcrumbs, tabs, Back and refresh are exercised at all five widths. These are fixed fictional employee preview lookups; Auth.js and production role/organisation/house permissions are unimplemented. Admin routes remain unchanged.
+
+## Phase 1C.1 diary routes
+
+The existing `tab=diary` destinations now render scoped Client/House Diary History, not placeholders. Six entries per page, search, category/date filtering and expandable cards reuse the source pattern. Other documentation tabs remain placeholders.
+
+| Destination | Client | House |
+| --- | --- | --- |
+| History | `/clients/[id]?tab=diary` | `/houses/[id]?tab=diary` |
+| Details | `/clients/[id]?tab=diary&item=[entryId]` | `/houses/[id]?tab=diary&item=[entryId]` |
+| Create | `/clients/[id]/diary/new` | `/houses/[id]/diary/new` |
+| Continue own draft | `/clients/[id]/diary/new?draft=[entryId]` | `/houses/[id]/diary/new?draft=[entryId]` |
+| Request correction | `/clients/[id]?tab=diary&item=[entryId]&action=correction` | `/houses/[id]?tab=diary&item=[entryId]&action=correction` |
+
+These use the already-planned diary/new paths and profile item query rather than introducing a second record URL scheme. Client/house association is checked before every mock read/write. Draft lookup also requires the author and draft state; submitted records cannot be reopened in the editor. Corrections require the submitted author and no pending request. No staff review/approval route or operation exists.
+
+Unknown/unassigned subjects fail server validation with HTTP 404. A missing, wrong-subject, unassigned or other-author diary entry shows a generic unavailable state within the authorised profile (HTTP 200); it reveals none of that entry's content. This also covers session-only IDs lost on reload. Seeded authorised entry links survive reload; newly created entries survive only client-side navigation. The preview layout serialises only the fixed fictional employee's scoped snapshot, including their authorised diary data; it is not an authenticated service. Production refuses every preview route.
+
+Form breadcrumbs return to the actual subject and Diary. Cancel and completion return to that subject's history. Unsaved changes require confirmation on Cancel, navigation and Back; reload/tab-close use the browser's before-unload prompt when supported. A same-URL history guard keeps the editor mounted when Back is declined. Editor completion replaces the guard location. Filters/pagination are view state and reset on a fresh visit.

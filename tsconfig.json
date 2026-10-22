@@ -53,6 +53,7 @@
     ".next",
     ".next-local",
     ".next-e2e",
-    ".ui-reference"
+    ".ui-reference",
+    ".next-build/**/* *.ts"
   ]
 }

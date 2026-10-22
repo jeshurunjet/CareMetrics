@@ -11,6 +11,8 @@ for (const name of [
   "types",
   "selectors",
   "queries",
+  "diary-adapter",
+  "diary-seed",
   "development-mock-adapter",
 ]) {
   const source = await readFile(`src/modules/staff/data/${name}.ts`, "utf8")
@@ -22,7 +24,7 @@ for (const name of [
       },
     })
     .outputText.replace(
-      /from ['"]\.\/(selectors|queries)['"]/g,
+      /from ['"]\.\/(selectors|queries|diary-adapter|diary-seed)['"]/g,
       'from "./$1.mjs"',
     )
   await writeFile(join(root, `${name}.mjs`), js)
@@ -45,8 +47,16 @@ const fixture = {
   attendance: [],
   templates: [],
   records: [],
-  diary: [],
-  categories: [],
+  diary: snapshot.diary.map((d) => ({
+    ...d,
+    author: snapshot.staff.find((e) => e.id === d.authorId)?.name,
+    category: snapshot.diaryCategories.find((c) => c.id === d.categoryId)?.name,
+    submittedAt: d.submittedAt ?? d.createdAt,
+  })),
+  categories: snapshot.diaryCategories.map((c) => ({
+    ...c,
+    status: c.active ? "Active" : "Inactive",
+  })),
   corrections: [],
   concerns: [],
   files: [],

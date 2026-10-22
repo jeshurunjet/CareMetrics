@@ -1,4 +1,4 @@
-import type { StaffReadService, StaffSnapshot } from "./types"
+import type { StaffSnapshot } from "./types"
 import {
   getHouse,
   getClient,
@@ -6,9 +6,12 @@ import {
   getClientContacts,
   searchStaff,
 } from "./queries"
+import { diaryQueries } from "./diary-adapter"
+import { seedDiary, diaryCategories } from "./diary-seed"
 import { myHouses, myClients, visibleNotices } from "./selectors"
 /** FICTIONAL DEVELOPMENT DATA ONLY. Not an API, database, identity or permission control. */
-export const developmentMockAdapter: StaffReadService = {
+export const developmentMockAdapter = {
+  ...diaryQueries,
   getHouses: myHouses,
   getHouse,
   getClients: myClients,
@@ -16,7 +19,7 @@ export const developmentMockAdapter: StaffReadService = {
   getClient,
   getClientContacts,
   search: searchStaff,
-  getSnapshot(employeeId, now) {
+  getSnapshot(employeeId: string, now: string): StaffSnapshot {
     const at = (hours: number) =>
       new Date(Date.parse(now) + hours * 3600000).toISOString()
     const s: StaffSnapshot = {
@@ -223,6 +226,10 @@ export const developmentMockAdapter: StaffReadService = {
           assignedBy: "Mere Walker (demo)",
         },
       ],
+      diary: seedDiary(now),
+      diaryCategories,
+      corrections: [],
+      demoAttendance: null,
       notices: [
         {
           id: "n1",
@@ -298,6 +305,7 @@ export const developmentMockAdapter: StaffReadService = {
       ),
       shifts: s.shifts.filter((sh) => houses.some((h) => h.id === sh.houseId)),
       notices: visibleNotices(s),
+      diary: diaryQueries.getHistory(s, undefined),
     }
   },
 }

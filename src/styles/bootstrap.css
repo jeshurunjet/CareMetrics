@@ -13,3 +13,17 @@
 .cm-app .cm-house-banner > .cm-photo-unavailable { height: 11rem; }
 .cm-app .cm-photo-unavailable.cm-result-img { min-height: 3rem; width: 3rem; height: 3rem; flex-shrink: 0; }
 .cm-app .cm-photo-unavailable.cm-result-img span { display: none; }
+/* Diary extensions retain source history/forms; long notes and controls must wrap. */
+.cm-app .cm-diary-text { white-space: pre-wrap; overflow-wrap: anywhere; }
+.cm-app .cm-history-title,.cm-app .cm-history-meta,.cm-app .cm-dl dd { overflow-wrap: anywhere; }
+.cm-app .cm-history-head > div { min-width: 0; }
+.cm-app [data-diary-editor] { min-width: 0; }
+.cm-app [data-diary-editor] .cm-form-page > .cm-banner { margin-bottom: 1rem; }
+.cm-app .cm-history-body .cm-row-actions { flex-wrap: wrap; }
+.cm-app .cm-pagination > div { flex-wrap: wrap; }
+.cm-app .cm-field input[type="datetime-local"] { min-width: 0; max-width: 100%; }
+.cm-app .cm-history-head:focus-visible,.cm-app .cm-pagination button:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 3px; }
+@media (max-width: 480px) {
+ .cm-app [data-diary-editor] .cm-form-actions { grid-template-columns: auto minmax(0, 1fr) minmax(0, 1.4fr); }
+ .cm-app [data-diary-editor] .cm-form-actions .cm-btn { min-width: 0; padding-inline: .75rem; }
+}

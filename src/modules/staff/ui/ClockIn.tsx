@@ -1,7 +1,7 @@
 "use client"
 // TODO: clock-out location policy still requires organisational sign-off.
 import { useEffect, useRef, useState } from "react"
-import { useStaffData } from "../data/context"
+import { useStaffData, useUpdateStaffData } from "../data/context"
 import {
   me,
   upcomingShifts,
@@ -26,6 +26,7 @@ import ShiftDetail from "./ShiftDetail"
 import PreviewMap from "./PreviewMap"
 export default function ClockIn() {
   const s = useStaffData()
+  const update = useUpdateStaffData()
   const nav = useNav()
   const user = me(s)
   const hl = highlightedShift(s)
@@ -34,7 +35,13 @@ export default function ClockIn() {
   const [gps, setGps] = useState<"unavailable" | "denied" | "checking">(
     "unavailable",
   )
-  const [clockedIn, setClockedIn] = useState(false)
+  const clockedIn = !!s.demoAttendance
+  const setClockedIn = (value: boolean) =>
+    update((prev) => ({
+      ...prev,
+      demoAttendance:
+        value && hl ? { employeeId: prev.meId, shiftId: hl.id } : null,
+    }))
   const [detail, setDetail] = useState<Shift | null>(null)
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
   useEffect(
@@ -231,7 +238,7 @@ export default function ClockIn() {
               <button
                 className={clockedIn ? "active" : ""}
                 aria-pressed={clockedIn}
-                onClick={() => setClockedIn((x) => !x)}
+                onClick={() => setClockedIn(!clockedIn)}
               >
                 Demo active attendance
               </button>

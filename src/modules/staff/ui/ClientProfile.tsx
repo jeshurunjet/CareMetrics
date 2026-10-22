@@ -18,6 +18,7 @@ import {
 } from "./index"
 import Tabs from "./Tabs"
 import ClientContacts from "./ClientContacts"
+import DiaryHistoryList from "../diary/DiaryHistoryList"
 import FeaturePlaceholder from "./FeaturePlaceholder"
 import PreviewActionDialog from "./PreviewActionDialog"
 export default function ClientProfile({
@@ -245,7 +246,7 @@ export default function ClientProfile({
           </div>
         )}
         {tab === "diary" && (
-          <FeaturePlaceholder title="Client diary" icon="book" />
+          <DiaryHistoryList subject={{ scope: "client", targetId: id }} />
         )}
         {tab === "care" && (
           <FeaturePlaceholder

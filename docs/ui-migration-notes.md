@@ -114,3 +114,61 @@ Generated type directories from other dev/test output trees were excluded from T
 - `tests/unit/staff-records.test.ts`, `tests/e2e/houses-clients.spec.ts`, one exact-heading selector in the prior browser test, reference/production check scripts, `tsconfig.json`, README and phase docs/evidence.
 
 No backend integration or Phase 1C feature was started. Recommended next: migrate original House/Client Diary UI first, then care-plan/charting/gallery UI in bounded Phase 1C slices, retaining the shared adapter and documented route structure. Authentication, organisation/role enforcement, persistent records, secure file storage and operational approval remain later work. No blocker remains for Phase 1B review.
+
+## Phase 1C.1 — Client and House Diary
+
+Git checkpoint before changes: `0398957` on `main`, containing completed Phase 1A/1B and already pushed at the user's request. The only pre-existing untracked files were duplicate `… 2.png` Phase 1A screenshots; these were left untouched. No Phase 1C.1 commit or push is part of this task.
+
+### Source reused and shared components
+
+Read the original `staff/pages/Shared.tsx` DiaryList (six records per page), `Forms.tsx` NewDiary/ContextBar, and `staff/ui.tsx` HistoryItem, Pagination, Select, FormField, OffShiftField and CorrectionDialog. Their history card markup, toolbar, form-page/context, off-shift block, action row, metadata and correction wording supply the migrated presentation. The active `DiaryHistoryList`, `DiaryEntryCard`, `DiaryEntryDetails`, `DiaryEntryForm`, `CorrectionRequestForm` and record metadata/status helpers share explicit `{scope,targetId}` context. Client and house histories never merge. Existing Avatar, Banner, Btn, Card, Empty, Icon, Modal, PageHeader, SearchInput, Staff shell and navigation remain shared. New source-derived FormField, Select and Pagination are reusable.
+
+All three source CSS copies and original reference files remain untouched. Scoped additions in `bootstrap.css` wrap long content and keep focus/action controls visible. Admin CMS is unchanged. Login, Dashboard and My Shifts retain their existing screens; the only ClockIn change promotes its explicitly labelled demo attendance appearance into the existing shared provider so diary forms can read the same demo state.
+
+### Adapter and validation
+
+The existing typed snapshot now contains DiaryCategory, DiaryEntry, separate CorrectionRequest arrays and optional demo attendance. `diary-seed.ts` supplies fictional categories and multiple-page histories, an own draft, another author's excluded draft, distinct house/client records and inaccessible subjects. The seed remains server-side; UI imports pure operations from `diary-adapter.ts`. `developmentMockAdapter` exposes those operations alongside the preceding read interface. The existing StaffDataProvider owns the mutable development snapshot; there is no competing store, localStorage diary, database, API, browser upload or external write.
+
+The adapter checks assignment scope on reads/creates, subject and author on drafts, and author/submitted status/no pending request on corrections. Querying applies case-insensitive title/content/author search, category, covered-date range, newest submission/creation first and six-record pagination. Drafts require a title; submissions also require an active category of the correct scope, at least ten non-whitespace content characters, a valid non-future covered time and an off-shift reason when demo attendance is absent/ineligible. Explicitly selected categories come from the adapter. Creation time is retained while editing a draft; covered/created/submitted times remain distinct.
+
+Covered-time fields explicitly use Pacific/Auckland, independent of device timezone. Missing and repeated daylight-saving wall times are rejected instead of silently shifted. Event timestamps use UTC ISO strings; displayed metadata uses the existing NZ time helpers. A scheduled shift alone never counts as active attendance. The existing demo toggle can allow an on-shift form without a required reason, but never claims verified location/real attendance. Reasons entered in the demo are retained.
+
+Submitted entries expose no edit/delete operation. Correction submission adds a separate pending request, displays reason/proposed content/status, and leaves the original entry unchanged. No staff approve/reject operation or button exists. The type/display supports a corrected status, but management approval, revised record versions and audit integrity are future backend/Admin work; this phase does not simulate approval.
+
+### Working UI and navigation
+
+Client/House profile Diary tabs now show history. New entries use the planned `/clients/[id]/diary/new` and `/houses/[id]/diary/new` routes. Existing `item` queries select details; `action=correction` selects the full-page correction form; `draft` selects the author's editable draft. Breadcrumbs, history return, submission return, Back and seeded deep links are covered. Unknown/unassigned subjects return server HTTP 404; invalid/wrong-subject/private draft IDs show a generic unavailable view inside the authorised profile without exposing that record. This last state is HTTP 200, not an asserted server authorisation response.
+
+Drafts, submissions, demo attendance and correction requests survive navigation in the Staff layout's current React session. They reset on a page reload or leaving/remounting the layout. New ID deep links then show unavailable; seeded IDs still resolve. A visible diary banner explains that nothing is saved to a server. Success is represented only by the development record/status, never by a claim of persisted care documentation.
+
+Cancel uses the existing discard-confirmation modal. Navigation/Back use a native confirmation while dirty, with a same-URL history guard so declining Back keeps the editor mounted; completion replaces the guard location. Reload/close uses before-unload where the browser supports it. Browser-controlled prompts are not branded screens. Keyboard labels, required indicators, errors/descriptions, expand state, current page and focus styling are explicit. Modal focus handling is reused from Phase 1A.
+
+### Intentional visual differences and evidence
+
+- Existing development warning plus a diary-specific session-reset banner add vertical height. Author/read-only context and source cards/forms retain their original styling.
+- Required Submitted/Draft/off-shift/pending-review badges and a separate Created timestamp extend the source metadata. A View details link supplements the original inline expandable history.
+- Original details exist only as expanded cards; the standalone details view is a documented extension using source Card/metadata styles. Original correction is a modal with reason/proposal but no original body. The migration uses a full-page correction form with original content to support the confirmed workflow on mobile. These are source-derived extensions, not claims of identical reference states.
+- Form breadcrumbs and explicit Pacific/Auckland help are additions. New forms identify Off-Shift Entry explicitly. Category fixtures are fictional configuration rather than real clinical rules.
+- The original 375px form action row slightly exceeds available width. A narrowly scoped mobile padding/grid adjustment keeps all three migrated buttons inside the viewport. Native controls retain the original style; proper medium/small button classes are applied to Next links.
+
+The test-only original renderer adapts the same scoped fictional entries/categories into the original store shape. Original reference files on disk remain unchanged. Matching screenshots use frozen time and deterministic photo substitutes; no font binaries are copied. Captures cover Client history/create/details/correction and House history/create at 375, 390, 768, 1280 and 1440px. The expanded source card is the reference for details; the source modal is the reference for the full-page correction extension. Screenshots are stored under `docs/ui-comparisons/phase-1c1/`. They establish reviewed layout evidence, not pixel-diff acceptance, independent designer approval or physical-device/browser certification.
+
+### Changed files
+
+- `src/modules/staff/data/{types,context,development-mock-adapter,diary-adapter,diary-seed}`: typed relationships, scoped pure queries/transitions, one session snapshot and fictional fixtures.
+- `src/modules/staff/diary/*`: shared history/card/details/form/correction/metadata/status/navigation and unsaved-change handling.
+- `src/modules/staff/ui/{FormField,Select,Pagination}`; ClientProfile/HouseProfile Diary tab composition; ClockIn demo-state connection; scoped bootstrap CSS; NZ wall-time conversion in `src/lib/time.ts`.
+- Both planned `src/app/(staff)/{clients,houses}/[id]/diary/new/page.tsx` routes validate preview and subject before rendering.
+- `tests/unit/diary.test.ts`, `tests/e2e/diary.spec.ts`, updated Phase 1B tab expectations, reference/production scripts, README, route/status/history docs, generated-type cache exclusion in `tsconfig.json`, and screenshots. Next regenerates `next-env.d.ts`; no dependency changes.
+
+No Care Plan, Charting, Gallery, Admin editing, authentication, GPS, persistent services or production file handling was implemented. The next task after diary review is a bounded Care Plan/Assessments UI migration, reusing these documentation patterns and keeping the later configurable template/version/correction model in view.
+
+### Phase 1C.1 final verification
+
+Lint (zero warnings), strict typecheck, formatting and all 33 unit tests passed. The final full `pnpm test:e2e` run passed **120 cases** (24 × five widths), including all 75 prior regression cases; a preceding original-export breadcrumb animation instability was corrected by using its existing Houses navigation for capture. The final production build passed; all 20 production preview-isolation paths returned 404 with preview explicitly enabled. Unassigned fixture names/record IDs were absent from production client chunks. All 51 extracted reference files and three active CSS copies remained byte-identical. No Admin source file changed.
+
+Captured **100 raw images** and inspected **15 paired boards** at the five requested widths: `comparison-[width]-history.png`, `comparison-[width]-forms.png`, and `comparison-[width]-details.png`. Focused list and field captures supplement context/header views. Cards, typography, filters and field styling retain close source parity; required metadata/banners and full-page extensions account for visible differences. The mobile action bounds are checked explicitly, in addition to document overflow, and all five capture cases reported no pageerror events. No exact-pixel claim is made.
+
+Phase 1C.1 has no implementation blocker for review. Remaining limitations are session-only data and the unimplemented backend, identity, management review/version/audit and secure files. No new phase was started and no commit/push was performed.
+
+Final type verification encountered sync-style generated duplicates (`routes.d 2.ts`, `cache-life.d 2.ts`) under `.next-build/types`, causing conflicting declarations after earlier successful checks. TypeScript now excludes only space-containing generated `.next-build` TypeScript filenames; canonical generated routes and all source/tests remain checked. No user source or duplicate screenshot was deleted. Typecheck and formatting passed again with this narrow cache exclusion.

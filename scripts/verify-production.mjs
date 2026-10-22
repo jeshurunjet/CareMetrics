@@ -45,6 +45,14 @@ try {
     "/clients/c1?tab=care",
     "/houses/h3",
     "/clients/c4",
+    "/clients/c1?tab=diary",
+    "/houses/h1?tab=diary",
+    "/clients/c1?tab=diary&item=client-c1-1&action=correction",
+    "/houses/h1?tab=diary&item=house-h1-1",
+    "/clients/c1/diary/new",
+    "/houses/h1/diary/new?draft=house-h1-8",
+    "/clients/c4/diary/new",
+    "/houses/h3/diary/new",
   ]
   for (const path of paths) {
     const res = await fetch(`http://localhost:8556${path}`)
@@ -60,6 +68,8 @@ try {
       "Riverside Lodge",
       "Morgan Reed",
       "Restricted Contact",
+      "Fictional diary note",
+      "House handover",
     ])
       assert.ok(!body.includes(marker), "no fictional data exposed")
   }

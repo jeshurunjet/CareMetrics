@@ -73,6 +73,13 @@ export interface StaffSnapshot {
   clients: Client[]
   shifts: Shift[]
   notices: Notice[]
+  diary: DiaryEntry[]
+  diaryCategories: DiaryCategory[]
+  corrections: CorrectionRequest[]
+  demoAttendance: {
+    employeeId: string
+    shiftId: string
+  } | null
 }
 export interface HouseSearchResult {
   id: string
@@ -104,4 +111,44 @@ export interface StaffReadService {
   getClient(snapshot: StaffSnapshot, id: string): Client | undefined
   getClientContacts(snapshot: StaffSnapshot, clientId: string): ClientContact[]
   search(snapshot: StaffSnapshot, query: string): StaffSearchResults
+}
+
+export type DiaryScope = "client" | "house"
+export interface DiarySubject {
+  scope: DiaryScope
+  targetId: string
+}
+export interface DiaryCategory {
+  id: string
+  name: string
+  scope: DiaryScope
+  active: boolean
+}
+export interface DiaryEntry extends DiarySubject {
+  id: string
+  authorId: string
+  title: string
+  categoryId: string
+  body: string
+  coveredAt: string
+  createdAt: string
+  submittedAt?: string
+  status: "draft" | "submitted" | "corrected"
+  offShiftReason?: string
+}
+export interface CorrectionRequest {
+  id: string
+  recordId: string
+  requestingEmployeeId: string
+  reason: string
+  proposed: string
+  requestedAt: string
+  status: "pending" | "approved" | "rejected"
+}
+export interface DiaryInput {
+  title: string
+  categoryId: string
+  body: string
+  coveredAt: string
+  offShiftReason: string
 }

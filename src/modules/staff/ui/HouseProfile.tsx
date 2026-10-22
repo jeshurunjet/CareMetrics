@@ -6,6 +6,7 @@ import { visibleNotices } from "../data/selectors"
 import { PageHeader, Card, Btn, Icon, Avatar, Empty, useNav } from "./index"
 import Tabs from "./Tabs"
 import SourcePhoto from "./SourcePhoto"
+import DiaryHistoryList from "../diary/DiaryHistoryList"
 import FeaturePlaceholder from "./FeaturePlaceholder"
 import PreviewActionDialog from "./PreviewActionDialog"
 import type { HouseTab } from "../data/sections"
@@ -164,7 +165,7 @@ export default function HouseProfile({
               Operational updates for the house. Client care notes belong in
               each client&apos;s diary.
             </p>
-            <FeaturePlaceholder title="House diary" icon="book" />
+            <DiaryHistoryList subject={{ scope: "house", targetId: id }} />
           </>
         )}
         {tab === "files" && (

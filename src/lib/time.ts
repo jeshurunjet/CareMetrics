@@ -53,3 +53,27 @@ export function ageOnDate(dob: string, now: string): number {
       : 0)
   )
 }
+/** datetime-local fields explicitly represent Pacific/Auckland, independent of device timezone. */
+export function toNZDateTimeInput(iso: string): string {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Pacific/Auckland",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(new Date(iso))
+  const value = (type: string) => parts.find((p) => p.type === type)?.value
+  return `${value("year")}-${value("month")}-${value("day")}T${value("hour")}:${value("minute")}`
+}
+export function fromNZDateTimeInput(local: string): string {
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(local)) return ""
+  const ms = Date.parse(`${local}:00Z`)
+  if (!Number.isFinite(ms)) return ""
+  const candidates = [12, 13]
+    .map((offset) => new Date(ms - offset * 3600000).toISOString())
+    .filter((iso) => toNZDateTimeInput(iso) === local)
+  // Reject missing/ambiguous daylight-saving times rather than silently choosing one.
+  return candidates.length === 1 ? candidates[0] : ""
+}

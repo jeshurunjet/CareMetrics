@@ -156,7 +156,6 @@ test("record tabs navigate to bounded placeholders with back and keyboard suppor
 }) => {
   await client(page)
   for (const [label, tab, title] of [
-    ["Diary", "diary", "Client diary"],
     ["Care Plan", "care", "Care Plan / Assessments"],
     ["Charting", "charting", "Client charting"],
     ["Gallery", "files", "Client gallery & documents"],
@@ -186,7 +185,11 @@ test("record tabs navigate to bounded placeholders with back and keyboard suppor
   ]) {
     await page.getByRole("tab", { name: label, exact: true }).click()
     await expect(page).toHaveURL(new RegExp(`/houses/h1\\?tab=${tab}$`))
-    await expect(page.getByRole("tabpanel")).toContainText(title)
+    if (tab === "diary")
+      await expect(
+        page.getByRole("link", { name: "New entry", exact: true }),
+      ).toBeVisible()
+    else await expect(page.getByRole("tabpanel")).toContainText(title)
   }
   await page.goBack()
   await expect(page).toHaveURL(/tab=files$/)
