@@ -13,7 +13,14 @@ export default async function Page({
   requirePreview()
   const { id } = await params
   loadPreviewRecord("house", id)
-  const tab = (await searchParams).tab ?? "overview"
+  const query = await searchParams
+  const tab = query.tab ?? "overview"
   if (!isHouseTab(tab)) notFound()
+  if (
+    tab === "files" &&
+    ((query.fileId !== undefined && typeof query.fileId !== "string") ||
+      (query.action !== undefined && typeof query.action !== "string"))
+  )
+    notFound()
   return <HouseProfile key={id} id={id} tab={tab} />
 }

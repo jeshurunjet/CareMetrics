@@ -56,3 +56,29 @@
 .cm-app .cm-configured-table .cm-field:not(.cm-field--error) .cm-input { border-color: var(--color-border); }
 /* Keep absolutely positioned screen-reader labels inside the table scroller. */
 .cm-app .cm-table-wrap { position: relative; }
+
+/* Phase 1C.4: source gallery primitives, with scoped wrapping and accessible actions. */
+.cm-app .cm-gallery, .cm-app .cm-gallery-upload { min-width: 0; }
+.cm-app .cm-file-list { list-style: none; padding: 0; margin: 0; }
+.cm-app .cm-file-list > li { min-width: 0; display: flex; }
+.cm-app .cm-file-list .cm-file { width: 100%; }
+.cm-app .cm-file-meta strong { white-space: normal; overflow-wrap: anywhere; }
+.cm-app .cm-file-meta span, .cm-app .cm-file-details dd { overflow-wrap: anywhere; }
+.cm-app .cm-file-actions { align-items: center; gap: .25rem; flex-wrap: wrap; }
+.cm-app .cm-file-actions > a { flex: 1; min-height: 2.75rem; display: grid; place-items: center; text-decoration: none; color: var(--color-ink-muted); }
+.cm-app .cm-file-actions > a.cm-btn { display: flex; }
+.cm-app .cm-file-actions button { min-height: 2.75rem; }
+.cm-app .cm-selection-row { align-items: flex-start; }
+.cm-app .cm-selection-row .cm-grow { min-width: 0; overflow-wrap: anywhere; }
+.cm-app .cm-selection-row p { margin: .25rem 0; }
+.cm-app .cm-selected-photo { width: 9rem; height: 6rem; object-fit: contain; border-radius: .5rem; margin-top: .5rem; }
+.cm-app .cm-file-image-error { padding: .5rem; text-align: center; }
+.cm-app .cm-file-actions a:focus-visible, .cm-app .cm-file-thumb:focus-visible { outline: 2px solid var(--color-brand); outline-offset: -3px; }
+.cm-app .cm-gallery .cm-dropzone { scroll-margin-top: 1rem; }
+.cm-app .cm-file-image { width: 100%; min-width: 0; position: relative; }
+.cm-app .cm-file-thumb { flex-shrink: 0; overflow: hidden; }
+.cm-app .cm-file-thumb .cm-file-image { height: 7rem; overflow: hidden; }
+.cm-app .cm-image-loading { position: absolute; inset: 0; display: grid; place-items: center; font-size: .75rem; background: var(--color-surface); }
+.cm-app .cm-file-image > .cm-preview-img { height: auto; }
+.cm-app .cm-gallery-upload > .cm-progress { flex: none; min-height: .35rem; width: 100%; }
+.cm-app .cm-gallery > .cm-row-between { flex-wrap: wrap; gap: .75rem; }

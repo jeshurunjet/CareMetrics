@@ -284,3 +284,39 @@ Final lint (zero warnings), strict typecheck, formatting, 63 unit tests, all 225
 Final evidence: 90 raw screenshots and 15 paired boards across 375, 390, 768, 1280 and 1440px in [phase-1c3 comparisons](ui-comparisons/phase-1c3/). Review retains source typography/palette/cards/table/repeating-row/bar presentation with the documented extensions. Numeric date ticks avoid mobile overlap. Only invalid cells receive error borders; errors name row/column. Semantic row headings use readable body styling. A 768px failure was traced to absolute screen-reader-only action labels escaping the table's containing block; positioning the scroll region fixes document overflow without hiding data or removing accessible names. All ten targeted 768px Charting cases and then the complete 225-case suite passed after the fix. All five final capture cases report no pageerror events, document overflow or out-of-bounds form actions. Source temporary validation toasts are allowed to expire before later comparison states.
 
 There are no remaining implementation blockers for this UI phase. Node 22 CI, other-browser/physical-device/exhaustive accessibility checks and independent design acceptance remain outstanding. Work is uncommitted on local `phase-1c3`; prior branches/checkpoints and reference source are preserved. Nothing was pushed and no subsequent phase began.
+
+## Phase 1C.4 — Client and House Galleries / Documents
+
+### Checkpoint and shared implementation
+
+Completed Phase 1C.3 is preserved at local checkpoint `2913cd0` on `phase-1c3`; baseline checks passed before committing. Work continues on `phase-1c4`, without resetting changes or pushing. The original reference and existing duplicate screenshots remain untouched.
+
+Source references are the client/house Gallery tabs, FileGrid, FileInfo, ImagePreview, UploadZone and profile-photo controls in the exported staff pages/UI. Original card, thumbnail, modal, dropzone, progress, filter and empty-state classes are retained. Existing Icon, Modal, SourcePhoto, Empty, Pagination and profile navigation are reused. Shared `files/` components now provide Gallery, FileCard, FileTypeIcon, FileMetadata, FileDetailsPanel, FileImage, DownloadAction, FileUploadArea and ProfilePhotoPicker, plus typed adapter, policy, seed, navigation and asset registry. A single snapshot attachment array serves both parents; no second mock store was introduced. See [file architecture](file-architecture.md).
+
+### Intentional differences and safety boundaries
+
+- The export has a grid with no list/grid switch. It remains a semantic list of source-styled cards, with document icons; no alternate view control was invented. Filename/type filtering, six-file pagination and complete metadata extend the original presentation.
+- Source staff Delete buttons are removed to meet the confirmed permission rule. Only unsent selections can be removed. Existing attachments cannot be deleted or reassociated.
+- Visible development warnings, uploader/type/size, accessible action names, wrapping filenames, real download controls and unsupported explanations add height. Mobile cards therefore differ from the shorter original. Original fonts, palette, navigation, icons and card treatment remain.
+- Downloads use only genuine local harmless PNG/TXT/CSV files. The export contains no usable PDF asset: PDF and unsupported previews display metadata/placeholders, with downloads disabled. No unknown remote file URL or fake signed URL is used.
+- Source selection immediately starts a simulation. The migrated upload explicitly validates and queues files, permits description/removal/cancel, then requires the labelled simulation action. Failure/retry is deliberately controllable. No upload request is sent. Only temporary metadata enters the existing session provider; contents are never persisted. The configurable 15 MiB example limit is labelled provisional, not organisational policy.
+- Source photo selection applies immediately. The shared picker adds preview/cancel and explicitly temporary application. Local object URLs are revoked on replacement/unmount. There is no gallery deletion or durable profile write.
+- Image loading/failure/retry, bounded mobile metadata, focus/keyboard controls and URL-backed details extend source interactions. Native downloads are enabled only through the closed asset registry.
+
+### Evidence methodology and limitations
+
+Nine representative original/migrated views at each of 375, 390, 768, 1280 and 1440px cover images, documents, house files, details, image preview, selection, validation error, empty state and photo selection. The test-only reference harness supplies the same fictional attachments and local assets to untouched source JSX/CSS. Frozen time and deterministic external profile/house imagery follow prior phases. Added PNG illustrations and TXT/CSV material contain no health information.
+
+The original has no document filter; its document capture focuses document cards. Its validation example uses an oversized PDF because the original does not reject the migrated unsupported-type example. Original selection captures its immediate progress; original photo selection captures its immediate application rather than a nonexistent picker. Empty comparisons use the empty house: the original client profile crashes for a fixture whose optional contact phone is absent (`nok.phone.replace`). The migrated empty-client case remains covered functionally; reference source was not modified to conceal this limitation. Source overflow remains visible; bounds assertions apply to migrated screens.
+
+Captures demonstrate source fidelity with these documented extensions, not exact pixel parity or independent design acceptance. Other browsers, physical devices, exhaustive accessibility, remote font availability and intended Node 22 runtime verification remain outstanding. No backend, Admin CMS, secure file service or next phase was started.
+
+Tablet visual review found a thumbnail image extending over its filename, an overflow also visible in the source. The migrated thumbnail now has an explicit fixed-height clipping container; geometry assertions ensure the image ends within the thumbnail and metadata begins below it at every tested width. The local dev server generated the normal `.next-local` type includes in `tsconfig.json`.
+
+### Phase 1C.4 final verification
+
+Lint, strict TypeScript, formatting, 72 unit tests, the complete 275-case browser suite, production build and all 41 production-isolation checks pass. After the final thumbnail fix, all 50 gallery cases passed again across the five required widths, including image/metadata geometry checks. Final evidence includes 90 raw screenshots and 15 paired boards; reviewed mobile/tablet/desktop states retain the source design with the differences above, with no collected page errors or document-level overflow. Original 51 reference files and three active source CSS copies remain byte-identical. Client/house galleries return HTTP 200 on the local development preview at port 8443. Node 22 remains unavailable. Changes are uncommitted on `phase-1c4`; nothing was pushed and no subsequent phase began.
+
+### Git publication checkpoint
+
+After implementation review, the user authorised committing and pushing the complete tracked application on a new branch, `phase-1c4-complete`. This branch includes the earlier application history and the Phase 1C.4 source, tests, harmless demo assets, documentation and comparison evidence. Prior branches are preserved; `reference/`, secrets, generated output and unrelated pre-existing duplicate screenshots are excluded.

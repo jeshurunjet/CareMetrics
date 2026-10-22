@@ -170,7 +170,7 @@ test("record tabs navigate to bounded placeholders with back and keyboard suppor
       .click()
     await expect(page).toHaveURL(new RegExp(`/clients/c1\\?tab=${tab}$`))
     await expect(page.getByText(title, { exact: true })).toBeVisible()
-    await expect(page.getByText(/Phase 1C migration pending/)).toBeVisible()
+    await expect(page.locator("[data-file-id]")).toHaveCount(6)
     await page.reload()
     await expect(
       page.getByRole("tab", {
@@ -191,6 +191,8 @@ test("record tabs navigate to bounded placeholders with back and keyboard suppor
       await expect(
         page.getByRole("link", { name: "New entry", exact: true }),
       ).toBeVisible()
+    else if (tab === "files")
+      await expect(page.locator("[data-file-id]")).toHaveCount(5)
     else await expect(page.getByRole("tabpanel")).toContainText(title)
   }
   await page.goBack()
@@ -241,8 +243,10 @@ test("photo and concern controls are honest preview-only interactions", async ({
   await expect(page.getByRole("dialog")).toContainText(
     "Development preview only",
   )
-  await expect(page.locator("input[type=file]")).toHaveCount(0)
-  await page.getByRole("button", { name: "Close preview" }).click()
+  await expect(
+    page.getByLabel("Select profile demonstration photo", { exact: true }),
+  ).toHaveCount(1)
+  await page.getByRole("button", { name: "Cancel photo selection" }).click()
   await page.getByRole("button", { name: "Submit concern" }).click()
   await expect(page.getByRole("dialog")).toContainText("not implemented")
 })

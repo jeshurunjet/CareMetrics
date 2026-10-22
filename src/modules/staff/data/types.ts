@@ -1,3 +1,4 @@
+import type { FileRecord } from "../files/types"
 import type {
   CareTemplate,
   ClientCareTemplateAssignment,
@@ -70,6 +71,7 @@ export interface Notice {
   status: "Published" | "Draft"
 }
 export interface StaffSnapshot {
+  attachments: FileRecord[]
   now: string
   meId: string
   staff: Employee[]

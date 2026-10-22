@@ -7,7 +7,9 @@ export default function Modal({
   onClose,
   children,
   footer,
+  wide = false,
 }: {
+  wide?: boolean
   title: string
   subtitle?: string
   onClose: () => void
@@ -55,7 +57,7 @@ export default function Modal({
       />
       <div
         ref={ref}
-        className="cm-modal"
+        className={`cm-modal ${wide ? "cm-modal--wide" : ""}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby={id}

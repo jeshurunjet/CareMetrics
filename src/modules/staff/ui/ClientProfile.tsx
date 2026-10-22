@@ -22,7 +22,10 @@ import Charting from "../charting/Charting"
 import CarePlan from "../care/CarePlan"
 import { getAssignedCareTemplates } from "../care/adapter"
 import DiaryHistoryList from "../diary/DiaryHistoryList"
-import FeaturePlaceholder from "./FeaturePlaceholder"
+import Gallery from "../files/Gallery"
+import ProfilePhotoPicker, {
+  useTemporaryProfilePhoto,
+} from "../files/ProfilePhotoPicker"
 import PreviewActionDialog from "./PreviewActionDialog"
 export default function ClientProfile({
   id,
@@ -33,6 +36,7 @@ export default function ClientProfile({
 }) {
   const s = useStaffData()
   const nav = useNav()
+  const temporaryPhoto = useTemporaryProfilePhoto()
   const c = staffQueries.getClient(s, id)
   const [action, setAction] = useState<string | null>(null)
   useEffect(() => {
@@ -71,7 +75,12 @@ export default function ClientProfile({
       />
       <section className="cm-profile-head">
         <div className="cm-photo-edit">
-          <Avatar name={c.name} tone={c.tone} size={76} photo={c.photo} />
+          <Avatar
+            name={c.name}
+            tone={c.tone}
+            size={76}
+            photo={temporaryPhoto.url ?? c.photo}
+          />
           <button
             type="button"
             className="cm-photo-control"
@@ -274,11 +283,28 @@ export default function ClientProfile({
         {tab === "care" && <CarePlan clientId={id} />}
         {tab === "charting" && <Charting clientId={id} />}
         {tab === "files" && (
-          <FeaturePlaceholder title="Client gallery & documents" icon="image" />
+          <Gallery subject={{ scope: "client", targetId: id }} />
         )}
       </div>
-      {action && (
-        <PreviewActionDialog title={action} onClose={() => setAction(null)} />
+      {temporaryPhoto.url && (
+        <p role="status" className="cm-hint">
+          Temporary photo preview only; leaving or reloading this profile resets
+          it.
+        </p>
+      )}
+      {action === "Update client photo · preview" ? (
+        <ProfilePhotoPicker
+          name={c.name}
+          onClose={() => setAction(null)}
+          onApply={(file) => {
+            temporaryPhoto.apply(file)
+            setAction(null)
+          }}
+        />
+      ) : (
+        action && (
+          <PreviewActionDialog title={action} onClose={() => setAction(null)} />
+        )
       )}
     </>
   )

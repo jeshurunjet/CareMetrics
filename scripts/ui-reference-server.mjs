@@ -19,6 +19,10 @@ const sources = [
   "src/modules/staff/care/adapter.ts",
   "src/modules/staff/care/seed.ts",
   "src/modules/staff/charting/seed.ts",
+  "src/modules/staff/files/seed.ts",
+  "src/modules/staff/files/adapter.ts",
+  "src/modules/staff/files/policy.ts",
+  "src/modules/staff/files/demo-assets.ts",
   "src/modules/forms/engine.ts",
   "src/lib/time.ts",
 ]
@@ -54,6 +58,10 @@ const snapshot = developmentMockAdapter.getSnapshot(
   "s1",
   "2026-10-22T01:00:00.000Z",
 )
+const { demoAssets } = await import(
+  pathToFileURL(compiled.get(resolve("src/modules/staff/files/demo-assets.ts")))
+)
+const fixtureAssetPath = (id) => demoAssets[id]?.path
 const fixture = {
   ...snapshot,
   staff: snapshot.staff.map((e) => ({
@@ -149,7 +157,26 @@ const fixture = {
     by: snapshot.staff.find((e) => e.id === c.requestingEmployeeId)?.name,
   })),
   concerns: [],
-  files: [],
+  files: snapshot.attachments.map((f) => ({
+    id: f.id,
+    scope: f.association.scope,
+    targetId: f.association.targetId,
+    name: f.name,
+    description: f.description,
+    type:
+      f.category === "image"
+        ? "Image"
+        : f.category === "pdf"
+          ? "PDF"
+          : "Document",
+    size: `${f.bytes} bytes`,
+    date: f.uploadedAt,
+    by: snapshot.staff.find((e) => e.id === f.uploadedById)?.name,
+    url:
+      f.category === "image" && f.assetId
+        ? fixtureAssetPath(f.assetId)
+        : undefined,
+  })),
   leave: [],
   audit: [],
   profileFields: [],
@@ -182,6 +209,7 @@ const { default: tailwind } = await import("@tailwindcss/postcss")
 const server = await createServer({
   root,
   configFile: false,
+  publicDir: resolve("public"),
   cacheDir: join(root, ".vite-cache"),
   optimizeDeps: {
     include: ["react", "react-dom/client", "leaflet", "react-leaflet"],

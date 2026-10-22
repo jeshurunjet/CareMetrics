@@ -27,5 +27,11 @@ export default async function Page({
       tab === "charting" ? "chart" : "care",
     )
   }
+  if (
+    tab === "files" &&
+    ((query.fileId !== undefined && typeof query.fileId !== "string") ||
+      (query.action !== undefined && typeof query.action !== "string"))
+  )
+    notFound()
   return <ClientProfile key={id} id={id} tab={tab} />
 }

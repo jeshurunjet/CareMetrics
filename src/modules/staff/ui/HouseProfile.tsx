@@ -8,7 +8,10 @@ import Tabs from "./Tabs"
 import SourcePhoto from "./SourcePhoto"
 import DiaryHistoryList from "../diary/DiaryHistoryList"
 import FeaturePlaceholder from "./FeaturePlaceholder"
-import PreviewActionDialog from "./PreviewActionDialog"
+import ProfilePhotoPicker, {
+  useTemporaryProfilePhoto,
+} from "../files/ProfilePhotoPicker"
+import Gallery from "../files/Gallery"
 import type { HouseTab } from "../data/sections"
 export default function HouseProfile({
   id,
@@ -19,6 +22,7 @@ export default function HouseProfile({
 }) {
   const s = useStaffData()
   const nav = useNav()
+  const temporaryPhoto = useTemporaryProfilePhoto()
   const h = staffQueries.getHouse(s, id)
   const [action, setAction] = useState<string | null>(null)
   if (!h)
@@ -58,7 +62,11 @@ export default function HouseProfile({
         }
       />
       <div className="cm-house-banner">
-        <SourcePhoto key={h.id} src={h.photo} alt={`${h.name} exterior`} />
+        <SourcePhoto
+          key={temporaryPhoto.url ?? h.id}
+          src={temporaryPhoto.url ?? h.photo}
+          alt={`${h.name} exterior`}
+        />
         <div className="cm-house-banner-info">
           {h.phone ? (
             <a href={`tel:${h.phone.replace(/\s/g, "")}`}>
@@ -169,7 +177,7 @@ export default function HouseProfile({
           </>
         )}
         {tab === "files" && (
-          <FeaturePlaceholder title="House documents & gallery" icon="image" />
+          <Gallery subject={{ scope: "house", targetId: id }} />
         )}
         {tab === "concerns" && (
           <FeaturePlaceholder
@@ -178,8 +186,21 @@ export default function HouseProfile({
           />
         )}
       </div>
+      {temporaryPhoto.url && (
+        <p role="status" className="cm-hint">
+          Temporary photo preview only; leaving or reloading this profile resets
+          it.
+        </p>
+      )}
       {action && (
-        <PreviewActionDialog title={action} onClose={() => setAction(null)} />
+        <ProfilePhotoPicker
+          name={h.name}
+          onClose={() => setAction(null)}
+          onApply={(file) => {
+            temporaryPhoto.apply(file)
+            setAction(null)
+          }}
+        />
       )}
     </>
   )

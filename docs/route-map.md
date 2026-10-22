@@ -112,3 +112,17 @@ Charting uses the same planned profile queries and records/new path as Care Plan
 The server validates the fixed fictional employee's client assignment and the expected care/chart template kind before rendering profile history. The shared form route resolves the assigned template kind; breadcrumbs, draft/submission returns and correction returns preserve that area. Unknown/unassigned clients/templates and a chart template opened under Care Plan (or vice versa) return HTTP 404. Invalid/wrong-client/wrong-template/other-author record IDs show a generic unavailable view within an authorised profile (HTTP 200). Session-created IDs reset on reload; seeded links can refresh.
 
 Chart history rows navigate using explicit links. Search, author/date filters and six-record pagination remain view state. Submitted cells are read-only; repeating editable rows exist only inside the shared form. Cancel, Back and ordinary in-app navigation preserve the existing unsaved-change prompts. Staff can save a draft before navigating and resume it within the same provider session. No browser record storage or authenticated service has been introduced. Production continues to reject all preview routes.
+
+## Phase 1C.4 Gallery / Documents routes
+
+| Destination | Client | House |
+| --- | --- | --- |
+| Gallery | `/clients/[id]?tab=files` | `/houses/[id]?tab=files` |
+| Information | `/clients/[id]?tab=files&fileId=[fileId]&action=info` | `/houses/[id]?tab=files&fileId=[fileId]&action=info` |
+| Preview | `/clients/[id]?tab=files&fileId=[fileId]&action=preview` | `/houses/[id]?tab=files&fileId=[fileId]&action=preview` |
+
+Missing `action` defaults to information. Unknown actions or missing/wrong-subject file IDs show generic File unavailable content (HTTP 200) within an authorised profile, revealing none of that file's metadata. Unknown/unassigned parent client/house and repeated non-scalar file/action queries return server HTTP 404. Seeded file links survive refresh; session-only additions become unavailable after reload. These are fixed fictional preview lookups, not authenticated server authorisation.
+
+The same Gallery component reads the explicit `{scope, targetId}` association. Client and house documents never merge. Links preserve query context, Browser Back and direct refresh; closing a modal pushes the subject's gallery URL. Existing modal focus containment/Escape are reused. Filter/page state stays mounted while opening details but resets after refresh. Upload files in the header focuses the existing selection area. File selection/progress is component-local and is cancelled/released when leaving the gallery; completed metadata survives navigation only in the existing provider session.
+
+Profile-photo selection uses a shared modal from the existing client photo control and house Update house photo action. Applied photo previews remain only while that profile is mounted; leaving/reloading it restores its original photo. No new upload/download API route or object storage endpoint was introduced. `/demo-assets/*` contains only clearly labelled harmless public PNG/text/CSV examples and their SVG source illustrations. These assets are public in every environment; they are not private care attachments. Only their allowlisted genuine assets have download links. All Staff gallery routes still fail closed in production.

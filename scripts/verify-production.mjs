@@ -68,6 +68,12 @@ try {
     "/clients/c1/records/new?templateId=t6&draft=chart-equipment-draft",
     "/clients/c2/records/new?templateId=t6",
     "/clients/c4?tab=charting&sub=chart-private",
+    "/clients/c1?tab=files",
+    "/clients/c1?tab=files&fileId=client-garden&action=preview",
+    "/clients/c1?tab=files&fileId=client-readme&action=info",
+    "/houses/h1?tab=files&fileId=house-garden&action=preview",
+    "/houses/h3?tab=files&fileId=private-house-file",
+    "/clients/c4?tab=files&fileId=private-client-file",
   ]
   for (const path of paths) {
     const res = await fetch(`http://localhost:8556${path}`)
@@ -90,6 +96,8 @@ try {
       "Unassigned chart content",
       "Fictional exercise session",
       "Demo walking frame",
+      "Restricted client file example",
+      "Restricted house file example",
     ])
       assert.ok(!body.includes(marker), "no fictional data exposed")
   }

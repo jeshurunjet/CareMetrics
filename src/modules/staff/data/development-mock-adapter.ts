@@ -1,3 +1,5 @@
+import { fileQueries } from "../files/adapter"
+import { seedAttachments } from "../files/seed"
 import type { StaffSnapshot } from "./types"
 import {
   getHouse,
@@ -18,6 +20,7 @@ import { seedDiary, diaryCategories } from "./diary-seed"
 import { myHouses, myClients, visibleNotices } from "./selectors"
 /** FICTIONAL DEVELOPMENT DATA ONLY. Not an API, database, identity or permission control. */
 export const developmentMockAdapter = {
+  ...fileQueries,
   ...diaryQueries,
   ...careQueries,
   getHouses: myHouses,
@@ -31,6 +34,7 @@ export const developmentMockAdapter = {
     const at = (hours: number) =>
       new Date(Date.parse(now) + hours * 3600000).toISOString()
     const s: StaffSnapshot = {
+      attachments: seedAttachments(now),
       now,
       meId: employeeId,
       staff: [
@@ -323,6 +327,14 @@ export const developmentMockAdapter = {
     return {
       ...s,
       houses,
+      attachments: [
+        ...clients.flatMap((c) =>
+          fileQueries.getGalleryFiles(s, { scope: "client", targetId: c.id }),
+        ),
+        ...houses.flatMap((h) =>
+          fileQueries.getGalleryFiles(s, { scope: "house", targetId: h.id }),
+        ),
+      ],
       staff: s.staff.filter(
         (e) =>
           e.id === employeeId ||
