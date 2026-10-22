@@ -7,7 +7,12 @@ import ts from "typescript"
 const root = resolve(".ui-reference")
 await mkdir(root, { recursive: true })
 await cp("reference/figma-export", root, { recursive: true })
-for (const name of ["types", "selectors", "development-mock-adapter"]) {
+for (const name of [
+  "types",
+  "selectors",
+  "queries",
+  "development-mock-adapter",
+]) {
   const source = await readFile(`src/modules/staff/data/${name}.ts`, "utf8")
   const js = ts
     .transpileModule(source, {
@@ -16,7 +21,10 @@ for (const name of ["types", "selectors", "development-mock-adapter"]) {
         target: ts.ScriptTarget.ES2022,
       },
     })
-    .outputText.replace(/from ['"]\.\/selectors['"]/g, 'from "./selectors.mjs"')
+    .outputText.replace(
+      /from ['"]\.\/(selectors|queries)['"]/g,
+      'from "./$1.mjs"',
+    )
   await writeFile(join(root, `${name}.mjs`), js)
 }
 const { developmentMockAdapter } = await import(

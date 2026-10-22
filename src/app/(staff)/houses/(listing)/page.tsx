@@ -1,6 +1,6 @@
 import { requirePreview } from "@/lib/require-preview"
-import UnportedScreen from "@/components/UnportedScreen"
+import HouseList from "@/modules/staff/ui/HouseList"
 export default function Page() {
   requirePreview()
-  return <UnportedScreen title="Houses" />
+  return <HouseList />
 }

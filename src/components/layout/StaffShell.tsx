@@ -4,7 +4,7 @@ import StaffSidebar from "./StaffSidebar"
 import StaffMobileHeader from "./StaffMobileHeader"
 import StaffMobileNavigation from "./StaffMobileNavigation"
 import { useEffect, useRef, useState } from "react"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import Icon from "@/components/Icon"
 import Avatar from "@/modules/staff/ui/Avatar"
 import StaffDataProvider from "@/modules/staff/data/context"
@@ -27,6 +27,7 @@ export default function StaffShell({
 }) {
   const router = useRouter()
   const path = usePathname()
+  const query = useSearchParams().toString()
   const [collapsed, setCollapsed] = useState(false)
   const [drawer, setDrawer] = useState(false)
   const main = useRef<HTMLDivElement>(null)
@@ -55,8 +56,12 @@ export default function StaffShell({
     )
   }
   useEffect(() => {
-    main.current?.scrollTo(0, 0)
-  }, [path])
+    if (window.location.hash) {
+      document
+        .getElementById(decodeURIComponent(window.location.hash.slice(1)))
+        ?.scrollIntoView({ block: "start" })
+    } else main.current?.scrollTo(0, 0)
+  }, [path, query])
   useEffect(() => {
     if (!drawer) return
     const previous = document.activeElement as HTMLElement | null

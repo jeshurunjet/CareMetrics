@@ -1,6 +1,6 @@
 import { requirePreview } from "@/lib/require-preview"
-import UnportedScreen from "@/components/UnportedScreen"
+import Search from "@/modules/staff/ui/Search"
 export default function Page() {
   requirePreview()
-  return <UnportedScreen title="Search" />
+  return <Search />
 }

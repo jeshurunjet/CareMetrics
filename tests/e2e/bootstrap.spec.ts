@@ -67,7 +67,7 @@ test("dashboard assignments, clients, coworkers and destination routes", async (
   await page.locator(".cm-house-mini").nth(1).click()
   await expect(page).toHaveURL(/\/houses\/h2$/)
   await expect(
-    page.getByRole("heading", { name: "Sunrise House" }),
+    page.getByRole("heading", { name: "Sunrise House", exact: true }),
   ).toBeVisible()
   await page.getByRole("button", { name: "Go back" }).click()
   await page.locator(".cm-client-card").last().click()

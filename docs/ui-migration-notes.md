@@ -67,6 +67,50 @@ Unit coverage includes highlighted current/nearest shift, three-row limit, multi
 - `tests/unit/staff-adapter.test.ts`, `tests/e2e/bootstrap.spec.ts`, `playwright.config.ts`, `scripts/{ui-reference-server,verify-production}.mjs`, lint artifact ignore and docs.
 - Removed the unreferenced Phase 0 `modules/workforce/preview-shifts.ts`; all screens now use the single adapter. No original reference file was removed.
 
-## Next phase
+## Phase 1A checkpoint recommendation (completed below)
 
 Phase 1B: migrate the approved Houses and Client/NOK detail interfaces using this same adapter and URL navigation. Then roster/remaining Staff and Admin UI in bounded phases. Do not begin database/authentication integration or claim production security from this work.
+
+## Phase 1B — Houses, Clients, Contacts and Search
+
+Completed Assigned Houses, House Profile overview, Client Profile overview, read-only Contacts/NOK and Search. Original sources are `staff/pages/Houses.tsx`, the profile/overview portion of `Client.tsx`, Search in `Other.tsx`, and Tabs/SearchInput in `staff/ui.tsx`. The new screens reuse their JSX structure, class names and approved CSS plus Phase 1A's Avatar, Card, Btn, Modal, Empty, icons, navigation provider, page container and Staff shell. The three source CSS files remain byte-identical; scoped accessibility/photo-fallback additions live in `bootstrap.css`. Admin, Login, My Shifts and Dashboard screen implementations were not changed.
+
+### Data and navigation
+
+The existing fictional adapter now includes optional house overview/email, client preferred name, date of birth, general summary and typed contact records with primary/emergency flags and permitted notes. No second store exists. The demonstration employee retains two assignments, three authorised clients and their shifts/notices; a third house and its client remain excluded. Examples cover multiple contacts, no contacts and a contact missing phone/email. Telephone numbers and `.invalid` email addresses are fictional.
+
+`queries.ts` exposes typed house/client/contact/by-house/search operations and rechecks assignment scope on every lookup. Search returns small result DTOs without contact details, DOB, summary, alerts or NHI, matching full/preferred client names or house name/address. A matching house includes its scoped clients. The client bundle imports these pure queries and the scoped snapshot, not the seed builder. Tests inspect broader snapshots and alternative employees; unassigned seed names were absent from built client chunks. These development rules are not a substitute for future authenticated server permissions.
+
+`record-loader.ts` is server-only, gates preview and validates the selected ID before rendering. Unknown/unassigned records and invalid tabs return generic HTTP 404. The shared loading boundary previously caused rejected IDs to stream HTTP 200; loading skeletons now belong to listing/dashboard/shifts/search routes while detail validation completes before streaming. `/houses/(listing)` is an internal route group with no public URL change. Local Next.js guides for async route parameters, native history and not-found streaming were consulted.
+
+The canonical routes support house switching, Dashboard → House → Client, Dashboard → Client, Search → House/Client, Client → House, breadcrumbs and query tabs. Back/refresh retain the selected record and query. The contacts shortcut includes an overview query/hash and focuses/scrolls to the selected client's contacts; the shell respects hash targets. Tabs support keyboard arrow/Home/End navigation and clear focus. Search has a visible label, clear control and result announcement. Photo failure retains usable source-styled fallback presentation.
+
+### Intentional visual and functional differences
+
+- Existing development warning remains and shifts content vertically. Source fonts, palette, card geometry, responsive breakpoints, sidebar and mobile navigation are retained.
+- Contacts retain the original highlighted primary card and secondary list, adding required primary/emergency text, read-only guidance, notes and larger identifiable telephone/email targets. These additions increase the card height. Missing values are stated rather than invented.
+- A small contacts shortcut makes NOK easy to reach on mobile. Client house is a real link. Profile editing is disabled; Admin editing is future work.
+- Search replaces the prototype's NOK name/phone subtitle with preferred name. Sensitive contact details never appear in search result DTOs.
+- House overview includes its fictional description; missing telephone is explicit. The house concerns tab says “Notifications & concerns”.
+- Diary, care plan, charting, gallery/files and house concerns destinations are labelled Phase 1C placeholders. Their original tabs/shortcuts work, but do not create records. Counts do not imply loaded care records.
+- Photo-update and concern controls open explicit preview-only dialogs. There is no file chooser, upload, persistence or success claim. Client fixtures without photos use the source initials Avatar fallback.
+
+### Visual evidence and validation
+
+[Phase 1B screenshots](ui-comparisons/phase-1b/) contain 50 original/migrated captures for Houses, House Profile, Client Profile, Contacts and Search across 375, 390, 768, 1280 and 1440px. Ten paired boards were inspected: `comparison-[width]-profiles.png` and `comparison-[width]-contacts-search.png`. Original appears left, migrated right. Typography, card layout, desktop columns, mobile contact wrapping, tabs and navigation retain close source parity with the additions above. No unintended document-level horizontal overflow was detected. Source mobile tab scrolling remains intentional.
+
+The source renderer uses the same fictional snapshot/frozen time. Both sides receive deterministic photo/map substitutes only in browser tests. Development-tool overlays are hidden during Phase 1B capture. This validates rendered source layout, not remote asset availability, exact pixels, clinical content or independent Figma/design approval. Physical devices, Safari/Firefox and exhaustive accessibility remain unverified.
+
+All checks passed: lint (zero warnings), strict typecheck, formatting, 22 unit tests, 75 Chromium browser cases (15 × five widths), production build and 12 production-isolation URLs with the preview flag enabled. Prior Phase 1A cases and Admin desktop gating remain in the browser suite. Tests cover current-house highlighting, multiple assignments, relationships/NOK, missing values, scoped search, unknown/unassigned IDs, query tabs, hash navigation, preview actions, image failures, Back/refresh and screenshot capture.
+
+Generated type directories from other dev/test output trees were excluded from TypeScript input after stale generated route validators referenced a moved source path. Canonical `.next-build` route generation and strict source/test checks remain enabled; generated cache was refreshed. No source rule or access restriction was weakened.
+
+### Phase 1B changed files and next step
+
+- `src/modules/staff/data/{types,development-mock-adapter,queries,record-loader,sections}.ts`: shared fictional records, scoped queries, route validation and tab definitions.
+- `src/modules/staff/ui/{HouseList,HouseProfile,ClientProfile,ClientContacts,Search,Tabs,SearchInput,SourcePhoto,FeaturePlaceholder,PreviewActionDialog,PageLoading}.tsx`: source-derived screens and reusable UI. Removed the now-unreferenced `StaffPlaceholder.tsx` after replacing both detail placeholders.
+- `src/app/(staff)/houses`, `clients/[id]/page.tsx`, `search`, `not-found.tsx`, route-local loading files: composition and explicit invalid/unavailable states. Shared global loading moved to route-local boundaries.
+- `src/components/layout/StaffShell.tsx`, `src/lib/time.ts`, `src/styles/bootstrap.css`: query/hash scrolling, NZ calendar-date/age helpers and scoped accessibility/fallback styles.
+- `tests/unit/staff-records.test.ts`, `tests/e2e/houses-clients.spec.ts`, one exact-heading selector in the prior browser test, reference/production check scripts, `tsconfig.json`, README and phase docs/evidence.
+
+No backend integration or Phase 1C feature was started. Recommended next: migrate original House/Client Diary UI first, then care-plan/charting/gallery UI in bounded Phase 1C slices, retaining the shared adapter and documented route structure. Authentication, organisation/role enforcement, persistent records, secure file storage and operational approval remain later work. No blocker remains for Phase 1B review.

@@ -3,3 +3,13 @@
 .ad-nav-group > a:hover { background: rgba(255,255,255,.08); }
 .ad-nav-group > a.active:hover { background: var(--color-brand); }
 .cm-app .cm-map-failure { position: absolute; z-index: 401; left: .5rem; right: .5rem; bottom: 1.5rem; margin: 0; padding: .5rem; border-radius: .5rem; background: white; color: var(--color-ink-muted); font-size: .75rem; }
+/* Phase 1B: scoped accessibility/failure states; source Staff/Admin CSS remains intact. */
+.cm-app .cm-photo-edit .cm-photo-control { position: absolute; bottom: -.1rem; right: -.1rem; width: 2rem; height: 2rem; border-radius: 50%; border: 2px solid white; background: var(--color-brand); color: white; display: grid; place-items: center; cursor: pointer; }
+.cm-app .cm-photo-edit .cm-photo-control:focus-visible, .cm-app .cm-link:focus-visible, .cm-app .cm-contact-links a:focus-visible { outline: 3px solid var(--color-brand-mid); outline-offset: 2px; }
+.cm-app .cm-contact-links a { min-height: 2.75rem; align-items: center; overflow-wrap: anywhere; }
+.cm-app .cm-contact .cm-grow { min-width: 0; overflow-wrap: anywhere; }
+.cm-app .cm-contact .cm-body { margin: .35rem 0 0; font-size: .8rem; }
+.cm-app .cm-photo-unavailable { display: grid; place-items: center; width: 100%; height: 100%; min-height: 7rem; background: var(--color-surface); color: var(--color-ink-muted); font-size: .8rem; }
+.cm-app .cm-house-banner > .cm-photo-unavailable { height: 11rem; }
+.cm-app .cm-photo-unavailable.cm-result-img { min-height: 3rem; width: 3rem; height: 3rem; flex-shrink: 0; }
+.cm-app .cm-photo-unavailable.cm-result-img span { display: none; }

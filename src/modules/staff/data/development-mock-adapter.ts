@@ -1,7 +1,21 @@
 import type { StaffReadService, StaffSnapshot } from "./types"
+import {
+  getHouse,
+  getClient,
+  getClientsByHouse,
+  getClientContacts,
+  searchStaff,
+} from "./queries"
 import { myHouses, myClients, visibleNotices } from "./selectors"
 /** FICTIONAL DEVELOPMENT DATA ONLY. Not an API, database, identity or permission control. */
 export const developmentMockAdapter: StaffReadService = {
+  getHouses: myHouses,
+  getHouse,
+  getClients: myClients,
+  getClientsByHouse,
+  getClient,
+  getClientContacts,
+  search: searchStaff,
   getSnapshot(employeeId, now) {
     const at = (hours: number) =>
       new Date(Date.parse(now) + hours * 3600000).toISOString()
@@ -35,17 +49,23 @@ export const developmentMockAdapter: StaffReadService = {
         {
           id: "h1",
           name: "Riverside Lodge",
+          email: "riverside@example.invalid",
+          description:
+            "A fictional supported-living house with shared gardens and a communal lounge.",
           address: "Example address · Hamilton East",
           photo:
             "https://images.unsplash.com/photo-1786526645041-e3bc6a6f0e33?auto=format&fit=crop&w=1080&q=75",
           manager: "Mere Walker (demo)",
-          phone: "",
+          phone: "000 000 1001",
           lat: -37.7905,
           lng: 175.2985,
         },
         {
           id: "h2",
           name: "Sunrise House",
+          email: "sunrise@example.invalid",
+          description:
+            "A fictional supported-living house with quiet shared spaces and room for creative activities.",
           address: "Example address · Hillcrest",
           photo:
             "https://images.unsplash.com/photo-1787636178432-63485b90b1d0?auto=format&fit=crop&w=1080&q=75",
@@ -76,6 +96,29 @@ export const developmentMockAdapter: StaffReadService = {
         {
           id: "c1",
           name: "Taylor Reed",
+          preferred: "Taylor",
+          dob: "1998-04-12",
+          summary:
+            "Taylor enjoys music, gardening and short walks. This is a fictional general profile for UI review.",
+          contacts: [
+            {
+              id: "nok1",
+              name: "Morgan Reed",
+              relation: "Parent (next of kin)",
+              phone: "000 000 0101",
+              email: "morgan.reed@example.invalid",
+              primary: true,
+              emergency: true,
+              notes: "Fictional contact. Prefers an initial telephone call.",
+            },
+            {
+              id: "nok2",
+              name: "Devon Reed",
+              relation: "Sibling",
+              phone: "000 000 0102",
+              emergency: true,
+            },
+          ],
           houseId: "h1",
           tone: "#1a6b7a",
           alerts: ["Demonstration alert"],
@@ -83,6 +126,11 @@ export const developmentMockAdapter: StaffReadService = {
         {
           id: "c2",
           name: "Casey Brooks",
+          preferred: "Casey",
+          dob: "1990-09-02",
+          summary:
+            "Casey enjoys audiobooks and community activities. This demonstration record has no contact information yet.",
+          contacts: [],
           houseId: "h1",
           tone: "#7c6bb0",
           alerts: [],
@@ -90,6 +138,18 @@ export const developmentMockAdapter: StaffReadService = {
         {
           id: "c3",
           name: "Jordan Quinn",
+          preferred: "Jordy",
+          summary:
+            "Jordan enjoys crafts and baking. This fictional profile demonstrates missing optional details.",
+          contacts: [
+            {
+              id: "nok3",
+              name: "Riley Quinn",
+              relation: "Friend",
+              primary: true,
+              notes: "Contact details are pending in this demonstration.",
+            },
+          ],
           houseId: "h2",
           tone: "#c07b45",
           alerts: [],
@@ -97,6 +157,17 @@ export const developmentMockAdapter: StaffReadService = {
         {
           id: "c4",
           name: "Unassigned Example",
+          preferred: "Unassigned",
+          summary: "Outside the demonstration employee's assigned houses.",
+          contacts: [
+            {
+              id: "nok4",
+              name: "Restricted Contact",
+              relation: "Family",
+              phone: "000 000 0104",
+              primary: true,
+            },
+          ],
           houseId: "h3",
           tone: "#1a6b7a",
           alerts: [],
@@ -158,6 +229,7 @@ export const developmentMockAdapter: StaffReadService = {
           category: "house",
           relatedId: "h1",
           title: "Riverside team handover",
+          body: "Please review the fictional house handover information before your next shift.",
           date: at(-1),
           publisher: "Mere Walker (demo)",
           read: false,
@@ -168,6 +240,7 @@ export const developmentMockAdapter: StaffReadService = {
           category: "client",
           relatedId: "c3",
           title: "Updated support information",
+          body: "A demonstration update is available for Jordan. This is fictional content only.",
           date: at(-3),
           publisher: "Example Administrator",
           read: false,

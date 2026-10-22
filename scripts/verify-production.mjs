@@ -32,7 +32,7 @@ try {
     "no production preview button",
   )
   assert.ok(!login.includes("staff2fa"), "no prototype credentials")
-  for (const path of [
+  const paths = [
     "/shift-check",
     "/dashboard",
     "/houses",
@@ -40,7 +40,13 @@ try {
     "/clients/c1",
     "/admin/dashboard",
     "/admin/employees",
-  ]) {
+    "/search?q=Riverside",
+    "/houses/h1?tab=files",
+    "/clients/c1?tab=care",
+    "/houses/h3",
+    "/clients/c4",
+  ]
+  for (const path of paths) {
     const res = await fetch(`http://localhost:8556${path}`)
     assert.equal(
       res.status,
@@ -48,11 +54,17 @@ try {
       `${path} fails closed even with preview opt-in`,
     )
     const body = await res.text()
-    for (const marker of ["Jamie Taufa", "Taylor Reed", "Riverside Lodge"])
+    for (const marker of [
+      "Jamie Taufa",
+      "Taylor Reed",
+      "Riverside Lodge",
+      "Morgan Reed",
+      "Restricted Contact",
+    ])
       assert.ok(!body.includes(marker), "no fictional data exposed")
   }
   console.log(
-    "Production HTTP checks passed: login inert, seven preview routes refused with flag enabled.",
+    `Production HTTP checks passed: login inert, ${paths.length} preview routes refused with flag enabled.`,
   )
 } finally {
   server.kill("SIGTERM")

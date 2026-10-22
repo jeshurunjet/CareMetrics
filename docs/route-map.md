@@ -1,6 +1,6 @@
 # Approved export → App Router route map
 
-Statuses: `original` = reference retained, `ported` = code adapted, `UI-matched` = visual comparison approved, `backend-connected` = authorised database operations, `tested` = relevant checks pass, `blocked` = dependency/decision missing. Statuses are independent; a shell route does not mean a screen is migrated.
+Statuses: `original` = reference retained, `ported` = code adapted, `UI-matched` = inspected against source rendering, `backend-connected` = authorised database operations, `tested` = relevant checks pass, `blocked` = dependency/decision missing. Statuses are independent; a shell route does not mean a screen is migrated.
 
 ## Staff (first migration priority)
 
@@ -10,13 +10,13 @@ Statuses: `original` = reference retained, `ported` = code adapted, `UI-matched`
 | LoginView forgot/reset/expired/2fa | `/forgot-password`, `/reset-password`, `/verify` | original; no fake token/OTP flows ported |
 | clock | `/shift-check` | ported, tested; source-derived UI with disabled real attendance |
 | home | `/dashboard` | ported, tested; full source-derived dashboard |
-| houses | `/houses` | original; routed placeholder |
-| house | `/houses/[houseId]?tab=…` | tested scoped detail placeholder; original detail content planned |
+| houses | `/houses` | ported, UI-matched, tested; all assigned houses |
+| house | `/houses/[houseId]?tab=…` | ported, UI-matched, tested; overview and contacts where applicable; documentation tabs are Phase 1C placeholders |
 | client | `/clients/[clientId]?tab=…&sub=…&item=…` | tested scoped detail placeholder; original content planned |
 | new-diary (house) | `/houses/[houseId]/diary/new` | original; planned |
 | new-diary (client) | `/clients/[clientId]/diary/new` | original; planned |
 | new-record | `/clients/[clientId]/records/new?templateId=…` | original; planned |
-| search | `/search` | original; routed placeholder |
+| search | `/search?q=…` | ported, UI-matched, tested; scoped house/client query |
 | roster | `/roster?tab=…` | original; routed placeholder |
 | leave | `/leave` | original; routed placeholder |
 | notifications | `/notifications` | original; routed placeholder |
@@ -53,3 +53,12 @@ Admin width gate comes from the preserved export CSS. It is not authorization. B
 ## Earlier migration
 
 The prior `/employee/*`, `/rostering`, `/care-records`, `/care-management`, `/attendance`, `/administration`, employee creation and related routes belong to a different source version. They are archived in `reference/workspace-before-bootstrap/src/app`, not carried forward as competing approved routes. No external redirect contract is assumed at this local bootstrap checkpoint.
+
+## Phase 1B route behaviour
+
+- `/houses/[id]`: `tab=overview` (default), `diary`, `files`, `concerns`. Overview is migrated; remaining tabs explicitly defer their feature implementation to Phase 1C.
+- `/clients/[id]`: `tab=overview` (default), `diary`, `care`, `charting`, `files`. Overview/Contacts are migrated; remaining tabs are Phase 1C placeholders. Contacts shortcut uses `?tab=overview#contacts-[id]`, scrolls/focuses the read-only section and preserves browser navigation.
+- `/search?q=…`: URL query follows input; house-name matches include that house's authorised clients. Results link to the same canonical detail URLs.
+- Invalid/unassigned IDs and unknown tab values return not-found without record details. Detail pages validate before streaming. Listing loading boundaries live in a route group, preserving `/houses` while avoiding the streamed HTTP 200 that a shared loading boundary would otherwise cause for rejected detail URLs.
+
+Dashboard → Houses → House → Client, Dashboard → Client, Search → either profile, Client → related House, house switching, breadcrumbs, tabs, Back and refresh are exercised at all five widths. These are fixed fictional employee preview lookups; Auth.js and production role/organisation/house permissions are unimplemented. Admin routes remain unchanged.
