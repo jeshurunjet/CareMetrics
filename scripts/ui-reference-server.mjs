@@ -10,6 +10,7 @@ await cp("reference/figma-export", root, { recursive: true })
 // Compile the pure mock graph into isolated ESM files, preserving no application import.
 const sources = [
   "src/modules/staff/data/types.ts",
+  "src/modules/staff/profile/adapter.ts",
   "src/modules/staff/notifications/adapter.ts",
   "src/modules/staff/notifications/seed.ts",
   "src/modules/staff/data/selectors.ts",

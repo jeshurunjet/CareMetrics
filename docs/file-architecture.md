@@ -28,7 +28,7 @@ Selected image object URLs exist only in local component state for an unsent pre
 
 ## Profile photos and permissions
 
-`ProfilePhotoPicker` and `useTemporaryProfilePhoto` serve both profiles. The picker validates, previews, cancels or applies a temporary photo. Applied photos are local to the mounted profile, not stored in the shared metadata model. Picker and applied-photo resource ownership are separate so closing the picker revokes its preview URL without invalidating the profile preview. Old URLs and URLs on unmount are revoked. Leaving/reloading the profile restores the original photo; the UI says so.
+`ProfilePhotoPicker` and `useTemporaryProfilePhoto` serve Client/House profiles and, from Phase 1D.4, the Staff profile. The picker validates, previews, cancels or applies a temporary photo. Client/House applied photos are local to the mounted profile, not stored in the shared metadata model. Staff photos use the same hook with StaffDataProvider resource ownership, sharing only the temporary Employee.photo display URL across the current UI session. Picker and applied-photo resource ownership are separate so closing the picker revokes its preview URL without invalidating the profile preview. Old URLs and URLs on unmount are revoked. Leaving/reloading Client/House profiles restores their original photo. Staff display photos survive client-side Staff navigation and reset on provider remount/reload/sign-out. Picker copy describes the selected lifetime.
 
 Staff may view/select/preview/download permitted examples and inspect metadata. They cannot remove existing gallery files or edit their association. Selection removal affects only unsent items; profile replacement is a temporary presentation change, not historical-document deletion. The original disabled staff Delete button is removed entirely to follow the confirmed management-only rule. Removal guidance remains visible as text.
 
@@ -45,3 +45,7 @@ Browser checks exercise local metadata only and genuine public demonstration dow
 ## Phase 1D.3 parent integration
 
 Official notices resolve only explicitly referenced notification attachments after checking the authorised parent. Own concerns use the same rule for concern attachments. A public demonstration notice TXT reuses demo-assets; submitted concerns retain validated selection metadata with sessionOnly availability. No contents/object URLs/upload simulation enter concern state. The source concern form has filename selection but no image-preview workflow; this phase explains that previews/downloads for selected contents are unavailable. Gallery/photo selection and management-only removal are unchanged. No additional upload architecture or storage was added.
+
+## Phase 1D.4 Staff identity photo
+
+The existing picker/policy is reused without a second upload component. StaffDataProvider owns the applied URL via the same temporary-photo hook and an action context, not a second employee or attachment store. Closing the picker revokes its selection URL independently of the provider URL; replacement and provider unmount revoke the applied URL. All displays read the same Employee.photo; no File/Blob contents, permanent upload or private public-storage URL is saved. Client/House resource lifetimes remain unchanged. See [Staff completion review](staff-ui-completion-review.md).

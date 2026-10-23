@@ -1,6 +1,6 @@
 import { requirePreview } from "@/lib/require-preview"
-import UnportedScreen from "@/components/UnportedScreen"
+import Settings from "@/modules/staff/profile/Settings"
 export default function Page() {
   requirePreview()
-  return <UnportedScreen title="Settings" />
+  return <Settings />
 }

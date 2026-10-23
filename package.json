@@ -8,13 +8,14 @@
     "build": "NEXT_BUILD_DIR=.next-build next build --webpack",
     "start": "NEXT_BUILD_DIR=.next-build next start -p ${PORT:-8443}",
     "typecheck": "NEXT_BUILD_DIR=.next-build next typegen && tsc --noEmit",
-    "format": "oxfmt src tests scripts next.config.ts vitest.config.ts playwright.config.ts eslint.config.mjs postcss.config.mjs",
+    "format": "oxfmt src tests scripts next.config.ts vitest.config.ts playwright.config.ts playwright.firefox.config.ts eslint.config.mjs postcss.config.mjs",
     "lint": "eslint . --max-warnings=0",
-    "format:check": "oxfmt --check src tests scripts next.config.ts vitest.config.ts playwright.config.ts eslint.config.mjs postcss.config.mjs",
+    "format:check": "oxfmt --check src tests scripts next.config.ts vitest.config.ts playwright.config.ts playwright.firefox.config.ts eslint.config.mjs postcss.config.mjs",
     "test": "vitest run",
     "test:e2e": "playwright test",
     "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
-    "test:production": "node scripts/verify-production.mjs"
+    "test:production": "node scripts/verify-production.mjs",
+    "test:e2e:firefox": "playwright test --config=playwright.firefox.config.ts"
   },
   "dependencies": {
     "leaflet": "^1.9.4",

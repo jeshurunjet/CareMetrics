@@ -33,6 +33,12 @@ try {
   )
   assert.ok(!login.includes("staff2fa"), "no prototype credentials")
   const paths = [
+    "/profile",
+    "/profile?action=edit",
+    "/profile?action=photo",
+    "/profile?employeeId=s2",
+    "/profile/s2",
+    "/settings",
     "/notifications",
     "/notifications?tab=client",
     "/notifications?tab=house",
@@ -120,6 +126,9 @@ try {
       "PRIVATE_EMPLOYEE_NOTICE",
       "PRIVATE_COWORKER_CONCERN",
       "INTERNAL_MANAGEMENT_CONCERN_NOTE",
+      "PRIVATE_COWORKER_PROFILE_ADDRESS",
+      "PRIVATE_COWORKER_EMERGENCY_CONTACT",
+      "Fictional home address",
       "Jamie Taufa",
       "Taylor Reed",
       "Riverside Lodge",

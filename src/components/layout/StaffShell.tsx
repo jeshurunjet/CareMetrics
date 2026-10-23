@@ -142,7 +142,7 @@ function StaffShellContent({ children }: { children: React.ReactNode }) {
             >
               <div className="cm-drawer-handle" />
               <div className="cm-drawer-user">
-                <Avatar name={user.name} size={34} />
+                <Avatar name={user.name} size={34} photo={user.photo} />
                 <div>
                   <strong>{user.name}</strong>
                   <span>
@@ -160,6 +160,7 @@ function StaffShellContent({ children }: { children: React.ReactNode }) {
                 <button
                   key={n.page}
                   className="cm-drawer-item"
+                  aria-current={section === n.page ? "page" : undefined}
                   onClick={() => top(n.page)}
                 >
                   <span>

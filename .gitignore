@@ -33,3 +33,5 @@ coverage/
 
 # Local Figma export and previous implementation snapshots.
 /reference/
+
+test-results-firefox/

@@ -1,6 +1,14 @@
+import { notFound } from "next/navigation"
 import { requirePreview } from "@/lib/require-preview"
-import UnportedScreen from "@/components/UnportedScreen"
-export default function Page() {
+import MyProfile from "@/modules/staff/profile/MyProfile"
+export default async function Page({ searchParams }: PageProps<"/profile">) {
   requirePreview()
-  return <UnportedScreen title="My Profile" />
+  const q = await searchParams
+  if (
+    Object.keys(q).some((k) => k !== "action") ||
+    Array.isArray(q.action) ||
+    (q.action && !["edit", "photo"].includes(q.action))
+  )
+    notFound()
+  return <MyProfile />
 }

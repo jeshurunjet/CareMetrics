@@ -1,3 +1,4 @@
+import { projectEmployee } from "../profile/adapter"
 import { seedConcerns } from "../notifications/seed"
 import { getMyConcerns, projectConcern } from "../notifications/adapter"
 import { leaveTypes, seedLeave } from "../leave/seed"
@@ -84,6 +85,12 @@ export const developmentMockAdapter = {
         },
         {
           id: "s1",
+          preferred: "Jamie",
+          phone: "000 000 0010",
+          address: "Fictional home address · Hamilton",
+          emergency: "Fictional contact · 000 000 0011",
+          started: "2022-03-14",
+          status: "Active",
           name: "Jamie Taufa",
           role: "Support Worker",
           employeeId: "EMP-001",
@@ -91,6 +98,11 @@ export const developmentMockAdapter = {
         },
         {
           id: "s2",
+          phone: "000 000 0020",
+          address: "PRIVATE_COWORKER_PROFILE_ADDRESS",
+          emergency: "PRIVATE_COWORKER_EMERGENCY_CONTACT",
+          started: "2020-08-01",
+          status: "Active",
           name: "Alex Morgan",
           role: "Support Worker",
           employeeId: "EMP-002",
@@ -439,14 +451,16 @@ export const developmentMockAdapter = {
           fileQueries.getGalleryFiles(s, { scope: "house", targetId: h.id }),
         ),
       ],
-      staff: s.staff.filter(
-        (e) =>
-          e.id === employeeId ||
-          s.assignments.some(
-            (a) =>
-              a.employeeId === e.id && houses.some((h) => h.id === a.houseId),
-          ),
-      ),
+      staff: s.staff
+        .filter(
+          (e) =>
+            e.id === employeeId ||
+            s.assignments.some(
+              (a) =>
+                a.employeeId === e.id && houses.some((h) => h.id === a.houseId),
+            ),
+        )
+        .map((e) => projectEmployee(e, employeeId)),
       clients,
       assignments: s.assignments.filter((a) =>
         houses.some((h) => h.id === a.houseId),

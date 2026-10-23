@@ -54,7 +54,7 @@ export default function StaffSidebar({
         ))}
       </nav>
       <div className="cm-sidebar-user">
-        <Avatar name={user.name} size={34} />
+        <Avatar name={user.name} size={34} photo={user.photo} />
         <div className="cm-sidebar-label">
           <strong>{user.name}</strong>
           <span>{user.role}</span>

@@ -139,3 +139,14 @@
   .cm-notifications .cm-notification-filters input { min-width:0;width:100%; }
 }
 .cm-modal-head h2 { overflow-wrap:anywhere;min-width:0; }
+
+/* Staff Profile keeps source heading typography while using one page-level h1. */
+.cm-staff-profile .cm-staff-name {font-family:var(--font-display);font-weight:400;font-size:1.75rem;line-height:1.15;margin:0;letter-spacing:-.01em;overflow-wrap:anywhere;}
+.cm-staff-profile dd,.cm-staff-profile .cm-notice-card {overflow-wrap:anywhere;}
+.cm-app .cm-drawer-item[aria-current="page"] {background:var(--color-brand-light);border-radius:.75rem;}
+@media(min-width:640px){.cm-staff-profile .cm-staff-name {font-size:2rem;}}
+
+@media(max-width:600px){.cm-staff-profile .cm-profile-head > .cm-btn {flex-basis:100%;}}
+
+.cm-app .cm-sidebar-user strong,.cm-app .cm-drawer-user strong {overflow-wrap:anywhere;}
+.cm-app .cm-drawer-user > div {min-width:0;flex:1;}

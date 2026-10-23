@@ -1,5 +1,5 @@
 "use client"
-/** Photo resources belong to the mounted profile, never to the shared metadata adapter. */
+/** Temporary URL ownership belongs to this hook’s caller; no uploaded-file metadata is created. */
 import { useEffect, useRef, useState } from "react"
 import { Modal, Banner, Btn } from "../ui"
 import {
@@ -17,14 +17,23 @@ export function useTemporaryProfilePhoto() {
     },
     [url],
   )
-  return { url, apply: (file: File) => setUrl(URL.createObjectURL(file)) }
+  return {
+    url,
+    apply: (file: File) => {
+      const next = URL.createObjectURL(file)
+      setUrl(next)
+      return next
+    },
+  }
 }
 export default function ProfilePhotoPicker({
   name,
   onClose,
   onApply,
+  lifetime = "profile",
 }: {
   name: string
+  lifetime?: "profile" | "session"
   onClose: () => void
   onApply: (file: File) => void
 }) {
@@ -60,7 +69,10 @@ export default function ProfilePhotoPicker({
     >
       <Banner tone="info">
         Development preview only. No file or record is uploaded or permanently
-        changed. This photo preview ends when you leave or reload the profile.
+        changed.{" "}
+        {lifetime === "session"
+          ? "This temporary staff photo is shared until the development session reloads or ends."
+          : "This photo preview ends when you leave or reload the profile."}
       </Banner>
       <p className="cm-hint">
         JPEG, PNG or WebP · provisional development limit{" "}

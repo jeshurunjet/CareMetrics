@@ -16,6 +16,12 @@ import type {
   CareRecord,
 } from "../care/types"
 export interface Employee {
+  preferred?: string
+  phone?: string
+  address?: string
+  emergency?: string
+  started?: string
+  status?: "Active" | "Inactive" | "Invited"
   id: string
   name: string
   role: string

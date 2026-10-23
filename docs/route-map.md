@@ -20,8 +20,8 @@ Statuses: `original` = reference retained, `ported` = code adapted, `UI-matched`
 | roster | `/roster?tab=…` | ported, UI-matched, tested; roster/team/own timesheets and attendance correction preview |
 | leave | `/leave` | ported, UI-matched, tested; own requests, fictional balances and pending submission preview |
 | notifications | `/notifications` | ported; official scoped notices, own concern submission/history/details, development only |
-| profile | `/profile` | original; routed placeholder |
-| settings | `/settings` | original; routed placeholder |
+| profile | `/profile` | ported; current employee, allowlisted session contact edits and temporary shared photo |
+| settings | `/settings` | ported; intentional Coming Soon with Dashboard return |
 
 Development sign-in → My Shifts → Dashboard is implemented; continuing without clock-in remains possible. The form accepts fictional input only and establishes a UI marker, not a trusted session. Current/nearest shift and three-row selection use the shared adapter. Dates use Pacific/Auckland. House/client cards, roster team tab and notice links retain real URLs; remaining destination content is explicitly placeholder-only.
 
@@ -165,3 +165,9 @@ Roster-context links use existing `/roster?shiftId=…`; they never grant roster
 One canonical `/notifications` route uses `tab=all|client|house|staff|concerns` (All default), `item=[noticeId]`, `tab=concerns&concernId=[id]`, or `action=new`. Profile links add `context=client|house&targetId=[id]` for exact scope/preselection. No duplicate detail route/API is introduced. Dashboard cards, header/sidebar/mobile Menu, contextual Client notices and House overview/concerns connect to it. Details close to the scoped base; context links open the authorised profile. Category changes intentionally return to the general category.
 
 Malformed/repeated/conflicting selectors and unknown tabs/actions/context subjects fail server preview validation with HTTP 404. Unknown/private notice/concern IDs produce generic unavailable content (HTTP 200), including session-only IDs after reload; no protected metadata is serialised. Seeded deep links, refresh, Back and forward remain supported. All routes remain development-only; trusted server authentication/organisation permissions remain outstanding. See [notification contracts](notifications-and-concerns.md).
+
+## Phase 1D.4 Profile and Settings
+
+Existing `/profile` is own-only. `?action=edit` selects the source inline contact form; `?action=photo` selects the shared temporary picker. Only one optional recognised action is accepted. Unknown/repeated keys/actions and attempts to choose another employee return server 404; `/profile/[id]` does not exist. Cancel/save/photo completion replace the query with the own overview. Shared unsaved-change guards cover inline edits, Cancel, navigation, Back and supported reload prompts. Seeded own data refreshes normally; session contact/photo changes reset on reload/provider remount.
+
+Dashboard current-employee card, desktop sidebar and mobile menu reach Profile; assigned-house buttons use the same canonical house routes and assignments. Settings preserves Coming Soon and adds Back to Dashboard. Mobile drawer items expose current-page semantics. All nine primary Staff destinations and the continuous core journey are covered by the integration tests; Admin stays separate. Real authentication and server permission enforcement remain future work. See [Staff completion review](staff-ui-completion-review.md).
