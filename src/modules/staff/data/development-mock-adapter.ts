@@ -1,3 +1,9 @@
+import { seedScheduleHistory } from "../roster/seed"
+import {
+  rosterQueries,
+  getOwnAttendance,
+  getAttendanceCorrections,
+} from "../roster/adapter"
 import { fileQueries } from "../files/adapter"
 import { seedAttachments } from "../files/seed"
 import type { StaffSnapshot } from "./types"
@@ -20,6 +26,7 @@ import { seedDiary, diaryCategories } from "./diary-seed"
 import { myHouses, myClients, visibleNotices } from "./selectors"
 /** FICTIONAL DEVELOPMENT DATA ONLY. Not an API, database, identity or permission control. */
 export const developmentMockAdapter = {
+  ...rosterQueries,
   ...fileQueries,
   ...diaryQueries,
   ...careQueries,
@@ -33,11 +40,21 @@ export const developmentMockAdapter = {
   getSnapshot(employeeId: string, now: string): StaffSnapshot {
     const at = (hours: number) =>
       new Date(Date.parse(now) + hours * 3600000).toISOString()
+    const history = seedScheduleHistory(now)
     const s: StaffSnapshot = {
+      attendance: history.attendance,
+      attendanceCorrections: history.corrections,
       attachments: seedAttachments(now),
       now,
       meId: employeeId,
       staff: [
+        {
+          id: "s4",
+          name: "Restricted Employee",
+          role: "Support Worker",
+          employeeId: "EMP-004",
+          email: "restricted@example.invalid",
+        },
         {
           id: "s1",
           name: "Jamie Taufa",
@@ -102,6 +119,7 @@ export const developmentMockAdapter = {
         },
       ],
       assignments: [
+        { employeeId: "s4", houseId: "h3" },
         { employeeId: "s1", houseId: "h1" },
         { employeeId: "s1", houseId: "h2" },
         { employeeId: "s2", houseId: "h1" },
@@ -189,6 +207,7 @@ export const developmentMockAdapter = {
         },
       ],
       shifts: [
+        ...history.shifts,
         {
           id: "sh1",
           staffId: "s1",
@@ -327,6 +346,10 @@ export const developmentMockAdapter = {
     return {
       ...s,
       houses,
+      attendance: s.attendance.filter((a) => !!getOwnAttendance(s, a.id)),
+      attendanceCorrections: s.attendance.flatMap((a) =>
+        getAttendanceCorrections(s, a.id),
+      ),
       attachments: [
         ...clients.flatMap((c) =>
           fileQueries.getGalleryFiles(s, { scope: "client", targetId: c.id }),

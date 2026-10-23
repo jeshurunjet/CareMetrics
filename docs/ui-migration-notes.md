@@ -320,3 +320,49 @@ Lint, strict TypeScript, formatting, 72 unit tests, the complete 275-case browse
 ### Git publication checkpoint
 
 After implementation review, the user authorised committing and pushing the complete tracked application on a new branch, `phase-1c4-complete`. This branch includes the earlier application history and the Phase 1C.4 source, tests, harmless demo assets, documentation and comparison evidence. Prior branches are preserved; `reference/`, secrets, generated output and unrelated pre-existing duplicate screenshots are excluded.
+
+## Phase 1D.1 — Staff Roster and Timesheets
+
+### Checkpoint and source inspection
+
+The brief's uncommitted Phase 1C.4 note was superseded by the user-authorised publication: `bc4b5e1` on `phase-1c4-complete` already preserves the full application. Before integration, lint/typecheck/format, 72 unit tests, all 275 browser cases, build and 41 production-isolation checks passed again. Work is isolated on new local `phase-1d1`; no reset/discard/push. Existing reference and unrelated duplicate screenshots remain untouched.
+
+Inspected original Roster/ShiftRow in `staff/pages/Other.tsx`, ShiftDetail/shiftStatus in `ClockIn.tsx`, shared Tabs/CorrectionDialog/Calendar/table CSS, store shift/attendance fixtures and the active Clock-in/Dashboard selectors. The export contains one Roster page with calendar/upcoming, Team Schedule and Timesheets tabs; it has no shift-swap request UI or separate Attendance Details screen. No unreachable legacy roster page was substituted.
+
+### Shared components and data
+
+Reused Staff shell/navigation, PageHeader, Tabs, Card, ShiftCard, ShiftDetail, Status, Avatar, Empty, Banner, FormField, Select, Pagination, Icon and unsaved-change handling. Source calendar grid/head, date chips, shift rows, two-column layout, stat row, table and modal classes remain. New `staff/roster/` modules separate Roster orchestration, RosterCalendar, HouseFilter, TeamSchedule, Timesheets, AttendanceDetails, AttendanceMetadata, AttendanceCorrectionForm, date helpers, adapter, typed contracts and fictional seed.
+
+Existing stable shifts and times remain shared with Clock-in and Dashboard. The single snapshot/provider adds own attendance and a separate attendance-correction array. No second roster store, browser persistence or fake API was created. Pure queries enforce own-shift/attendance association and assigned-house team scope; serialisation excludes coworker/private attendance and corrections. Team queries project operational data only. Shared status selectors handle cancellation and completed/current/upcoming consistently. Diary/Care Plan/Charting demo appearance remains distinct from timestamped attendance and does not silently populate timesheets. See [scheduling-and-attendance.md](scheduling-and-attendance.md).
+
+### Routes and interaction boundaries
+
+The existing `/roster?tab=…` now renders the three real views. URL-backed day/month/house, own shift/attendance details and `action=correction` support deep links, refresh and browser Back. Server preview validation rejects unrelated/unknown IDs, malformed/repeated parameters and inaccessible houses with generic HTTP 404. No new API or competing route hierarchy. Existing Dashboard/Clock-in roster links remain connected. House/attendance links extend the shared ShiftDetail. Filters/pagination in Timesheets are view state.
+
+Corrections validate own immutable association, reason, at least one changed valid NZ event time, resulting chronology, non-future proposal and no pending request. Completion creates separate Pending Review metadata only; original events remain unchanged. Historical approved/rejected fixtures demonstrate display without applying changes or exposing review controls. Cancel/Back/unsaved navigation use existing prompts. Real Clock In/Out, GPS, Admin review, persistent audit and payroll remain unimplemented. No automatic GPS bypass or invented attendance policy was introduced.
+
+### Intentional visual differences
+
+- Breadcrumbs, existing preview strip, feature warning and house/date filters add vertical height. Shared shift cards add attendance state and preserve the existing manager/date metadata; original fonts/palette/card geometry remain.
+- Original calendar groups by start date; migrated overnight entries appear on each overlapping date with explicit end-date text. Calendar navigation uses explicit NZ date keys, selected/current semantics and arrow-key focus rather than device-local/UTC slicing.
+- The source's team table contains all future authorised shifts. The migrated view requires house/day selection and groups the operational rows with collapse/expand. It reveals no coworker event/location/private personnel information.
+- Timesheets add date/house filters, newest-first ordering, six-row pagination, actual versus scheduled distinctions, missing clock-out labels and details links. Wider columns remain contained horizontal scroll regions with labels/focus and visible instructions; text is not shrunk to fit a phone.
+- Attendance Details is a new source-styled modal. The original overnight ShiftDetail provides its nearest metadata reference. Structured proposed dates/times and the existing full-page correction pattern replace the source's free-text-only correction modal. Original values, development limits and requests remain separate.
+- Source cancellation logic ignores cancelled status and ready-to-clock-in implies verification; migrated shared selectors exclude cancelled assignments and keep real attendance controls disabled. Historical approval labels explicitly say fixture; no staff review buttons exist.
+- Initial mobile review caught a date input squeezed beside its label. Scoped toolbar flex wrapping now gives date filters readable width. Tablet review also restored the original `cm-input` treatment and stacked labels for these date controls. A test failure reading a stale house-filter result was corrected by waiting for URL/render completion, preserving the scope assertion.
+
+The test-only reference harness compiles the pure scheduling modules and adapts only fictional data, not source JSX/CSS. All source originals remain unchanged. Roster comparisons use frozen time and explicit Pacific/Auckland browser timezone, same fixtures and deterministic external-image/tiles. Nine states at each agreed width cover landing/calendar, shifts, team, timesheets, attendance, correction, validation and empty state. Original source limitations and the added workflows mean exact pixel parity is not claimed.
+
+### Changed files and remaining limits
+
+New roster modules and unit/browser tests; existing StaffSnapshot/adapter/selectors, Roster route, shared ShiftCard/ShiftDetail, a Dashboard cancelled-coworker exclusion and scoped bootstrap CSS. Reference/production verification scripts and README/route/status/model/history/evidence docs are updated. No dependencies, font binaries, original CSS, Admin screens or backend services changed.
+
+Node 22 was checked in common local Homebrew/mise/nvm locations and remains unavailable; host Node 25.9.0/pnpm 10.15.1 is explicitly documented. Physical devices, other browsers, exhaustive accessibility, independent design acceptance, trusted identity/server authorisation, persistence and management review remain future work. No Leave/Notifications/Admin/backend phase begins automatically; no push is part of this assignment.
+
+The original source treats a past open attendance fixture as active in its sidebar. The migrated Timesheets explicitly labels it Missing Clock-out and does not infer verified current attendance. This source limitation remains visible in comparisons.
+
+### Phase 1D.1 final verification
+
+Final lint (zero warnings), strict TypeScript, formatting, all 81 unit tests, all 325 browser cases, production build and 49 production-isolation checks pass. All prior 275 browser cases remain included, without weakening their assertions. After the final date-filter appearance adjustment, the complete 50-case Roster suite passed again across all five required widths. The final captures report no collected page errors or document-level horizontal overflow. Local Roster, Timesheets and attendance correction routes return HTTP 200 on port 8443. Restricted scheduling/private attendance fixture markers are absent from production client chunks. All 51 source reference files and the three active source CSS copies remain unchanged.
+
+Final evidence contains 90 raw captures and 15 paired comparison boards at 375, 390, 768, 1280 and 1440px, with reviewed mobile/tablet/desktop layouts and documented source limitations/extensions. See [Phase 1D.1 comparisons](ui-comparisons/phase-1d1/README.md). Node 22 verification remains outstanding. There are no remaining UI implementation blockers; work is uncommitted on local `phase-1d1`, checkpoint `bc4b5e1` and previous branches are preserved, and nothing was pushed. No later phase has begun.

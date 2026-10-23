@@ -1,3 +1,7 @@
+import type {
+  AttendanceRecord,
+  AttendanceCorrectionRequest,
+} from "../roster/types"
 import type { FileRecord } from "../files/types"
 import type {
   CareTemplate,
@@ -57,6 +61,8 @@ export interface Shift {
   start: string
   end: string
   assignedBy: string
+  status?: "cancelled"
+  notes?: string
 }
 export interface Notice {
   id: string
@@ -71,6 +77,8 @@ export interface Notice {
   status: "Published" | "Draft"
 }
 export interface StaffSnapshot {
+  attendance: AttendanceRecord[]
+  attendanceCorrections: AttendanceCorrectionRequest[]
   attachments: FileRecord[]
   now: string
   meId: string

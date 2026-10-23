@@ -33,6 +33,14 @@ try {
   )
   assert.ok(!login.includes("staff2fa"), "no prototype credentials")
   const paths = [
+    "/roster",
+    "/roster?tab=team&house=h1",
+    "/roster?tab=timesheets",
+    "/roster?shiftId=sh1",
+    "/roster?tab=timesheets&attendanceId=at-overnight",
+    "/roster?tab=timesheets&attendanceId=at-overnight&action=correction",
+    "/roster?shiftId=restricted-shift",
+    "/roster?tab=timesheets&attendanceId=coworker-attendance",
     "/shift-check",
     "/dashboard",
     "/houses",
@@ -84,6 +92,8 @@ try {
     )
     const body = await res.text()
     for (const marker of [
+      "Private coworker attendance example",
+      "Fictional recorded attendance",
       "Jamie Taufa",
       "Taylor Reed",
       "Riverside Lodge",

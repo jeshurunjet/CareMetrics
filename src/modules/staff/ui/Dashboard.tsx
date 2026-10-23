@@ -47,6 +47,7 @@ export default function Home() {
     .filter(
       (x) =>
         x.houseId === sel &&
+        x.status !== "cancelled" &&
         x.staffId !== s.meId &&
         Date.parse(x.end) > Date.parse(s.now),
     )

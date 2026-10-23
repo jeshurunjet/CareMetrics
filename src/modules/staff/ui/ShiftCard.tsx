@@ -1,8 +1,10 @@
 "use client"
+import { shiftTime } from "../roster/dates"
+import { attendanceStatus } from "../roster/adapter"
 import type { Shift } from "../data/types"
 import { useStaffData } from "../data/context"
 import { shiftStatus } from "../data/selectors"
-import { formatTime, dayNumber, weekday, formatDate } from "@/lib/time"
+import { dayNumber, weekday, formatDate } from "@/lib/time"
 import { Card, Status, Icon } from "./index"
 export default function ShiftCard({
   shift: sh,
@@ -27,13 +29,12 @@ export default function ShiftCard({
           <span>{weekday(sh.start)}</span>
         </div>
         <div className="cm-grow">
-          <strong>
-            {formatTime(sh.start)} – {formatTime(sh.end)}
-          </strong>
+          <strong>{shiftTime(sh.start, sh.end)}</strong>
           <span>{h.name}</span>
           <small>
             {formatDate(sh.start)} · Assigned by {sh.assignedBy}
           </small>
+          <small>{attendanceStatus(s, sh.id)}</small>
         </div>
         <Status tone={t.tone}>{t.label}</Status>
         <Icon name="chevron" size={16} />

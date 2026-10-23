@@ -14,10 +14,13 @@ export const myShifts = (s: StaffSnapshot) =>
     )
     .sort((a, b) => a.start.localeCompare(b.start))
 export const isCurrent = (s: StaffSnapshot, sh: Shift) =>
+  sh.status !== "cancelled" &&
   Date.parse(sh.start) <= Date.parse(s.now) &&
   Date.parse(s.now) < Date.parse(sh.end)
 export const upcomingShifts = (s: StaffSnapshot) =>
-  myShifts(s).filter((x) => Date.parse(x.end) > Date.parse(s.now))
+  myShifts(s).filter(
+    (x) => x.status !== "cancelled" && Date.parse(x.end) > Date.parse(s.now),
+  )
 export const highlightedShift = (s: StaffSnapshot) =>
   upcomingShifts(s).find((x) => isCurrent(s, x)) ?? upcomingShifts(s)[0]
 export const visibleNotices = (s: StaffSnapshot) =>
@@ -34,6 +37,10 @@ export const visibleNotices = (s: StaffSnapshot) =>
     )
     .sort((a, b) => b.date.localeCompare(a.date))
 export const shiftStatus = (s: StaffSnapshot, sh: Shift) =>
-  isCurrent(s, sh)
-    ? { tone: "brand" as const, label: "Current · preview" }
-    : { tone: "info" as const, label: "Upcoming" }
+  sh.status === "cancelled"
+    ? { tone: "danger" as const, label: "Cancelled" }
+    : Date.parse(sh.end) <= Date.parse(s.now)
+      ? { tone: "neutral" as const, label: "Completed" }
+      : isCurrent(s, sh)
+        ? { tone: "brand" as const, label: "Current · preview" }
+        : { tone: "info" as const, label: "Upcoming" }

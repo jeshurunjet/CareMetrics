@@ -19,6 +19,9 @@ const sources = [
   "src/modules/staff/care/adapter.ts",
   "src/modules/staff/care/seed.ts",
   "src/modules/staff/charting/seed.ts",
+  "src/modules/staff/roster/seed.ts",
+  "src/modules/staff/roster/adapter.ts",
+  "src/modules/staff/roster/dates.ts",
   "src/modules/staff/files/seed.ts",
   "src/modules/staff/files/adapter.ts",
   "src/modules/staff/files/policy.ts",
@@ -70,7 +73,7 @@ const fixture = {
       .filter((a) => a.employeeId === e.id)
       .map((a) => a.houseId),
   })),
-  attendance: [],
+  attendance: snapshot.attendance,
   templates: snapshot.careTemplates.map((t) => {
     const assigned = snapshot.careAssignments.filter(
       (a) => a.templateId === t.id && a.status === "active",
@@ -145,17 +148,33 @@ const fixture = {
     ...c,
     status: c.active ? "Active" : "Inactive",
   })),
-  corrections: snapshot.corrections.map((c) => ({
-    ...c,
-    status:
-      c.status === "pending"
-        ? "Pending"
-        : c.status === "approved"
-          ? "Approved"
-          : "Rejected",
-    submittedAt: c.requestedAt,
-    by: snapshot.staff.find((e) => e.id === c.requestingEmployeeId)?.name,
-  })),
+  corrections: [
+    ...snapshot.attendanceCorrections.map((c) => ({
+      ...c,
+      recordType: "Timesheet",
+      recordId: c.shiftId,
+      status:
+        c.status === "pending"
+          ? "Pending"
+          : c.status === "approved"
+            ? "Approved"
+            : "Rejected",
+      submittedAt: c.requestedAt,
+      by: snapshot.staff.find((e) => e.id === c.requestingEmployeeId)?.name,
+      proposed: `${c.proposedClockIn ?? ""} / ${c.proposedClockOut ?? ""}`,
+    })),
+    ...snapshot.corrections.map((c) => ({
+      ...c,
+      status:
+        c.status === "pending"
+          ? "Pending"
+          : c.status === "approved"
+            ? "Approved"
+            : "Rejected",
+      submittedAt: c.requestedAt,
+      by: snapshot.staff.find((e) => e.id === c.requestingEmployeeId)?.name,
+    })),
+  ],
   concerns: [],
   files: snapshot.attachments.map((f) => ({
     id: f.id,

@@ -126,3 +126,20 @@ Missing `action` defaults to information. Unknown actions or missing/wrong-subje
 The same Gallery component reads the explicit `{scope, targetId}` association. Client and house documents never merge. Links preserve query context, Browser Back and direct refresh; closing a modal pushes the subject's gallery URL. Existing modal focus containment/Escape are reused. Filter/page state stays mounted while opening details but resets after refresh. Upload files in the header focuses the existing selection area. File selection/progress is component-local and is cancelled/released when leaving the gallery; completed metadata survives navigation only in the existing provider session.
 
 Profile-photo selection uses a shared modal from the existing client photo control and house Update house photo action. Applied photo previews remain only while that profile is mounted; leaving/reloading it restores its original photo. No new upload/download API route or object storage endpoint was introduced. `/demo-assets/*` contains only clearly labelled harmless public PNG/text/CSV examples and their SVG source illustrations. These assets are public in every environment; they are not private care attachments. Only their allowlisted genuine assets have download links. All Staff gallery routes still fail closed in production.
+
+## Phase 1D.1 Roster and Timesheets
+
+The existing `/roster?tab=…` placeholder is replaced by one Staff destination. `tab=roster` (default), `team` and `timesheets` retain the original segmented navigation. No new URL hierarchy or backend endpoint was added.
+
+| View | URL |
+| --- | --- |
+| Calendar and upcoming shifts | `/roster?tab=roster&day=YYYY-MM-DD&month=YYYY-MM&house=[houseId]` |
+| Team Schedule | `/roster?tab=team&house=[houseId]&day=YYYY-MM-DD` |
+| My Timesheets | `/roster?tab=timesheets` |
+| Own Shift Details | `/roster?tab=roster&shiftId=[shiftId]` (also accessible from timesheets) |
+| Own Attendance Details | `/roster?tab=timesheets&attendanceId=[attendanceId]` |
+| Request correction | `/roster?tab=timesheets&attendanceId=[attendanceId]&action=correction` |
+
+Dashboard → Roster/Team, My Shifts → View full roster, calendar/list → Shift Details → House, and Timesheets → Attendance → Correction are connected. Shift/attendance modals support Escape, Back and direct refresh. Closing a modal retains its selected calendar/team context. Calendar/team house/day/month selection is URL-backed; timesheet range/house/page filters are view state and reset on refresh or opening the full-page correction editor.
+
+The server preview gate validates scalar query values, tab/date/month/house and own shift/attendance scope before rendering. Unknown/unassigned house, coworker/unrelated/missing shift or attendance IDs, repeated parameters and invalid action/association combinations return generic HTTP 404 without unrelated record metadata. There is no streamed loading boundary that converts these validation failures into HTTP 200. Seeded deep links resolve; requests are session-only additions attached to a seeded attendance ID. Production still refuses all preview routes, even with the flag enabled. These are fixed fictional lookups, not production identity/authorisation.

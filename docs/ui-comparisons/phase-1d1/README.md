@@ -1,0 +1,15 @@
+# Phase 1D.1 visual comparison evidence
+
+Nine states × original/migrated × five widths (375, 390, 768, 1280, 1440px): 90 raw captures and 15 paired boards. Viewport height is 900px. Original is left, migrated right. Desktop board columns scale to 720px; raw PNGs preserve resolution.
+
+- `comparison-[width]-roster.png`: landing page, calendar/selected-day cards, Shift Details.
+- `comparison-[width]-attendance.png`: Team Schedule, Timesheet History, Attendance Details.
+- `comparison-[width]-requests.png`: correction form, validation, empty calendar day.
+
+Original Staff Roster in `Other.tsx`, ShiftDetail in `ClockIn.tsx` and shared source CSS are rendered unchanged. The reference harness supplies the same fictional snapshot and converts attendance corrections to the source's free-text shape. Time is frozen at 2026-10-22T01:00:00Z; the roster browser context explicitly uses Pacific/Auckland. External imagery/tiles are deterministic test substitutes; no font binaries were added.
+
+Source calendar/cards/tables/summary styling, colours, fonts and navigation are reused. The migrated page adds breadcrumbs, development warnings, complete shift/attendance metadata, house/date filters, accessible labels/focus, day grouping and six-row timesheet pagination. These required additions increase height. Overnight shifts appear on both dates they overlap; the source only groups by start date. The source displays future team shifts together; migration scopes by selected house/day and adds collapsible grouping. Wide tables remain intentionally horizontally scrollable within labelled keyboard-focusable regions.
+
+The source has no separate Attendance Details screen: its overnight Shift Details modal is the reference for that added source-styled metadata modal. Source correction uses a free-text modal; migration uses a full-page structured date/time form with original attendance, reusing established correction conventions. The correction screenshot focuses the actual inputs; the original record is visible in the separate Attendance Details comparison. Source error and empty states are retained without modifying source markup. The export's ready-to-clock-in status is replaced by an honest current-preview label; cancelled shifts cannot be eligible in the migrated shared selectors.
+
+Initial mobile review corrected cramped date controls by wrapping filters onto separate rows. Tablet review restored the original input class and stacked date labels. The original sidebar treats the past missing-clock-out fixture as active; migration labels it Missing Clock-out without claiming current verified attendance. Migrated capture tests collect page errors and assert no page-level horizontal overflow. Screenshots establish reviewed source fidelity with documented extensions, not exact pixel parity or independent design approval. Physical devices, Safari/Firefox, exhaustive accessibility and Node 22 verification remain outstanding. See [migration notes](../../ui-migration-notes.md) and [shared scheduling contract](../../scheduling-and-attendance.md).

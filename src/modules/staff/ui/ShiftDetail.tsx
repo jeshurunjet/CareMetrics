@@ -1,8 +1,11 @@
 "use client"
+import Link from "next/link"
+import { shiftTime, durationText } from "../roster/dates"
+import { attendanceForShift, attendanceStatus } from "../roster/adapter"
 import type { Shift } from "../data/types"
 import { useStaffData } from "../data/context"
 import { shiftStatus } from "../data/selectors"
-import { formatDate, formatTime } from "@/lib/time"
+import { formatDate, formatDateTime } from "@/lib/time"
 import { Modal, Btn, Status, useNav } from "./index"
 export default function ShiftDetail({
   shift,
@@ -15,9 +18,11 @@ export default function ShiftDetail({
   const nav = useNav()
   const h = s.houses.find((h) => h.id === shift.houseId)!
   const t = shiftStatus(s, shift)
+  const attendance = attendanceForShift(s, shift.id)
   const coworkers = s.shifts.filter(
     (sh) =>
       sh.houseId === shift.houseId &&
+      sh.status !== "cancelled" &&
       sh.staffId !== s.meId &&
       Date.parse(sh.start) < Date.parse(shift.end) &&
       Date.parse(sh.end) > Date.parse(shift.start),
@@ -25,7 +30,7 @@ export default function ShiftDetail({
   return (
     <Modal
       title="Shift details"
-      subtitle={`${formatDate(shift.start)} · ${formatTime(shift.start)} – ${formatTime(shift.end)}`}
+      subtitle={`${formatDate(shift.start)} · ${shiftTime(shift.start, shift.end)}`}
       onClose={onClose}
       footer={
         <Btn
@@ -40,6 +45,14 @@ export default function ShiftDetail({
       }
     >
       <dl className="cm-dl">
+        <div>
+          <dt>Employee</dt>
+          <dd>{s.staff.find((e) => e.id === shift.staffId)?.name}</dd>
+        </div>
+        <div>
+          <dt>Scheduled duration</dt>
+          <dd>{durationText(shift.start, shift.end)}</dd>
+        </div>
         <div>
           <dt>Status</dt>
           <dd>
@@ -60,7 +73,15 @@ export default function ShiftDetail({
         </div>
         <div>
           <dt>Clock in / out</dt>
-          <dd>Not recorded · development preview</dd>
+          <dd>
+            {attendance?.clockIn
+              ? `${formatDateTime(attendance.clockIn)} / ${
+                  attendance.clockOut
+                    ? formatDateTime(attendance.clockOut)
+                    : "Not recorded"
+                }`
+              : "Not recorded · development preview"}
+          </dd>
         </div>
         <div>
           <dt>Coworkers</dt>
@@ -70,7 +91,25 @@ export default function ShiftDetail({
               .join(", ") || "None scheduled"}
           </dd>
         </div>
+        <div>
+          <dt>Attendance status</dt>
+          <dd>{attendanceStatus(s, shift.id)}</dd>
+        </div>
+        {shift.notes && (
+          <div className="cm-dl-full">
+            <dt>Shift notes</dt>
+            <dd>{shift.notes}</dd>
+          </div>
+        )}
       </dl>
+      {attendance && (
+        <Link
+          className="cm-btn cm-btn--secondary cm-btn--md"
+          href={`/roster?tab=timesheets&attendanceId=${attendance.id}`}
+        >
+          View attendance
+        </Link>
+      )}
     </Modal>
   )
 }

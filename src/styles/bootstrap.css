@@ -82,3 +82,22 @@
 .cm-app .cm-file-image > .cm-preview-img { height: auto; }
 .cm-app .cm-gallery-upload > .cm-progress { flex: none; min-height: .35rem; width: 100%; }
 .cm-app .cm-gallery > .cm-row-between { flex-wrap: wrap; gap: .75rem; }
+/* Phase 1D.1: preserve source schedule layouts and confine wide tables to their region. */
+.cm-app .cm-roster, .cm-app .cm-roster .cm-two-col > *, .cm-app .cm-roster .cm-stack { min-width: 0; }
+.cm-app .cm-roster .cm-shift-row { width: 100%; }
+.cm-app .cm-roster .cm-shift-row .cm-grow { min-width: 0; overflow-wrap: anywhere; }
+.cm-app .cm-roster .cm-shift-row strong { white-space: normal; }
+.cm-app .cm-roster nav[aria-label="Roster breadcrumbs"] { font-size: .8rem; overflow-wrap: anywhere; }
+.cm-app .cm-roster .cm-banner { flex: none; }
+.cm-app .cm-timesheet-table .cm-table { min-width: 64rem; }
+.cm-app .cm-roster .cm-toolbar { flex-wrap: wrap; }
+.cm-app .cm-roster .cm-toolbar > * { min-width: 0; }
+.cm-app .cm-roster .cm-filter input { min-width: 0; max-width: 100%; }
+.cm-app .cm-roster-day-nav { flex-wrap: wrap; gap: .5rem; }
+.cm-app .cm-team-group summary { cursor: pointer; padding: .75rem 0; font-weight: 700; }
+.cm-app .cm-roster .cm-cal button:focus-visible { outline: 2px solid var(--color-brand); outline-offset: -2px; }
+.cm-app .cm-roster .cm-row-actions { flex-wrap: wrap; }
+.cm-app .cm-roster .cm-toolbar > * { flex: 1 1 12rem; }
+.cm-app .cm-roster .cm-filter input { width: 100%; }
+.cm-app .cm-roster .cm-roster-date-filter { flex-direction: column; align-items: stretch; gap: .25rem; font-size: .8rem; }
+.cm-app .cm-roster .cm-toolbar { align-items: flex-end; }

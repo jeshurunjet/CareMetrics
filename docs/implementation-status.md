@@ -1,44 +1,50 @@
-# Implementation status — Phase 1C.4
+# Implementation status — Phase 1D.1
 
-Client and House Galleries/Documents now extend the existing development-only Staff UI. One typed attachment model and the existing adapter/provider serve both contexts. No production file service is connected. Earlier status: [Phase 1C.3](history/phase-1c3-status.md).
+Roster and Timesheets extend the existing fictional Staff UI. One snapshot now serves scheduled shifts, own attendance and separate attendance correction requests; no production attendance/backend service is connected. Previous status: [Phase 1C.4](history/phase-1c4-status.md).
 
-## Checkpoint and scope
+## Checkpoint
 
-Phase 1C.3 checkpoint: `2913cd0` on local `phase-1c3`. Before the checkpoint, lint/typecheck/format, 63 unit tests, 225 browser cases, build and 35 production-isolation checks passed. Phase 1C.4 was implemented on local `phase-1c4`; the complete version is prepared on `phase-1c4-complete` for the user-authorised Git push. `main` remains `9cecc8b`. No previous branch was reset or overwritten. Pre-existing duplicate screenshots and the local reference are preserved.
+Completed Phase 1C.4 is already committed/pushed at `bc4b5e1` on `phase-1c4-complete`, superseding the brief's older uncommitted note. Its baseline passed lint, strict types, formatting, 72 unit tests, all 275 browser cases, build and 41 production-isolation checks again. No duplicate checkpoint commit was needed. Phase 1D.1 is isolated on new local branch `phase-1d1`; previous branches and the local reference/duplicate screenshots are preserved. No push is authorised for this phase.
 
-| Area | Completed behaviour and boundary |
+| Area | Implementation and boundary |
 | --- | --- |
-| Client and House Galleries | Shared source-derived cards, thumbnails/icons, filename/type/size/author/date, scoped filename search and type filter, newest-first and six-file pagination. Contexts remain separate. |
-| Details and previews | Source modal treatment, complete metadata, URL-selected information/image preview, Escape/Back/refresh, loading/error/retry and honest unsupported/PDF-unavailable states. |
-| Downloads | Four allowlisted harmless bundled PNG/TXT/CSV assets have working downloads. Missing, unsupported and session-only contents have no enabled download or invented URL. |
-| Upload selection | Shared browse/drop area, metadata and temporary image preview, optional description, duplicate-name support, remove-unsent-selection, centralized configurable provisional validation, progress, success/failure/retry/cancel. Completion adds session-only metadata, never file contents. |
-| Profile photos | Shared image-only picker for client/house; preview, cancel and temporary application with object-URL cleanup. No permanent change. |
-| Access and removal | Existing fictional role/house scope, explicit association IDs and generic unavailable responses for unrelated file IDs. No staff delete or reassociation operation. This is not production authorisation. |
-| Design and earlier workflows | Original reference/CSS retained; scoped additions. Diary, Care Plan, Charting and earlier Staff/Admin-gate regressions retained. No Admin file management. |
+| Roster landing/navigation | Source header, shared Staff shell and three tabs; Dashboard/My Shifts links connect to the same `/roster` destination. |
+| My Roster/calendar | Source month calendar and ShiftCard, all assigned houses, current/selected date, keyboard arrows, month navigation, selected-day shifts, chronological upcoming list and house filter. Overnight shifts appear on both overlapping dates. |
+| Shift details | Shared source modal now includes employee, scheduled duration, notes, attendance and house/attendance links. Cancelled shifts are excluded from ordinary eligibility. |
+| Team Schedule | Source operational table with house/date selectors, day navigation and collapsible house group. No private coworker attendance/GPS/leave information. |
+| My Timesheets | Source summary/table with date/house filters, newest-first/six-row pages, scheduled versus actual values, missing attendance states and details links. |
+| Attendance details | Source-styled modal with fictional event metadata, durations, original/proposed corrections and explicit GPS/payroll limitations. |
+| Correction requests | Structured NZ time proposals/reason, validated own-record association, unsaved-change prompts, session-only Pending Review, originals unchanged. No staff approval or roster editing. |
+| Earlier UI/Admin | Existing regression suite retained. Admin content and real clock-in/out remain unchanged/unavailable. |
 
 ## Verification
 
+Status: the new UI is `ported`, `UI-matched` with documented extensions, and `tested` within the boundaries below. No scheduling or attendance feature is `backend-connected`.
+
 | Check | Result |
 | --- | --- |
-| Lint / strict TypeScript / formatting | PASS, zero lint warnings |
-| Unit tests | PASS, 72 tests across seven files |
-| Complete browser regression | PASS, 275 cases across five widths, retaining all earlier 225 cases |
-| Final gallery regression after thumbnail fix | PASS, all 50 cases across five widths, including image/metadata bounds |
-| Production build | PASS |
-| Production isolation | PASS, 41 preview routes refused with preview flag enabled; login inert |
-| Source integrity | PASS, 51 reference files and three original CSS copies byte-identical |
-| Local preview smoke | PASS, client/house galleries HTTP 200 on port 8443 |
-| Visual evidence | 90 raw captures and 15 paired boards, five required widths |
-| Whitespace check | PASS, `git diff --check` |
+| `pnpm lint` | PASS, zero warnings |
+| `pnpm typecheck` | PASS, strict source/tests and generated routes |
+| `pnpm format:check` | PASS |
+| `pnpm test` | PASS, 81 unit tests across eight files |
+| `pnpm test:e2e` | PASS, 325 cases across all five widths; includes all previous 275 cases |
+| Final targeted roster regression | PASS, 50 cases across five widths after date-filter styling changes |
+| `pnpm build` | PASS |
+| `pnpm test:production` | PASS, 49 preview routes refused with the preview flag enabled; login inert |
+| Local smoke | PASS, Roster/Timesheets/Correction HTTP 200 on port 8443 |
+| Source integrity | PASS, 51 reference files and three original active CSS copies unchanged |
+| Production client chunks | PASS, restricted employee/shift and private coworker attendance fixture markers absent |
+| Visual evidence | 90 raw captures and 15 paired boards at 375, 390, 768, 1280 and 1440px |
+| `git diff --check` | PASS |
 
-Visual review found and corrected tablet thumbnail overlap; the final gallery run verifies containment at all widths. Captured migrated states have no collected page errors or document-level horizontal overflow. Source layout limitations and added metadata/warnings/confirmation flows remain documented. Exact visual parity is not claimed.
+Unit coverage includes stable fixture consistency, assignments/ownership, cancellation, timezone/month/leap-day and overnight date handling, actual/scheduled/missing/zero/reversed duration, operational team projection, private snapshot filtering, pagination and correction validation/original retention. Browser coverage includes existing navigation, calendar keys/month/house/empty states, overnight labels, deep links/Back/refresh, Team grouping/filters, timesheet data/filter/page controls, validation/cancel/session-reset, invalid/unrelated HTTP 404 and all earlier Staff/Admin-gate workflows.
 
-## Remaining limitations and next step
+Final visual review preserves the source calendar, cards, table/stat styling and modals with documented metadata/filter/correction extensions. Mobile filter wrapping and original date-input styling were corrected. Final captures report no page errors or unintended page-level horizontal overflow; wide tables retain labelled keyboard-focusable scrolling. No exact pixel parity or independent design approval is claimed.
 
-All identity, assignments, attendance and records remain fictional development state. Simulated upload completion retains metadata only until provider reset/reload; selected contents and temporary photos exist only in browser memory. There are no real uploads, storage, signed URLs, database writes, secure production retrieval, antivirus checks, GPS or management removal. Downloadable public assets contain only harmless demo material and are not a private-storage pattern. PDF has no bundled example and shows an explicit placeholder.
+## Limits and next step
 
-Unknown/unassigned parents and malformed repeated gallery parameters return 404. Invalid/unrelated file IDs within an authorised profile return a generic unavailable state with HTTP 200, including session-only IDs after reload. No unrelated metadata is displayed. Future server-side organisation, role, house and record checks remain required on every read/write.
+Identity, access checks, shifts, event-location evidence, attendance and reviews are fictional development previews. New correction requests reset on reload/provider remount. No real attendance/GPS, persistence, management approval, corrected event versions, payroll, database or production audit was added. The existing demo active-appearance flag does not create recorded timesheets. No shift-swap feature exists in the exported Staff roster, so none was invented.
 
-Host Node 25.9.0/pnpm 10.15.1; Node 22 is unavailable locally, so intended-runtime verification remains outstanding. Chromium viewport checks do not certify physical devices, Safari/Firefox, exhaustive accessibility or independent design approval.
+Node 22 is unavailable in the supported local locations checked; verification uses Node 25.9.0/pnpm 10.15.1. Intended-runtime CI, other browsers/physical devices, exhaustive accessibility and independent design acceptance remain outstanding. No UI implementation blocker remains for review. Review Phase 1D.1 before agreeing the next bounded Staff UI task; no Leave, Notifications, Admin or backend phase starts automatically. Changes remain uncommitted on `phase-1d1`; no push.
 
-No Phase 1C.4 UI implementation blocker remains. Review this bounded migration, then specify the next Staff UI phase. Do not start Phase 1D, Admin, backend or deployment automatically. The full tracked application is checkpointed on `phase-1c4-complete` for the user-authorised push; previous branches remain unchanged. Reference files and unrelated duplicate screenshots remain local-only. See [file architecture](file-architecture.md), [routes](route-map.md), [migration notes](ui-migration-notes.md) and [visual evidence](ui-comparisons/phase-1c4/README.md).
+See [scheduling model](scheduling-and-attendance.md), [routes](route-map.md), [migration notes](ui-migration-notes.md) and [visual comparisons](ui-comparisons/phase-1d1/README.md).
