@@ -1,3 +1,9 @@
+import type {
+  Concern,
+  NotificationReadState,
+  NoticePriority,
+  NoticeAudience,
+} from "../notifications/types"
 import type { LeaveType, LeaveRequest, LeaveBalance } from "../leave/types"
 import type {
   AttendanceRecord,
@@ -72,12 +78,17 @@ export interface Notice {
   body?: string
   date: string
   publisher: string
-  read: boolean
+  publisherId: string
+  priority: NoticePriority
+  targetAudience: NoticeAudience
+  attachmentIds?: string[]
   relatedId?: string
   audience?: string
   status: "Published" | "Draft"
 }
 export interface StaffSnapshot {
+  concerns: Concern[]
+  notificationReads: NotificationReadState[]
   leaveTypes: LeaveType[]
   leaveRequests: LeaveRequest[]
   leaveBalances: LeaveBalance[]

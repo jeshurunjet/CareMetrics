@@ -3,9 +3,9 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useStaffData } from "../data/context"
 import { staffQueries } from "../data/queries"
-import { visibleNotices } from "../data/selectors"
+import ContextualNoticeList from "../notifications/ContextualNoticeList"
 import type { ClientTab } from "../data/sections"
-import { formatDateOnly, ageOnDate, formatDateTime } from "@/lib/time"
+import { formatDateOnly, ageOnDate } from "@/lib/time"
 import {
   PageHeader,
   Card,
@@ -58,9 +58,6 @@ export default function ClientProfile({
     )
   const h = staffQueries.getHouse(s, c.houseId)!
   const nok = staffQueries.getClientContacts(s, c.id).find((k) => k.primary)
-  const notices = visibleNotices(s).filter(
-    (n) => n.category === "client" && n.relatedId === c.id,
-  )
   const setTab = (t: string) => nav.go({ page: "client", id: c.id, tab: t })
   return (
     <>
@@ -239,40 +236,7 @@ export default function ClientProfile({
                   </Card>
                 ))}
               </div>
-              <Card className="cm-panel">
-                <div className="cm-row-between">
-                  <h2 className="cm-h3">Concerns & notices</h2>
-                  <Btn
-                    size="sm"
-                    variant="secondary"
-                    icon="flag"
-                    onClick={() => setAction("Submit client concern · preview")}
-                  >
-                    Submit concern
-                  </Btn>
-                </div>
-                <div className="cm-stack">
-                  <h3 className="cm-h3">Official notices</h3>
-                  {notices.length === 0 ? (
-                    <p className="cm-muted">No notices published.</p>
-                  ) : (
-                    notices.map((n) => (
-                      <div key={n.id} className="cm-notice-card">
-                        <div>
-                          <strong>{n.title}</strong>
-                          <span>
-                            {formatDateTime(n.date)} · {n.publisher}
-                          </span>
-                        </div>
-                        <p>{n.body}</p>
-                      </div>
-                    ))
-                  )}
-                  <p className="cm-hint">
-                    Concern submission is a Phase 1C placeholder.
-                  </p>
-                </div>
-              </Card>
+              <ContextualNoticeList context="client" targetId={c.id} />
             </div>
             <ClientContacts clientId={c.id} />
           </div>

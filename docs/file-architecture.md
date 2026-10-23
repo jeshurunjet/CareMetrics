@@ -4,7 +4,7 @@ This is a fictional, development-only UI contract. No upload service, private st
 
 ## Shared metadata and associations
 
-`src/modules/staff/files/types.ts` defines `FileRecord`: stable ID, filename, optional description, MIME type, byte size, image/pdf/document category, UTC upload timestamp, uploader employee ID, explicit association and demonstration availability. `association` is a discriminated `{scope, targetId}` relation. Client and house are implemented; diary/careRecord/notification/concern are reserved for later authorised parent workflows. Ownership never derives from a filename or path. The immutable submitted-file association has no staff editing operation.
+`src/modules/staff/files/types.ts` defines `FileRecord`: stable ID, filename, optional description, MIME type, byte size, image/pdf/document category, UTC upload timestamp, uploader employee ID, explicit association and demonstration availability. `association` is a discriminated `{scope, targetId}` relation. Client and house galleries are implemented; diary/careRecord remain reserved for later authorised parent workflows. Phase 1D.3 adds notification/concern parent reads and concern selection metadata through the same FileRecord array; see [Notifications and Concerns](notifications-and-concerns.md). These are not general gallery permissions. Ownership never derives from a filename or path. The immutable submitted-file association has no staff editing operation.
 
 One `attachments` array extends the existing StaffSnapshot/provider. There is no independent file store or mock API. The development seed reuses existing employees/houses/clients. c1 has three image records and four documents, c2 has documents, c3 has none; h1 has images/documents, h2 is empty. Multiple uploaders, an unsupported DOCX preview, a missing PDF asset and inaccessible c4/h3 file fixtures exercise the states. All content and metadata are fictional.
 
@@ -41,3 +41,7 @@ Management removal needs authorised desktop CMS review, reason/request actor/tim
 ## Verification limits
 
 Browser checks exercise local metadata only and genuine public demonstration downloads. Viewport emulation does not certify physical device pickers, mobile keyboards, Safari/Firefox or exhaustive accessibility. Node 22 intended-runtime verification remains outstanding if unavailable on the host. Source comparisons document intentional additions and limitations; they are not exact pixel parity or independent design acceptance.
+
+## Phase 1D.3 parent integration
+
+Official notices resolve only explicitly referenced notification attachments after checking the authorised parent. Own concerns use the same rule for concern attachments. A public demonstration notice TXT reuses demo-assets; submitted concerns retain validated selection metadata with sessionOnly availability. No contents/object URLs/upload simulation enter concern state. The source concern form has filename selection but no image-preview workflow; this phase explains that previews/downloads for selected contents are unavailable. Gallery/photo selection and management-only removal are unchanged. No additional upload architecture or storage was added.

@@ -248,7 +248,15 @@ test("photo and concern controls are honest preview-only interactions", async ({
   ).toHaveCount(1)
   await page.getByRole("button", { name: "Cancel photo selection" }).click()
   await page.getByRole("button", { name: "Submit concern" }).click()
-  await expect(page.getByRole("dialog")).toContainText("not implemented")
+  await expect(page.getByRole("dialog")).toContainText(
+    "not delivered to management",
+  )
+  await expect(page.getByLabel("Concern context", { exact: true })).toHaveValue(
+    "client",
+  )
+  await expect(
+    page.getByLabel("Related client or house", { exact: true }),
+  ).toHaveValue("c1")
 })
 test("failed photo has an understandable fallback", async ({ page }) => {
   await page.route("https://images.unsplash.com/**", (r) =>

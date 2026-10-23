@@ -11,7 +11,7 @@ Statuses: `original` = reference retained, `ported` = code adapted, `UI-matched`
 | clock | `/shift-check` | ported, tested; source-derived UI with disabled real attendance |
 | home | `/dashboard` | ported, tested; full source-derived dashboard |
 | houses | `/houses` | ported, UI-matched, tested; all assigned houses |
-| house | `/houses/[houseId]?tab=…` | ported, UI-matched, tested; overview, Diary and Gallery migrated; concerns remain placeholder-only |
+| house | `/houses/[houseId]?tab=…` | ported, UI-matched, tested; overview, Diary, Gallery and Notifications/own Concerns migrated |
 | client | `/clients/[clientId]?tab=…&sub=…&item=…` | ported, UI-matched, tested; overview, contacts, Diary, Care Plan, Charting and Gallery migrated |
 | new-diary (house) | `/houses/[houseId]/diary/new?draft=…` | ported; development draft/create/submit form |
 | new-diary (client) | `/clients/[clientId]/diary/new?draft=…` | ported; development draft/create/submit form |
@@ -19,7 +19,7 @@ Statuses: `original` = reference retained, `ported` = code adapted, `UI-matched`
 | search | `/search?q=…` | ported, UI-matched, tested; scoped house/client query |
 | roster | `/roster?tab=…` | ported, UI-matched, tested; roster/team/own timesheets and attendance correction preview |
 | leave | `/leave` | ported, UI-matched, tested; own requests, fictional balances and pending submission preview |
-| notifications | `/notifications` | original; routed placeholder |
+| notifications | `/notifications` | ported; official scoped notices, own concern submission/history/details, development only |
 | profile | `/profile` | original; routed placeholder |
 | settings | `/settings` | original; routed placeholder |
 
@@ -159,3 +159,9 @@ No competing route hierarchy or leave API was introduced. The form/details prese
 The preview gate refuses production. Repeated/non-scalar parameters, unsupported action and simultaneous new-form/request queries return HTTP 404. Missing/unknown/other-employee request IDs show the same generic unavailable state within the own Leave page (HTTP 200), without any other employee metadata. This also supports session-created IDs which resolve during client navigation but become unavailable on reload. These fixed fictional employee checks are not production authentication/authorisation.
 
 Roster-context links use existing `/roster?shiftId=…`; they never grant roster editing or expose coworker leave. No withdrawal, approval, cancellation or decision-editing route exists.
+
+## Phase 1D.3 Notifications and Concerns
+
+One canonical `/notifications` route uses `tab=all|client|house|staff|concerns` (All default), `item=[noticeId]`, `tab=concerns&concernId=[id]`, or `action=new`. Profile links add `context=client|house&targetId=[id]` for exact scope/preselection. No duplicate detail route/API is introduced. Dashboard cards, header/sidebar/mobile Menu, contextual Client notices and House overview/concerns connect to it. Details close to the scoped base; context links open the authorised profile. Category changes intentionally return to the general category.
+
+Malformed/repeated/conflicting selectors and unknown tabs/actions/context subjects fail server preview validation with HTTP 404. Unknown/private notice/concern IDs produce generic unavailable content (HTTP 200), including session-only IDs after reload; no protected metadata is serialised. Seeded deep links, refresh, Back and forward remain supported. All routes remain development-only; trusted server authentication/organisation permissions remain outstanding. See [notification contracts](notifications-and-concerns.md).

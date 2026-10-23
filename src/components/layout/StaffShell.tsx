@@ -7,10 +7,11 @@ import { useEffect, useRef, useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import Icon from "@/components/Icon"
 import Avatar from "@/modules/staff/ui/Avatar"
-import StaffDataProvider from "@/modules/staff/data/context"
+import StaffDataProvider, { useStaffData } from "@/modules/staff/data/context"
 import type { StaffSnapshot } from "@/modules/staff/data/types"
-import { me, visibleNotices, myHouses } from "@/modules/staff/data/selectors"
+import { me, myHouses } from "@/modules/staff/data/selectors"
 import { clearMockSession } from "@/modules/auth/mock-session"
+import { unreadCount } from "@/modules/staff/notifications/adapter"
 const SECTION: Record<string, string> = {
   house: "houses",
   client: "houses",
@@ -25,6 +26,14 @@ export default function StaffShell({
   data: StaffSnapshot
   children: React.ReactNode
 }) {
+  return (
+    <StaffDataProvider data={data}>
+      <StaffShellContent>{children}</StaffShellContent>
+    </StaffDataProvider>
+  )
+}
+function StaffShellContent({ children }: { children: React.ReactNode }) {
+  const data = useStaffData()
   const router = useRouter()
   const path = usePathname()
   const query = useSearchParams().toString()
@@ -40,7 +49,7 @@ export default function StaffShell({
         : path.split("/")[1]
   const section = page === "clients" ? "houses" : (SECTION[page] ?? page)
   const user = me(data)
-  const unread = visibleNotices(data).filter((n) => !n.read).length
+  const unread = unreadCount(data)
   const onLogout = () => {
     clearMockSession()
     router.push("/login")
@@ -91,7 +100,7 @@ export default function StaffShell({
     }
   }, [drawer])
   return (
-    <StaffDataProvider data={data}>
+    <>
       <div className={`cm-app ${collapsed ? "cm-app--collapsed" : ""}`}>
         <StaffSidebar
           user={user}
@@ -176,6 +185,6 @@ export default function StaffShell({
           </div>
         )}
       </div>
-    </StaffDataProvider>
+    </>
   )
 }

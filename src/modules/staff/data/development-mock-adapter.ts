@@ -1,3 +1,5 @@
+import { seedConcerns } from "../notifications/seed"
+import { getMyConcerns, projectConcern } from "../notifications/adapter"
 import { leaveTypes, seedLeave } from "../leave/seed"
 import { leaveQueries } from "../leave/adapter"
 import { seedScheduleHistory } from "../roster/seed"
@@ -46,12 +48,30 @@ export const developmentMockAdapter = {
     const leave = seedLeave(now)
     const history = seedScheduleHistory(now)
     const s: StaffSnapshot = {
+      concerns: seedConcerns(now),
+      notificationReads: [
+        { notificationId: "n3", employeeId: "s1", readAt: at(-4) },
+      ],
       leaveTypes,
       leaveRequests: leave.requests,
       leaveBalances: leave.balances,
       attendance: history.attendance,
       attendanceCorrections: history.corrections,
-      attachments: seedAttachments(now),
+      attachments: [
+        ...seedAttachments(now),
+        {
+          id: "notice-demo-readme",
+          name: "Public demonstration information.txt",
+          mimeType: "text/plain",
+          bytes: 242,
+          category: "document",
+          uploadedAt: now,
+          uploadedById: "administrator-demo",
+          association: { scope: "notification", targetId: "n2" },
+          availability: "bundled",
+          assetId: "readme",
+        },
+      ],
       now,
       meId: employeeId,
       staff: [
@@ -294,6 +314,31 @@ export const developmentMockAdapter = {
       demoAttendance: null,
       notices: [
         {
+          id: "n-private-client",
+          category: "client",
+          relatedId: "c4",
+          title: "Restricted client notice",
+          body: "PRIVATE_CLIENT_NOTICE",
+          date: at(-2),
+          publisher: "Example Manager",
+          publisherId: "management-demo",
+          priority: "Urgent",
+          targetAudience: { kind: "organisation" },
+          status: "Published",
+        },
+        {
+          id: "n-private-employee",
+          category: "staff",
+          title: "Private employee notice",
+          body: "PRIVATE_EMPLOYEE_NOTICE",
+          date: at(-2),
+          publisher: "Example Manager",
+          publisherId: "management-demo",
+          priority: "Normal",
+          targetAudience: { kind: "employee", employeeId: "s4" },
+          status: "Published",
+        },
+        {
           id: "n1",
           category: "house",
           relatedId: "h1",
@@ -301,18 +346,23 @@ export const developmentMockAdapter = {
           body: "Please review the fictional house handover information before your next shift.",
           date: at(-1),
           publisher: "Mere Walker (demo)",
-          read: false,
+          publisherId: "management-demo",
+          priority: "Important",
+          targetAudience: { kind: "organisation" },
           status: "Published",
         },
         {
           id: "n2",
+          attachmentIds: ["notice-demo-readme"],
           category: "client",
           relatedId: "c3",
           title: "Updated support information",
           body: "A demonstration update is available for Jordan. This is fictional content only.",
           date: at(-3),
           publisher: "Example Administrator",
-          read: false,
+          publisherId: "administrator-demo",
+          priority: "Important",
+          targetAudience: { kind: "organisation" },
           status: "Published",
         },
         {
@@ -320,9 +370,12 @@ export const developmentMockAdapter = {
           category: "staff",
           audience: "All staff",
           title: "Team meeting reminder",
+          body: "Fictional workplace meeting information. Please review the agenda before the demonstration meeting.",
           date: at(-5),
           publisher: "Mere Walker (demo)",
-          read: true,
+          publisherId: "management-demo",
+          priority: "Normal",
+          targetAudience: { kind: "organisation" },
           status: "Published",
         },
         {
@@ -332,7 +385,9 @@ export const developmentMockAdapter = {
           title: "Unassigned house notice",
           date: at(-1),
           publisher: "Example Manager",
-          read: false,
+          publisherId: "management-demo",
+          priority: "Important",
+          targetAudience: { kind: "organisation" },
           status: "Published",
         },
         {
@@ -341,7 +396,9 @@ export const developmentMockAdapter = {
           title: "Unpublished draft",
           date: at(-1),
           publisher: "Example Manager",
-          read: false,
+          publisherId: "management-demo",
+          priority: "Important",
+          targetAudience: { kind: "organisation" },
           status: "Draft",
         },
       ],
@@ -353,6 +410,12 @@ export const developmentMockAdapter = {
     return {
       ...s,
       houses,
+      concerns: getMyConcerns(s).map(projectConcern),
+      notificationReads: s.notificationReads.filter(
+        (r) =>
+          r.employeeId === employeeId &&
+          visibleNotices(s).some((n) => n.id === r.notificationId),
+      ),
       leaveRequests: leaveQueries.getMyLeave(s),
       leaveBalances: leaveQueries.getMyLeaveBalances(s),
       attendance: s.attendance.filter((a) => !!getOwnAttendance(s, a.id)),
@@ -360,6 +423,15 @@ export const developmentMockAdapter = {
         getAttendanceCorrections(s, a.id),
       ),
       attachments: [
+        ...s.attachments.filter(
+          (f) =>
+            f.association.scope === "notification" &&
+            visibleNotices(s).some(
+              (n) =>
+                n.id === f.association.targetId &&
+                n.attachmentIds?.includes(f.id),
+            ),
+        ),
         ...clients.flatMap((c) =>
           fileQueries.getGalleryFiles(s, { scope: "client", targetId: c.id }),
         ),

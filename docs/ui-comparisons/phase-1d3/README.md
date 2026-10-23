@@ -1,0 +1,19 @@
+# Phase 1D.3 Notifications and Concerns comparisons
+
+The untouched original Figma-export StaffApp is rendered through the test-only reference harness with the same fictional authorised fixtures. No original JSX/CSS was edited. Clock is frozen at 22 October 2026; Pacific/Auckland display, deterministic external image/tile stubs and the existing remote font stylesheet are used on both sides. No font binaries were added.
+
+Twelve representative states at each width (375, 390, 768, 1280 and 1440px): All, Client, House, Staff, notice details, read state, new concern, validation, own concern history, concern details, Client context and House context. Final evidence comprises 120 raw PNGs and 20 paired boards. Read captures wait for dialog closure and assert the updated card state. Migrated captures assert no document-level horizontal overflow and collect page errors; source overflow is retained as evidence rather than hidden.
+
+| Width | Categories | Notices / read | Concern form / history | Details / contexts |
+| --- | --- | --- | --- | --- |
+| 375 | [Board](comparison-375-categories.png) | [Board](comparison-375-notices.png) | [Board](comparison-375-concerns.png) | [Board](comparison-375-contexts.png) |
+| 390 | [Board](comparison-390-categories.png) | [Board](comparison-390-notices.png) | [Board](comparison-390-concerns.png) | [Board](comparison-390-contexts.png) |
+| 768 | [Board](comparison-768-categories.png) | [Board](comparison-768-notices.png) | [Board](comparison-768-concerns.png) | [Board](comparison-768-contexts.png) |
+| 1280 | [Board](comparison-1280-categories.png) | [Board](comparison-1280-notices.png) | [Board](comparison-1280-concerns.png) | [Board](comparison-1280-contexts.png) |
+| 1440 | [Board](comparison-1440-categories.png) | [Board](comparison-1440-notices.png) | [Board](comparison-1440-concerns.png) | [Board](comparison-1440-contexts.png) |
+
+Preserved: source typography/palette, Staff navigation/breakpoints, tab scrolling, category icons, notice cards/unread edge/dot, fields, priority choices, modal/sheet and responsive layout language. Filters, explicit preview guidance, breadcrumbs, text states, priority/message metadata and new details increase height; mobile content/modal bodies remain scrollable. Contextual lists use the source cards with explicit details actions and author-only concern labels. House overview retains its compact highlighted latest notice; the full history stays in the existing concerns tab.
+
+The source has no Concern Details screen, so its history card is the nearest original comparison. Client context uses c1's empty official-notice state and own reviewed concern; c3's existing notice/context/preselection is covered functionally. Source c3 profile has a missing-contact-phone crash, so it is not modified or substituted in a source capture. The original sidebar interprets an old open attendance fixture as active; the migration does not infer verified attendance. Source concern read/status labels and All badge reflect its global read implementation; migrated reads are employee-specific. Original captures navigate sequentially in one reference session, while some migrated states use direct refreshable URLs and restore seeded state; this can also change the background unread badge between form/detail comparisons. Source form has one combined target selector, no read-only author or separate context field, no configured category and filename-only attachment selection. Added fields/guidance/metadata and corrected permission behaviour are documented in the contracts.
+
+These are source-render comparisons with intentional extensions, not exact pixel parity or independent design acceptance. Viewport Chromium testing does not certify physical devices, Safari/Firefox or exhaustive accessibility. Font/provider availability and Node 22 verification remain outstanding.

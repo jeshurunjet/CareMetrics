@@ -3,6 +3,7 @@ import { useState } from "react"
 import HouseCard from "./HouseCard"
 import ClientCard from "./ClientCard"
 import NotificationCard from "./NotificationCard"
+import { unreadCount } from "../notifications/adapter"
 import { useStaffData } from "../data/context"
 import {
   me,
@@ -233,6 +234,9 @@ export default function Home() {
               action="View all"
               onAction={() => nav.go({ page: "notifications" })}
             />
+            <p className="cm-hint" data-unread-count={unreadCount(s)}>
+              {unreadCount(s)} unread notifications
+            </p>
             {notices.length === 0 ? (
               <Empty icon="bell" title="You're all caught up" />
             ) : (

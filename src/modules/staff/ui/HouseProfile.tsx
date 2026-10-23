@@ -2,12 +2,12 @@
 import { useState } from "react"
 import { useStaffData } from "../data/context"
 import { staffQueries } from "../data/queries"
-import { visibleNotices } from "../data/selectors"
 import { PageHeader, Card, Btn, Icon, Avatar, Empty, useNav } from "./index"
 import Tabs from "./Tabs"
 import SourcePhoto from "./SourcePhoto"
 import DiaryHistoryList from "../diary/DiaryHistoryList"
-import FeaturePlaceholder from "./FeaturePlaceholder"
+import ContextualNoticeList from "../notifications/ContextualNoticeList"
+import { useRouter } from "next/navigation"
 import ProfilePhotoPicker, {
   useTemporaryProfilePhoto,
 } from "../files/ProfilePhotoPicker"
@@ -21,6 +21,7 @@ export default function HouseProfile({
   tab: HouseTab
 }) {
   const s = useStaffData()
+  const router = useRouter()
   const nav = useNav()
   const temporaryPhoto = useTemporaryProfilePhoto()
   const h = staffQueries.getHouse(s, id)
@@ -107,18 +108,7 @@ export default function HouseProfile({
       <div role="tabpanel" aria-label={`House ${tab}`}>
         {tab === "overview" && (
           <div className="cm-stack">
-            {visibleNotices(s)
-              .filter((n) => n.category === "house" && n.relatedId === h.id)
-              .slice(0, 1)
-              .map((n) => (
-                <div key={n.id} className="cm-notice-card cm-notice-card--hl">
-                  <div>
-                    <strong>{n.title}</strong>
-                    <span>{n.publisher}</span>
-                  </div>
-                  <p>{n.body}</p>
-                </div>
-              ))}
+            <ContextualNoticeList context="house" targetId={h.id} compact />
             {h.description && <p className="cm-body">{h.description}</p>}
             <h2 className="cm-h3">
               Clients at {h.name}{" "}
@@ -160,7 +150,11 @@ export default function HouseProfile({
               <Btn
                 variant="secondary"
                 icon="flag"
-                onClick={() => setTab("concerns")}
+                onClick={() =>
+                  router.push(
+                    `/notifications?tab=house&context=house&targetId=${h.id}&action=new`,
+                  )
+                }
               >
                 Submit house concern
               </Btn>
@@ -180,10 +174,7 @@ export default function HouseProfile({
           <Gallery subject={{ scope: "house", targetId: id }} />
         )}
         {tab === "concerns" && (
-          <FeaturePlaceholder
-            title="House notifications & concerns"
-            icon="flag"
-          />
+          <ContextualNoticeList context="house" targetId={h.id} />
         )}
       </div>
       {temporaryPhoto.url && (

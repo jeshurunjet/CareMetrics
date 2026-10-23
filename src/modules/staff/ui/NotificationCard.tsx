@@ -1,9 +1,13 @@
 "use client"
+import { useStaffData } from "../data/context"
+import { isNoticeRead } from "../notifications/adapter"
+import NotificationStatus from "../notifications/NotificationStatus"
 import type { Notice } from "../data/types"
 import { formatDateTime as fmtDateTime } from "@/lib/time"
 import { Icon, useNav } from "./index"
 export default function NotificationCard({ n }: { n: Notice }) {
   const nav = useNav()
+  const s = useStaffData()
   return (
     <button
       className="cm-notice-row"
@@ -27,7 +31,10 @@ export default function NotificationCard({ n }: { n: Notice }) {
           {fmtDateTime(n.date)} · {n.publisher}
         </span>
       </div>
-      {!n.read && <i className="cm-unread" aria-label="Unread" />}
+      <NotificationStatus value={n.priority} />
+      {!isNoticeRead(s, n.id) && (
+        <i className="cm-unread" aria-label="Unread" />
+      )}
     </button>
   )
 }

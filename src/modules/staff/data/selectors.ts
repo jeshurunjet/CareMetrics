@@ -25,16 +25,29 @@ export const highlightedShift = (s: StaffSnapshot) =>
   upcomingShifts(s).find((x) => isCurrent(s, x)) ?? upcomingShifts(s)[0]
 export const visibleNotices = (s: StaffSnapshot) =>
   s.notices
-    .filter(
-      (n) =>
-        n.status === "Published" &&
-        (!n.audience ||
-          n.audience === "All staff" ||
-          myHouses(s).some((h) => h.id === n.audience)) &&
+    .filter((n) => {
+      if (
+        !me(s) ||
+        !["Support Worker", "Manager", "Administrator"].includes(me(s).role) ||
+        n.status !== "Published"
+      )
+        return false
+      const audience = n.targetAudience
+      const audienceOk =
+        audience?.kind === "organisation" ||
+        (audience?.kind === "employee" && audience.employeeId === s.meId) ||
+        (audience?.kind === "house" &&
+          myHouses(s).some((h) => h.id === audience.houseId)) ||
+        (audience?.kind === "role" && audience.role === me(s).role)
+      return (
+        audienceOk &&
         (n.category === "staff" ||
-          myHouses(s).some((h) => h.id === n.relatedId) ||
-          myClients(s).some((c) => c.id === n.relatedId)),
-    )
+          (n.category === "house" &&
+            myHouses(s).some((h) => h.id === n.relatedId)) ||
+          (n.category === "client" &&
+            myClients(s).some((c) => c.id === n.relatedId)))
+      )
+    })
     .sort((a, b) => b.date.localeCompare(a.date))
 export const shiftStatus = (s: StaffSnapshot, sh: Shift) =>
   sh.status === "cancelled"

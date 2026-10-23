@@ -118,6 +118,10 @@ test("team schedule is grouped, navigable and limited to assigned operational co
   ).toHaveCount(0)
   await expect(page.getByText(/restricted@example/)).toHaveCount(0)
   await page.getByLabel("Roster house", { exact: true }).selectOption("h2")
+  await expect(page).toHaveURL(/house=h2/)
+  await expect(page.getByLabel("Roster house", { exact: true })).toHaveValue(
+    "h2",
+  )
   await page.getByRole("button", { name: "Next day", exact: true }).click()
   await expect(page.locator(".cm-team-group")).toContainText("Sam Wilson")
   await page.locator("summary").click()

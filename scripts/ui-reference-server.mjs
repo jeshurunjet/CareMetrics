@@ -10,6 +10,8 @@ await cp("reference/figma-export", root, { recursive: true })
 // Compile the pure mock graph into isolated ESM files, preserving no application import.
 const sources = [
   "src/modules/staff/data/types.ts",
+  "src/modules/staff/notifications/adapter.ts",
+  "src/modules/staff/notifications/seed.ts",
   "src/modules/staff/data/selectors.ts",
   "src/modules/staff/data/queries.ts",
   "src/modules/staff/data/diary-adapter.ts",
@@ -177,7 +179,28 @@ const fixture = {
       by: snapshot.staff.find((e) => e.id === c.requestingEmployeeId)?.name,
     })),
   ],
-  concerns: [],
+  notices: snapshot.notices.map((n) => ({
+    ...n,
+    read: snapshot.notificationReads.some(
+      (r) => r.employeeId === snapshot.meId && r.notificationId === n.id,
+    ),
+  })),
+  concerns: snapshot.concerns.map((c) => ({
+    ...c,
+    targetType: c.context,
+    date: c.submittedAt,
+    by: snapshot.staff.find((e) => e.id === c.submittedById)?.name,
+    status: c.status === "Under Review" ? "Under review" : c.status,
+    notes: c.response
+      ? [
+          {
+            by: c.response.reviewerName,
+            date: c.response.at,
+            text: c.response.text,
+          },
+        ]
+      : [],
+  })),
   files: snapshot.attachments.map((f) => ({
     id: f.id,
     scope: f.association.scope,

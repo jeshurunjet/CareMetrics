@@ -118,3 +118,24 @@
 @media (max-width: 600px) {
  .cm-app .cm-leave .cm-leave-row > .cm-grow { flex-basis: 100%; }
 }
+
+/* Phase 1D.3: source notice/card/form layout, with readable wrapped metadata. */
+.cm-notifications .cm-notification-filters { display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin-top:16px; }
+.cm-notifications .cm-notification-filters > label { display:flex;flex-direction:column;gap:6px;min-width:140px;flex:1; }
+.cm-notifications .cm-notification-filters > .cm-search { flex-direction:row;align-items:center;min-width:200px; }
+.cm-notifications .cm-notice-item { text-align:left;width:100%; }
+.cm-notifications .cm-notice-item .cm-grow { min-width:0;overflow-wrap:anywhere; }
+.cm-notifications .cm-notice-item p { font-size:13px;color:var(--color-ink-muted);margin:8px 0; }
+.cm-notifications .cm-notice-labels { display:flex;align-items:center;flex-wrap:wrap;gap:10px; }
+.cm-notice-message { white-space:pre-wrap;overflow-wrap:anywhere; }
+.cm-concern-priority { border:0;padding:0;margin:0; }
+.cm-concern-priority legend { font-size:13px;font-weight:600;margin-bottom:8px; }
+.cm-notifications section[aria-label="My contextual concerns"] { margin-top:20px; }
+@media(max-width:600px) {
+  .cm-notifications .cm-concern-item { flex-wrap:wrap; }
+  .cm-notifications .cm-concern-item > .cm-grow { flex-basis:100%; }
+  .cm-notifications .cm-notification-filters > label { flex-basis:calc(50% - 12px);min-width:0; }
+  .cm-notifications .cm-notification-filters > .cm-search { flex-basis:100%; }
+  .cm-notifications .cm-notification-filters input { min-width:0;width:100%; }
+}
+.cm-modal-head h2 { overflow-wrap:anywhere;min-width:0; }
