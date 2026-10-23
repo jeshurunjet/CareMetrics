@@ -32,7 +32,29 @@ try {
     "no production preview button",
   )
   assert.ok(!login.includes("staff2fa"), "no prototype credentials")
+  assert.ok(
+    !login.includes("Preview administration"),
+    "no production Administration preview entry",
+  )
   const paths = [
+    "/admin",
+    "/admin/employees/new",
+    "/admin/employees/s1",
+    "/admin/employees/s1/edit",
+    "/admin/employees/a1?tab=account",
+    "/admin/employees/s1?tab=houses",
+    "/admin/houses/new",
+    "/admin/houses/h1",
+    "/admin/houses/h1/edit",
+    "/admin/houses/h3?tab=employees",
+    "/admin/houses/h1?tab=clients",
+    "/admin/clients/new",
+    "/admin/clients/c1",
+    "/admin/clients/c1/edit",
+    "/admin/clients/c1?tab=contacts",
+    "/admin/clients/c1?tab=house",
+    "/admin/clients/c4",
+    "/admin/dashboard?previewRole=Administrator",
     "/profile",
     "/profile?action=edit",
     "/profile?action=photo",

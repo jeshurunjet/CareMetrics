@@ -4,6 +4,11 @@ import "../index.css"
 import "../styles/staff.css"
 import "../styles/admin.css"
 import "../styles/bootstrap.css"
+import "../styles/admin-migration.css"
+import { isPreviewEnabled } from "@/lib/preview"
+import { developmentMockAdapter } from "@/modules/staff/data/development-mock-adapter"
+import StaffDataProvider from "@/modules/staff/data/context"
+export const dynamic = "force-dynamic"
 export const metadata: Metadata = {
   title: "CareMetrics",
   description: "CareMetrics application foundation — UI only",
@@ -21,7 +26,20 @@ export default function RootLayout({
   )
   return (
     <html lang="en-NZ">
-      <body>{children}</body>
+      <body>
+        {isPreviewEnabled() ? (
+          <StaffDataProvider
+            data={developmentMockAdapter.getSnapshot(
+              "s1",
+              process.env.CAREMETRICS_DEMO_NOW || new Date().toISOString(),
+            )}
+          >
+            {children}
+          </StaffDataProvider>
+        ) : (
+          children
+        )}
+      </body>
     </html>
   )
 }

@@ -1,5 +1,4 @@
 import { requirePreview } from "@/lib/require-preview"
-import { loadPreviewRecord } from "@/modules/staff/data/record-loader"
 import { isHouseTab } from "@/modules/staff/data/sections"
 import { notFound } from "next/navigation"
 import HouseProfile from "@/modules/staff/ui/HouseProfile"
@@ -12,7 +11,6 @@ export default async function Page({
 }) {
   requirePreview()
   const { id } = await params
-  loadPreviewRecord("house", id)
   const query = await searchParams
   const tab = query.tab ?? "overview"
   if (!isHouseTab(tab)) notFound()

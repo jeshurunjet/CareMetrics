@@ -29,13 +29,13 @@ Development sign-in → My Shifts → Dashboard is implemented; continuing witho
 
 | Export stack page | Proposed URL | Current status |
 | --- | --- | --- |
-| dashboard | `/admin/dashboard` | original content; ported shell/placeholder |
-| employees | `/admin/employees` | original; routed placeholder |
-| employee / employee-form | `/admin/employees/[id]`, `/admin/employees/new`, `/admin/employees/[id]/edit` | original; detail/form planned |
-| houses | `/admin/houses` | original; routed placeholder |
-| house / house-form | `/admin/houses/[id]`, `/admin/houses/new`, `/admin/houses/[id]/edit` | original; planned |
-| clients | `/admin/clients` | original; routed placeholder |
-| client / client-form | `/admin/clients/[id]`, `/admin/clients/new`, `/admin/clients/[id]/edit` | original; planned |
+| dashboard | `/admin/dashboard` | ported source-derived summary/queues/shared data; development only |
+| employees | `/admin/employees` | ported directory/search/filter/pagination |
+| employee / employee-form | `/admin/employees/[id]`, `/admin/employees/new`, `/admin/employees/[id]/edit` | ported overview/assignments/account, create/edit; bounded future operational tabs |
+| houses | `/admin/houses` | ported cards/list/search/filter/pagination |
+| house / house-form | `/admin/houses/[id]`, `/admin/houses/new`, `/admin/houses/[id]/edit` | ported core details, relationships/location, create/edit |
+| clients | `/admin/clients` | ported directory/search/filter/pagination |
+| client / client-form | `/admin/clients/[id]`, `/admin/clients/new`, `/admin/clients/[id]/edit` | ported profile/contacts/confirmed transfer, create/edit and bounded documentation summaries |
 | roster + shift drawer | `/admin/roster?tab=…&shiftId=…` | original; routed placeholder; drawer planned |
 | docs | `/admin/documentation?tab=…` | original; routed placeholder |
 | template | `/admin/documentation/templates/[id]` | original; planned |
@@ -171,3 +171,15 @@ Malformed/repeated/conflicting selectors and unknown tabs/actions/context subjec
 Existing `/profile` is own-only. `?action=edit` selects the source inline contact form; `?action=photo` selects the shared temporary picker. Only one optional recognised action is accepted. Unknown/repeated keys/actions and attempts to choose another employee return server 404; `/profile/[id]` does not exist. Cancel/save/photo completion replace the query with the own overview. Shared unsaved-change guards cover inline edits, Cancel, navigation, Back and supported reload prompts. Seeded own data refreshes normally; session contact/photo changes reset on reload/provider remount.
 
 Dashboard current-employee card, desktop sidebar and mobile menu reach Profile; assigned-house buttons use the same canonical house routes and assignments. Settings preserves Coming Soon and adds Back to Dashboard. Mobile drawer items expose current-page semantics. All nine primary Staff destinations and the continuous core journey are covered by the integration tests; Admin stays separate. Real authentication and server permission enforcement remain future work. See [Staff completion review](staff-ui-completion-review.md).
+
+## Phase 1E.1 Admin core and session scope
+
+Core Admin routes are ported, source-compared with documented extensions and tested; none is backend-connected. Operational placeholders remain explicitly deferred.
+
+`/admin` redirects to `/admin/dashboard`. Existing canonical entity routes above now render source-derived core management UI. Detail tabs use `?tab=`: Employees `overview|houses|roster|attendance|leave|account`; Houses `overview|employees|clients|location|diary|files|notices`; Clients `overview|contacts|house|diary|care|chart|files|notices|activity`. New Client from House uses the form's optional selected-house query, not a second creation route. `saved=1` displays explicit session-only confirmation.
+
+Every server page/layout retains `requirePreview`/equivalent development-only gating. Malformed/unknown tabs and invalid seeded identifiers show generic not-found. Session UUIDs can resolve during client navigation; after reload, missing records show unavailable after explicit preview opt-in. Fresh Admin direct requests require the development role opt-in; Login's existing explicit Administration preview entry selects it. Manager/Staff/Senior Staff demonstrations are labelled and never trusted security.
+
+The root development provider preserves one snapshot across these Admin routes and Staff. Initial Staff loads remain scoped. Admin data merges once; mutations update current employee/house/client relationships. Staff house/client/care/roster/notification route boundaries now validate current session scope instead of a stale fixed fixture, including during initial SSR. Existing production refusal, malformed-query and unrelated-record checks remain covered. Browser Back, refresh and breadcrumbs use canonical URLs.
+
+Future operational Admin routes remain labelled placeholders. Admin desktop gating remains UX only. See [Admin contracts](admin-core-data-management.md) for role limits, assignment dependency policy, contacts, transfers, privacy projection and outstanding backend requirements.

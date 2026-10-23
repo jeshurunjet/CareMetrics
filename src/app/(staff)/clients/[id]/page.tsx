@@ -1,8 +1,5 @@
 import { requirePreview } from "@/lib/require-preview"
-import {
-  loadPreviewRecord,
-  loadPreviewCareTemplate,
-} from "@/modules/staff/data/record-loader"
+import StaffCareScopeGuard from "@/modules/preview/StaffCareScopeGuard"
 import { isClientTab } from "@/modules/staff/data/sections"
 import { notFound } from "next/navigation"
 import ClientProfile from "@/modules/staff/ui/ClientProfile"
@@ -15,17 +12,11 @@ export default async function Page({
 }) {
   requirePreview()
   const { id } = await params
-  loadPreviewRecord("client", id)
   const query = await searchParams
   const tab = query.tab ?? "overview"
   if (!isClientTab(tab)) notFound()
   if ((tab === "care" || tab === "charting") && query.sub !== undefined) {
     if (typeof query.sub !== "string") notFound()
-    loadPreviewCareTemplate(
-      id,
-      query.sub,
-      tab === "charting" ? "chart" : "care",
-    )
   }
   if (
     tab === "files" &&
@@ -33,5 +24,17 @@ export default async function Page({
       (query.action !== undefined && typeof query.action !== "string"))
   )
     notFound()
-  return <ClientProfile key={id} id={id} tab={tab} />
+  const profile = <ClientProfile key={id} id={id} tab={tab} />
+  return (tab === "care" || tab === "charting") &&
+    typeof query.sub === "string" ? (
+    <StaffCareScopeGuard
+      clientId={id}
+      templateId={query.sub}
+      kind={tab === "charting" ? "chart" : "care"}
+    >
+      {profile}
+    </StaffCareScopeGuard>
+  ) : (
+    profile
+  )
 }

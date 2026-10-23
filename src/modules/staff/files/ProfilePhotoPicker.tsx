@@ -1,5 +1,6 @@
 "use client"
 /** Temporary URL ownership belongs to this hook’s caller; no uploaded-file metadata is created. */
+/** One resource registry for the shared session; keys distinguish employee/house/client photos. */
 import { useEffect, useRef, useState } from "react"
 import { Modal, Banner, Btn } from "../ui"
 import {
@@ -9,18 +10,41 @@ import {
   developmentFilePolicy,
 } from "./policy"
 import FileImage from "./FileImage"
-export function useTemporaryProfilePhoto() {
-  const [url, setUrl] = useState<string | undefined>(undefined)
-  useEffect(
-    () => () => {
-      if (url) URL.revokeObjectURL(url)
+export function useTemporaryEntityPhotos() {
+  const urls = useRef(new Map<string, string>())
+  useEffect(() => {
+    const owned = urls.current
+    return () => {
+      owned.forEach((url) => URL.revokeObjectURL(url))
+      owned.clear()
+    }
+  }, [])
+  const clear = () => {
+    urls.current.forEach((url) => URL.revokeObjectURL(url))
+    urls.current.clear()
+  }
+  return {
+    clear,
+    apply: (key: string, file: File) => {
+      const previous = urls.current.get(key)
+      if (previous) URL.revokeObjectURL(previous)
+      const url = URL.createObjectURL(file)
+      urls.current.set(key, url)
+      return url
     },
-    [url],
-  )
+  }
+}
+export function useTemporaryProfilePhoto() {
+  const photos = useTemporaryEntityPhotos()
+  const [url, setUrl] = useState<string | undefined>()
   return {
     url,
+    clear: () => {
+      photos.clear()
+      setUrl(undefined)
+    },
     apply: (file: File) => {
-      const next = URL.createObjectURL(file)
+      const next = photos.apply("profile", file)
       setUrl(next)
       return next
     },

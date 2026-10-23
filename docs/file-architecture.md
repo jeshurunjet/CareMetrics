@@ -49,3 +49,7 @@ Official notices resolve only explicitly referenced notification attachments aft
 ## Phase 1D.4 Staff identity photo
 
 The existing picker/policy is reused without a second upload component. StaffDataProvider owns the applied URL via the same temporary-photo hook and an action context, not a second employee or attachment store. Closing the picker revokes its selection URL independently of the provider URL; replacement and provider unmount revoke the applied URL. All displays read the same Employee.photo; no File/Blob contents, permanent upload or private public-storage URL is saved. Client/House resource lifetimes remain unchanged. See [Staff completion review](staff-ui-completion-review.md).
+
+## Phase 1E.1 shared management photos
+
+Admin entity forms reuse ProfilePhotoPicker and the same selection policy. Pending selections use the existing mounted-form photo hook. Applied employee/house/client URLs use an entity-keyed resource registry in the shared provider, in the same photo module, so replacing an employee photo from either interface revokes the previous applied URL. Different employees' photos retain independent lifetimes. Session reset/logout/unmount revokes all applied resources. No File/Blob contents, browser storage database, attachment upload or durable file metadata is introduced. Staff Client/House selection still has mounted-profile lifetime; an Admin-saved demonstration photo is a shared domain display value for the development session. This is not secure storage or real upload functionality.

@@ -1,6 +1,11 @@
+import AdminAccess from "@/modules/admin/ui/AdminAccess"
 import { requirePreview } from "@/lib/require-preview"
-import UnportedScreen from "@/components/UnportedScreen"
+import FutureModule from "@/modules/admin/ui/FutureModule"
 export default function Page() {
   requirePreview()
-  return <UnportedScreen title="Files & Galleries" />
+  return (
+    <AdminAccess>
+      <FutureModule title="Files & Galleries" />
+    </AdminAccess>
+  )
 }

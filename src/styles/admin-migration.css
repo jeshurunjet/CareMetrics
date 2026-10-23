@@ -1,0 +1,36 @@
+/* Scoped extensions for source-derived Admin previews. Original CSS stays intact. */
+.ad-app .ad-nav a { display:flex; align-items:center; gap:10px; text-decoration:none; }
+.ad-app .ad-pop a { display:flex; align-items:center; gap:10px; padding:10px 14px; color:inherit; text-decoration:none; }
+.ad-app .ad-pop a:hover { background:var(--cm-bg,#f4f6f9); }
+.ad-app .ad-queue a { display:flex; width:100%; color:inherit; text-decoration:none; padding:10px 0; }
+.ad-app .ad-queue a strong,.ad-app .ad-queue a span { display:block; }
+.ad-app .ad-queue a span { font-size:12px; color:var(--cm-muted,#7d899c); }
+.ad-app .ad-house-tile { color:inherit; text-decoration:none; }
+.ad-app .ad-photo-row { flex-wrap:wrap; }
+.ad-app .ad-photo-row .cm-avatar { flex-shrink:0; }
+.ad-app .ad-form-side .ad-photo-row { align-items:flex-start; }
+.ad-app .ad-loc-map .cm-map,.ad-app .ad-loc-map .cm-map-wrap { height:100%; min-height:280px; }
+.ad-app .ad-loc-map { min-height:280px; }
+.ad-app .ad-table-wrap { max-width:100%; position:relative; }
+.ad-app .ad-table td,.ad-app .ad-kv dd,.ad-app .ad-head-title { overflow-wrap:anywhere; }
+.ad-app a:focus-visible,.ad-app button:focus-visible,.ad-app select:focus-visible { outline:2px solid #1a6b7a; outline-offset:3px; }
+.ad-app .ad-entity-form { min-width:0; display:flex; flex-direction:column; gap:1.25rem; }
+.ad-app .ad-activity>li { display:flex; gap:10px; }
+.ad-app .ad-top-actions .ad-icon-btn { color:inherit; text-decoration:none; }
+.ad-app .ad-pop--account .cm-input { margin:8px 12px; width:calc(100% - 24px); }
+
+.ad-desktop-guard h2 { margin:.5rem 0 0; font-family:var(--font-display); font-weight:400; font-size:1.75rem; }
+
+/* Match source button geometry for semantic navigation links. */
+.ad-app .ad-nav-group > a { position:relative; height:2.4rem; gap:.7rem; padding:0 .65rem; border-radius:.55rem; font-size:.85rem; font-weight:500; white-space:nowrap; }
+.ad-app .ad-nav-group > a svg { flex-shrink:0; opacity:.8; }
+.ad-app .ad-nav-group > a.active,.ad-app .ad-nav-group > a.active:hover { background:color-mix(in srgb,var(--color-brand-mid) 26%,transparent); color:white; font-weight:600; }
+.ad-app .ad-nav-group > a.active::before { content:""; position:absolute; left:-.625rem; top:.5rem; bottom:.5rem; width:3px; border-radius:0 3px 3px 0; background:var(--color-brand-mid); }
+.ad-app--collapsed .ad-nav-group > a { justify-content:center; padding:0; }
+.ad-app .ad-table { min-width:720px; }
+.ad-app .ad-table td { overflow-wrap:normal; }
+.ad-app .ad-cell-user { min-width:120px; }
+.ad-app .ad-activity > li { padding:.65rem .25rem; border-bottom:1px solid var(--ad-line); gap:.75rem; }
+.ad-app .ad-activity > li:last-child { border-bottom:0; }
+.ad-app .ad-queue a { gap:.75rem; padding:.6rem .7rem; border:1px solid var(--ad-line); border-radius:.65rem; }
+.ad-app .ad-queue a:hover { border-color:color-mix(in srgb,var(--color-brand) 40%,transparent); background:var(--ad-row); }

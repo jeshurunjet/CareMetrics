@@ -7,8 +7,8 @@ import { useEffect, useRef, useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import Icon from "@/components/Icon"
 import Avatar from "@/modules/staff/ui/Avatar"
-import StaffDataProvider, { useStaffData } from "@/modules/staff/data/context"
-import type { StaffSnapshot } from "@/modules/staff/data/types"
+import { useStaffData } from "@/modules/staff/data/context"
+import { usePreviewSession } from "@/modules/preview/context"
 import { me, myHouses } from "@/modules/staff/data/selectors"
 import { clearMockSession } from "@/modules/auth/mock-session"
 import { unreadCount } from "@/modules/staff/notifications/adapter"
@@ -21,19 +21,11 @@ const SECTION: Record<string, string> = {
 
 export default function StaffShell({
   children,
-  data,
 }: {
-  data: StaffSnapshot
   children: React.ReactNode
 }) {
-  return (
-    <StaffDataProvider data={data}>
-      <StaffShellContent>{children}</StaffShellContent>
-    </StaffDataProvider>
-  )
-}
-function StaffShellContent({ children }: { children: React.ReactNode }) {
   const data = useStaffData()
+  const preview = usePreviewSession()
   const router = useRouter()
   const path = usePathname()
   const query = useSearchParams().toString()
@@ -52,6 +44,7 @@ function StaffShellContent({ children }: { children: React.ReactNode }) {
   const unread = unreadCount(data)
   const onLogout = () => {
     clearMockSession()
+    preview.reset()
     router.push("/login")
   }
   const top = (page: string) => {

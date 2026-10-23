@@ -30,6 +30,11 @@ export interface Employee {
   photo?: string
 }
 export interface House {
+  code?: string
+  suburb?: string
+  status?: "Active" | "Inactive"
+  locationSet?: boolean
+  geofence?: number | null
   id: string
   name: string
   address: string
@@ -46,6 +51,7 @@ export interface HouseAssignment {
   houseId: string
 }
 export interface ClientContact {
+  address?: string
   id: string
   name: string
   relation: string
@@ -56,6 +62,9 @@ export interface ClientContact {
   notes?: string
 }
 export interface Client {
+  ref?: string
+  nhi?: string
+  status?: "Active" | "Inactive"
   id: string
   name: string
   preferred: string
@@ -92,7 +101,12 @@ export interface Notice {
   audience?: string
   status: "Published" | "Draft"
 }
+export interface Organisation {
+  id: string
+  name: string
+}
 export interface StaffSnapshot {
+  organisation?: Organisation
   concerns: Concern[]
   notificationReads: NotificationReadState[]
   leaveTypes: LeaveType[]

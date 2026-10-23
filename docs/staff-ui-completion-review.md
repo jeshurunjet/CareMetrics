@@ -80,7 +80,7 @@ ProfilePhotoPicker, the shared selection policy and useTemporaryProfilePhoto are
 | `/profile` | Session-only contact changes and temporary photo; account status explicitly a fictional fixture, security services unavailable. | Auth.js identity, server self-service allowlist, approved privacy policy and real employee writes. |
 | `/settings` | Intentional Coming Soon with Dashboard return. | Secondary requirements/backend phase, not an unfinished navigation migration. |
 | All Staff domain writes | No database, durable audit or real management delivery. | Backend integration, organisation/privacy/security/operations acceptance. |
-| `/admin/*` | Existing separate desktop gate/shell/placeholders, no Staff navigation entry added. | Future bounded desktop CMS migration; the width gate is UX, not authorisation. |
+| `/admin/*` | Phase 1E.1 adds separate desktop core management; operational modules remain placeholders and no Staff Admin navigation is added. | Development-only shared state; the width gate is UX, not authorisation. See Admin contracts. |
 
 Unused original legacy views and local reference source remain preserved. Dormant placeholder helpers are not used as replacements for completed primary Staff screens. There is no new fabricated success or unrelated feature implemented to eliminate these deliberate boundaries.
 
@@ -126,3 +126,7 @@ Recommended next step: review the completed Staff UI and agree the first bounded
 ## Changed files
 
 New `staff/profile/` modules: MyProfile, ProfileEditForm, AssignedHouses, Settings, adapter and types. Existing Employee/snapshot builder/context, shared photo picker, Staff shell/sidebar, Profile/Settings routes, scoped bootstrap CSS and Next dev-indicator configuration are extended. New profile unit and integration/browser tests; optional Firefox configuration/script and generated-output exclusion. Reference/production scripts, README, route/status/migration/file contracts, historical 1D.3 status and comparison evidence are updated. No original CSS/reference asset, existing domain record ID or Admin implementation changes.
+
+## Phase 1E.1 shared-boundary update
+
+The completed Staff screen layouts remain preserved. The existing snapshot provider now lives above Staff/Admin during development so core management edits propagate within the same session. Initial Staff payloads remain scoped; visiting the explicitly opted-in Admin tree adds the broader fictional dataset to that one browser state, which is not a confidentiality boundary. Staff reads still use the scoped projection. Management assignment/status/transfer changes alter current house/client visibility without deleting historical records. Session-aware route checks replace fixed s1 seed reads where those would reject newly assigned or created entities; production refusal and initial invalid-ID scope checks remain. Photo resource ownership is shared by entity across Admin/Staff, using the existing picker/policy and URL lifecycle helper. See [Admin contracts](admin-core-data-management.md) for exact limitations. Staff profile self-service allowlist and real attendance restrictions remain unchanged.

@@ -1,6 +1,11 @@
+import AdminAccess from "@/modules/admin/ui/AdminAccess"
 import { requirePreview } from "@/lib/require-preview"
-import UnportedScreen from "@/components/UnportedScreen"
+import EmployeeDirectory from "@/modules/admin/employees/EmployeeDirectory"
 export default function Page() {
   requirePreview()
-  return <UnportedScreen title="Employees" />
+  return (
+    <AdminAccess>
+      <EmployeeDirectory />
+    </AdminAccess>
+  )
 }

@@ -1,11 +1,9 @@
+import { isStaffPreviewRole } from "../data/permissions"
 import type { StaffSnapshot, Employee } from "../data/types"
 import type { ProfileInput } from "./types"
 export function getMyProfile(s: StaffSnapshot) {
   const employee = s.staff.find((e) => e.id === s.meId)
-  return employee &&
-    ["Support Worker", "Manager", "Administrator"].includes(employee.role)
-    ? employee
-    : undefined
+  return employee && isStaffPreviewRole(employee.role) ? employee : undefined
 }
 export const editableProfileFields = ["phone", "address", "emergency"] as const
 export function validateProfileInput(

@@ -35,3 +35,5 @@ coverage/
 /reference/
 
 test-results-firefox/
+
+test-results-admin/

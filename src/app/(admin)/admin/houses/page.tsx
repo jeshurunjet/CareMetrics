@@ -1,6 +1,11 @@
+import AdminAccess from "@/modules/admin/ui/AdminAccess"
 import { requirePreview } from "@/lib/require-preview"
-import UnportedScreen from "@/components/UnportedScreen"
+import HouseDirectory from "@/modules/admin/houses/HouseDirectory"
 export default function Page() {
   requirePreview()
-  return <UnportedScreen title="Houses" />
+  return (
+    <AdminAccess>
+      <HouseDirectory />
+    </AdminAccess>
+  )
 }

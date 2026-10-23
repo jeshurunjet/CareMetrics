@@ -1,6 +1,5 @@
 import { requirePreview } from "@/lib/require-preview"
-import { loadPreviewCareTemplate } from "@/modules/staff/data/record-loader"
-import AssessmentForm from "@/modules/staff/care/AssessmentForm"
+import AssessmentEntryRoute from "@/modules/preview/AssessmentEntryRoute"
 import { notFound } from "next/navigation"
 export default async function Page({
   params,
@@ -17,11 +16,9 @@ export default async function Page({
     (draft !== undefined && typeof draft !== "string")
   )
     notFound()
-  const assigned = loadPreviewCareTemplate(id, templateId)
   return (
-    <AssessmentForm
+    <AssessmentEntryRoute
       key={`${id}-${templateId}-${draft ?? "new"}`}
-      kind={assigned.template.kind}
       clientId={id}
       templateId={templateId}
       draftId={draft}

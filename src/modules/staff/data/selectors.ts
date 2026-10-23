@@ -1,11 +1,19 @@
+import { isStaffPreviewRole } from "./permissions"
 import type { StaffSnapshot, Shift } from "./types"
 export const me = (s: StaffSnapshot) => s.staff.find((x) => x.id === s.meId)!
 export const myHouses = (s: StaffSnapshot) =>
-  s.houses.filter((h) =>
-    s.assignments.some((a) => a.employeeId === s.meId && a.houseId === h.id),
+  s.houses.filter(
+    (h) =>
+      isStaffPreviewRole(me(s)?.role) &&
+      h.status !== "Inactive" &&
+      me(s)?.status !== "Inactive" &&
+      s.assignments.some((a) => a.employeeId === s.meId && a.houseId === h.id),
   )
 export const myClients = (s: StaffSnapshot) =>
-  s.clients.filter((c) => myHouses(s).some((h) => h.id === c.houseId))
+  s.clients.filter(
+    (c) =>
+      c.status !== "Inactive" && myHouses(s).some((h) => h.id === c.houseId),
+  )
 export const myShifts = (s: StaffSnapshot) =>
   s.shifts
     .filter(
@@ -26,11 +34,7 @@ export const highlightedShift = (s: StaffSnapshot) =>
 export const visibleNotices = (s: StaffSnapshot) =>
   s.notices
     .filter((n) => {
-      if (
-        !me(s) ||
-        !["Support Worker", "Manager", "Administrator"].includes(me(s).role) ||
-        n.status !== "Published"
-      )
+      if (!me(s) || !isStaffPreviewRole(me(s).role) || n.status !== "Published")
         return false
       const audience = n.targetAudience
       const audienceOk =

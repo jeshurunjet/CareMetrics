@@ -1,6 +1,6 @@
 # CareMetrics
 
-Phase 1D.4 Staff Profile, Settings and final UI integration on the Next.js foundation for a New Zealand disability-support care/workforce application. This is a UI-only development preview, with no real authentication, persistence, GPS verification or file services. Use fictional data only.
+Phase 1E.1 desktop Admin foundations and core Employee, House and Client management on the Next.js foundation for a New Zealand disability-support care/workforce application. This is a UI-only development preview, with no real authentication, persistence, GPS verification or file services. Use fictional data only.
 
 ## Run locally
 
@@ -45,3 +45,7 @@ Next.js/React/TypeScript are active. Auth.js, Prisma, Neon PostgreSQL, private V
 `reference/` is local-only and excluded from Git. Fresh clones run all functional browser checks and migrated-screen captures; original-export comparisons run additionally when the local reference is present. Set `CAREMETRICS_SKIP_REFERENCE=true` to verify the no-reference path explicitly. Historical docs describe the locally retained originals.
 
 For representative Firefox smoke checks, install the isolated Playwright test browser with `pnpm exec playwright install firefox`, then run `pnpm test:e2e:firefox`. On this host Firefox currently fails before application execution with `Could not find profile folder`; no Firefox application pass is claimed. This is selected desktop smoke coverage, not full browser/device certification. See [Staff UI completion review](docs/staff-ui-completion-review.md) for routes, remaining placeholders and future integration boundaries.
+
+The desktop Admin core preview now includes Dashboard, Employees, Houses, Clients, Contacts/NOK and confirmed assignment/transfer workflows. From development Login choose **Preview administration**. Fresh direct Admin entry requires explicit development opt-in; role demonstrations are in the labelled account disclosure. Admin edits and Staff views share one in-memory session; reload resets records and roles. Never introduce real personnel/client/health data. Operational Admin modules remain future placeholders. Read [Admin core contracts](docs/admin-core-data-management.md).
+
+Run `pnpm test:e2e:admin` for Admin workflow/comparison checks at 375/390/768 (desktop notice) and 1280/1440/1600px. The ordinary full browser command retains all earlier Staff tests and includes Admin coverage at its established five widths.

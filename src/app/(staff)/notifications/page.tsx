@@ -1,8 +1,7 @@
 import { notFound } from "next/navigation"
 import { requirePreview } from "@/lib/require-preview"
 import Notifications from "@/modules/staff/notifications/Notifications"
-import { developmentMockAdapter } from "@/modules/staff/data/development-mock-adapter"
-import { canSubmitConcern } from "@/modules/staff/notifications/adapter"
+import StaffRouteScopeGuard from "@/modules/preview/StaffRouteScopeGuard"
 export default async function Page({
   searchParams,
 }: PageProps<"/notifications">) {
@@ -20,13 +19,9 @@ export default async function Page({
     (q.concernId && q.tab !== "concerns")
   )
     notFound()
-  if (q.context && q.targetId) {
-    const s = developmentMockAdapter.getSnapshot(
-      "s1",
-      process.env.CAREMETRICS_DEMO_NOW || new Date().toISOString(),
-    )
-    if (!canSubmitConcern(s, q.context as string, q.targetId as string))
-      notFound()
-  }
-  return <Notifications />
+  return (
+    <StaffRouteScopeGuard kind="notifications" q={q}>
+      <Notifications />
+    </StaffRouteScopeGuard>
+  )
 }

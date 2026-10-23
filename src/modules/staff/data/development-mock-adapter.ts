@@ -1,14 +1,9 @@
-import { projectEmployee } from "../profile/adapter"
+import { projectStaffSnapshot } from "./projection"
 import { seedConcerns } from "../notifications/seed"
-import { getMyConcerns, projectConcern } from "../notifications/adapter"
 import { leaveTypes, seedLeave } from "../leave/seed"
 import { leaveQueries } from "../leave/adapter"
 import { seedScheduleHistory } from "../roster/seed"
-import {
-  rosterQueries,
-  getOwnAttendance,
-  getAttendanceCorrections,
-} from "../roster/adapter"
+import { rosterQueries } from "../roster/adapter"
 import { fileQueries } from "../files/adapter"
 import { seedAttachments } from "../files/seed"
 import type { StaffSnapshot } from "./types"
@@ -28,7 +23,7 @@ import { careQueries } from "../care/adapter"
 import { careTemplates, careAssignments, seedCareRecords } from "../care/seed"
 import { diaryQueries } from "./diary-adapter"
 import { seedDiary, diaryCategories } from "./diary-seed"
-import { myHouses, myClients, visibleNotices } from "./selectors"
+import { myHouses, myClients } from "./selectors"
 /** FICTIONAL DEVELOPMENT DATA ONLY. Not an API, database, identity or permission control. */
 export const developmentMockAdapter = {
   ...leaveQueries,
@@ -43,12 +38,16 @@ export const developmentMockAdapter = {
   getClient,
   getClientContacts,
   search: searchStaff,
-  getSnapshot(employeeId: string, now: string): StaffSnapshot {
+  getSnapshot(employeeId: string, now: string, full = false): StaffSnapshot {
     const at = (hours: number) =>
       new Date(Date.parse(now) + hours * 3600000).toISOString()
     const leave = seedLeave(now)
     const history = seedScheduleHistory(now)
     const s: StaffSnapshot = {
+      organisation: {
+        id: "caremetrics-demo",
+        name: "CareMetrics fictional organisation",
+      },
       concerns: seedConcerns(now),
       notificationReads: [
         { notificationId: "n3", employeeId: "s1", readAt: at(-4) },
@@ -417,80 +416,39 @@ export const developmentMockAdapter = {
     }
     if (!s.staff.some((e) => e.id === employeeId))
       throw new Error("Unknown fictional employee")
-    const houses = myHouses(s)
-    const clients = myClients(s)
-    return {
-      ...s,
-      houses,
-      concerns: getMyConcerns(s).map(projectConcern),
-      notificationReads: s.notificationReads.filter(
-        (r) =>
-          r.employeeId === employeeId &&
-          visibleNotices(s).some((n) => n.id === r.notificationId),
-      ),
-      leaveRequests: leaveQueries.getMyLeave(s),
-      leaveBalances: leaveQueries.getMyLeaveBalances(s),
-      attendance: s.attendance.filter((a) => !!getOwnAttendance(s, a.id)),
-      attendanceCorrections: s.attendance.flatMap((a) =>
-        getAttendanceCorrections(s, a.id),
-      ),
-      attachments: [
-        ...s.attachments.filter(
-          (f) =>
-            f.association.scope === "notification" &&
-            visibleNotices(s).some(
-              (n) =>
-                n.id === f.association.targetId &&
-                n.attachmentIds?.includes(f.id),
-            ),
-        ),
-        ...clients.flatMap((c) =>
-          fileQueries.getGalleryFiles(s, { scope: "client", targetId: c.id }),
-        ),
-        ...houses.flatMap((h) =>
-          fileQueries.getGalleryFiles(s, { scope: "house", targetId: h.id }),
-        ),
-      ],
-      staff: s.staff
-        .filter(
-          (e) =>
-            e.id === employeeId ||
-            s.assignments.some(
-              (a) =>
-                a.employeeId === e.id && houses.some((h) => h.id === a.houseId),
-            ),
-        )
-        .map((e) => projectEmployee(e, employeeId)),
-      clients,
-      assignments: s.assignments.filter((a) =>
-        houses.some((h) => h.id === a.houseId),
-      ),
-      shifts: s.shifts.filter((sh) => houses.some((h) => h.id === sh.houseId)),
-      notices: visibleNotices(s),
-      diary: diaryQueries.getHistory(s, undefined),
-      careAssignments: s.careAssignments.filter((a) =>
-        clients.some((c) => c.id === a.clientId),
-      ),
-      careTemplates: s.careTemplates.filter((t) =>
-        clients.some((c) =>
-          careQueries.getAssignedCareTemplate(s, c.id, t.id, t.kind),
-        ),
-      ),
-      careRecords: clients.flatMap((c) =>
-        careQueries
-          .getAssignedCareTemplates(s, c.id, "care")
-          .concat(careQueries.getAssignedCareTemplates(s, c.id, "chart"))
-          .flatMap((t) => careQueries.getCareRecords(s, c.id, t.template.id)),
-      ),
-      corrections: s.corrections.filter((c) =>
-        c.recordType === "care"
-          ? s.careRecords.some(
-              (r) =>
-                r.id === c.recordId &&
-                careQueries.getCareRecord(s, r.clientId, r.templateId, r.id),
-            )
-          : diaryQueries.getHistory(s).some((d) => d.id === c.recordId),
-      ),
+    if (full) {
+      s.staff.push(
+        {
+          id: "m1",
+          name: "Mere Walker (demo)",
+          employeeId: "EMP-MANAGER",
+          email: "manager@example.invalid",
+          role: "Manager",
+          status: "Active",
+        },
+        {
+          id: "a1",
+          name: "Example Administrator",
+          employeeId: "EMP-ADMIN",
+          email: "administrator@example.invalid",
+          role: "Administrator",
+          status: "Active",
+        },
+      )
+      s.staff = s.staff.map((e) => ({ ...e, status: e.status ?? "Active" }))
+      s.houses = s.houses.map((h, i) => ({
+        ...h,
+        code: `HOUSE-${i + 1}`,
+        status: "Active",
+        locationSet: true,
+      }))
+      s.clients = s.clients.map((c, i) => ({
+        ...c,
+        ref: `CLIENT-${i + 1}`,
+        status: "Active",
+      }))
+      return s
     }
+    return projectStaffSnapshot(s)
   },
 }

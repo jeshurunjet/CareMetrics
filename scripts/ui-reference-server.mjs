@@ -9,6 +9,8 @@ await mkdir(root, { recursive: true })
 await cp("reference/figma-export", root, { recursive: true })
 // Compile the pure mock graph into isolated ESM files, preserving no application import.
 const sources = [
+  "src/modules/staff/data/permissions.ts",
+  "src/modules/staff/data/projection.ts",
   "src/modules/staff/data/types.ts",
   "src/modules/staff/profile/adapter.ts",
   "src/modules/staff/notifications/adapter.ts",
@@ -70,7 +72,7 @@ const { demoAssets } = await import(
   pathToFileURL(compiled.get(resolve("src/modules/staff/files/demo-assets.ts")))
 )
 const fixtureAssetPath = (id) => demoAssets[id]?.path
-const fixture = {
+const buildFixture = (snapshot) => ({
   ...snapshot,
   staff: snapshot.staff.map((e) => ({
     ...e,
@@ -242,8 +244,39 @@ const fixture = {
   org: {},
   perms: {},
   admin: { role: "Administrator", userId: "s1" },
-}
+})
+const fixture = buildFixture(snapshot)
 await writeFile(join(root, "fixture.json"), JSON.stringify(fixture))
+const adminSnapshot = developmentMockAdapter.getSnapshot(
+  "s1",
+  "2026-10-22T01:00:00.000Z",
+  true,
+)
+const adminFixture = buildFixture(adminSnapshot)
+adminFixture.admin = { role: "Administrator", userId: "a1" }
+adminFixture.org = { name: "CareMetrics fictional organisation" }
+adminFixture.perms = Object.fromEntries(
+  [
+    "Create staff accounts",
+    "Assign Administrator role",
+    "Deactivate accounts",
+    "System configuration",
+    "Manage houses & clients",
+    "View client NHI",
+  ].map((action) => [
+    action,
+    {
+      Administrator: true,
+      Manager: !["Assign Administrator role", "System configuration"].includes(
+        action,
+      ),
+      Staff: false,
+      "Senior Staff": false,
+    },
+  ]),
+)
+await writeFile(join(root, "admin-fixture.json"), JSON.stringify(adminFixture))
+
 const store = await readFile(join(root, "staff/store.ts"), "utf8")
 await writeFile(
   join(root, "staff/store.ts"),
@@ -259,7 +292,7 @@ await writeFile(
 )
 await writeFile(
   join(root, "comparison.tsx"),
-  `import React from 'react';import {createRoot} from 'react-dom/client';import StaffApp from './staff/StaffApp';import LoginView from './views/LoginView';import './index.css';import {update} from './staff/store';if(new URLSearchParams(location.search).get('scenario')==='leave-empty')update(()=>({leave:[]}));const login=new URLSearchParams(location.search).get('screen')==='login';createRoot(document.getElementById('root')!).render(login?<LoginView onLogin={()=>{}}/>:<StaffApp onLogout={()=>{}}/>);`,
+  `import React from 'react';import {createRoot} from 'react-dom/client';import StaffApp from './staff/StaffApp';import AdminApp from './admin/AdminApp';import adminFixture from './admin-fixture.json';import LoginView from './views/LoginView';import './index.css';import {update} from './staff/store';if(new URLSearchParams(location.search).get('scenario')==='leave-empty')update(()=>({leave:[]}));const screen=new URLSearchParams(location.search).get('screen');const login=screen==='login';if(screen==='admin')update(()=>adminFixture);createRoot(document.getElementById('root')!).render(screen==='admin'?<AdminApp initialRole='Administrator' onLogout={()=>{}}/>:login?<LoginView onLogin={()=>{}}/>:<StaffApp onLogout={()=>{}}/>);`,
 )
 const require = createRequire(import.meta.url)
 const fromVitest = createRequire(require.resolve("vitest/package.json"))

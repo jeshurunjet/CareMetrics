@@ -1,3 +1,4 @@
+import { isStaffPreviewRole } from "../data/permissions"
 import type { StaffSnapshot, Notice } from "../data/types"
 import { me, myClients, myHouses, visibleNotices } from "../data/selectors"
 import { validateFileSelection } from "../files/policy"
@@ -38,10 +39,7 @@ export const canSubmitConcern = (
   s: StaffSnapshot,
   context: string,
   id: string,
-) =>
-  !!me(s) &&
-  ["Support Worker", "Manager", "Administrator"].includes(me(s).role) &&
-  !!contextName(s, context, id)
+) => !!me(s) && isStaffPreviewRole(me(s).role) && !!contextName(s, context, id)
 /** Explicit projection strips internal/management-only properties even with a broader fixture. */
 export function projectConcern(c: Concern): Concern {
   return {

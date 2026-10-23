@@ -1,9 +1,13 @@
 "use client"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Icon from "@/components/Icon"
-import Avatar from "@/components/Avatar"
+import AdminHeader from "@/modules/admin/ui/AdminHeader"
+import { usePreviewSession } from "@/modules/preview/context"
+import { canManage } from "@/modules/admin/data/adapter"
+import { Locked } from "@/modules/admin/ui/core"
+import type { StaffSnapshot } from "@/modules/staff/data/types"
 const groups = [
   {
     title: "Main",
@@ -39,22 +43,41 @@ const groups = [
 ]
 export default function AdminShell({
   children,
+  data,
 }: {
   children: React.ReactNode
+  data: StaffSnapshot
 }) {
+  const session = usePreviewSession()
+  useEffect(() => {
+    if (canManage(session.role) && !session.loaded) session.load(data)
+  }, [session, data])
+  const badges: Record<string, number> = {
+    roster: session.data.attendanceCorrections.filter(
+      (c) => c.status === "pending",
+    ).length,
+    documentation: session.data.corrections.filter(
+      (c) => c.status === "pending",
+    ).length,
+    leave: session.data.leaveRequests.filter((l) => l.status === "pending")
+      .length,
+    notifications: session.data.concerns.filter((c) => c.status === "Submitted")
+      .length,
+  }
   const [collapsed, setCollapsed] = useState(false)
   const path = usePathname()
   const title =
     groups
       .flatMap((g) => g.items)
-      .find(([page]) => path === `/admin/${page}`)?.[1] ?? "Administration"
+      .find(([page]) => path.startsWith(`/admin/${page}`))?.[1] ??
+    "Administration"
   return (
     <>
       <div className="ad-desktop-guard">
         <span className="cm-logo">
           <Icon name="logo" />
         </span>
-        <h1>Desktop required</h1>
+        <h2>Desktop required</h2>
         <p>
           CareMetrics Administration is available on desktop browsers. Please
           open this interface on a larger screen.
@@ -88,14 +111,21 @@ export default function AdminShell({
                   <Link
                     key={page}
                     href={`/admin/${page}`}
-                    className={path === `/admin/${page}` ? "active" : ""}
+                    className={
+                      path.startsWith(`/admin/${page}`) ? "active" : ""
+                    }
                     aria-current={
-                      path === `/admin/${page}` ? "page" : undefined
+                      path.startsWith(`/admin/${page}`) ? "page" : undefined
                     }
                     title={collapsed ? label : undefined}
                   >
                     <Icon name={icon} size={17} />
                     <span className="ad-lbl">{label}</span>
+                    {canManage(session.role) &&
+                      session.loaded &&
+                      badges[page] > 0 && (
+                        <b className="ad-lbl ad-nav-badge">{badges[page]}</b>
+                      )}
                   </Link>
                 ))}
               </div>
@@ -103,32 +133,35 @@ export default function AdminShell({
           </nav>
           <div className="ad-sidebar-foot ad-lbl">
             <Icon name="layers" size={13} />
-            UI ONLY · no live records
+            Prototype data · resets on reload
           </div>
         </aside>
         <div className="ad-main">
-          <header className="ad-topbar">
-            <div className="ad-top-title">
-              <span>{title}</span>
-            </div>
-            <div className="ad-gsearch">
-              <Icon name="search" size={16} />
-              <input
-                disabled
-                placeholder="Search employees, houses, clients, templates…"
-                aria-label="Global search (not implemented)"
-              />
-            </div>
-            <div className="ad-top-actions">
-              <Avatar />
-              <Link href="/login">Exit preview</Link>
-            </div>
-          </header>
+          <AdminHeader title={title} />
           <main className="ad-content">
             <div className="ad-page">
               <p className="cm-hint">
                 UI ONLY · development preview · no authentication or persistence
               </p>
+              {canManage(session.role) ? (
+                !session.loaded && (
+                  <p role="status">Loading shared development records…</p>
+                )
+              ) : (
+                <>
+                  <Locked text="Staff and Senior Staff cannot use Admin management screens or mutations." />
+                  <p className="ad-faint">
+                    Explicit development role demonstration · unavailable in
+                    production.
+                  </p>
+                  <button
+                    className="cm-btn cm-btn--primary cm-btn--md"
+                    onClick={() => session.setRole("Administrator")}
+                  >
+                    Open Administrator preview
+                  </button>
+                </>
+              )}
               {children}
             </div>
           </main>

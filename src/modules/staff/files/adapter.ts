@@ -1,16 +1,11 @@
+import { isStaffPreviewRole } from "../data/permissions"
 import type { StaffSnapshot } from "../data/types"
 import type { GallerySubject, FileRecord, FileSelectionMetadata } from "./types"
 import { getClient, getHouse } from "../data/queries"
 import { demoAssets } from "./demo-assets"
 import { validateFileSelection } from "./policy"
 export function getGallerySubject(s: StaffSnapshot, subject: GallerySubject) {
-  if (
-    !s.staff.some(
-      (e) =>
-        e.id === s.meId &&
-        ["Support Worker", "Manager", "Administrator"].includes(e.role),
-    )
-  )
+  if (!s.staff.some((e) => e.id === s.meId && isStaffPreviewRole(e.role)))
     return undefined
   return subject.scope === "client"
     ? getClient(s, subject.targetId)
