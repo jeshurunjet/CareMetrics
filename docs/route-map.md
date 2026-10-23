@@ -31,12 +31,12 @@ Development sign-in → My Shifts → Dashboard is implemented; continuing witho
 | --- | --- | --- |
 | dashboard | `/admin/dashboard` | ported source-derived summary/queues/shared data; development only |
 | employees | `/admin/employees` | ported directory/search/filter/pagination |
-| employee / employee-form | `/admin/employees/[id]`, `/admin/employees/new`, `/admin/employees/[id]/edit` | ported overview/assignments/account, create/edit; bounded future operational tabs |
+| employee / employee-form | `/admin/employees/[id]`, `/admin/employees/new`, `/admin/employees/[id]/edit` | ported overview/assignments/account, create/edit and linked workforce records |
 | houses | `/admin/houses` | ported cards/list/search/filter/pagination |
 | house / house-form | `/admin/houses/[id]`, `/admin/houses/new`, `/admin/houses/[id]/edit` | ported core details, relationships/location, create/edit |
 | clients | `/admin/clients` | ported directory/search/filter/pagination |
 | client / client-form | `/admin/clients/[id]`, `/admin/clients/new`, `/admin/clients/[id]/edit` | ported profile/contacts/confirmed transfer, create/edit and bounded documentation summaries |
-| roster + shift drawer | `/admin/roster?tab=…&shiftId=…` | original; routed placeholder; drawer planned |
+| roster + shift drawer | `/admin/roster?tab=…&shiftId=…` | ported roster/shift/attendance/timesheet/correction views and development-only query drawers |
 | docs | `/admin/documentation?tab=…` | original; routed placeholder |
 | template | `/admin/documentation/templates/[id]` | original; planned |
 | record | `/admin/documentation/records/[id]` | original; planned |
@@ -44,7 +44,7 @@ Development sign-in → My Shifts → Dashboard is implemented; continuing witho
 | files + file drawer | `/admin/files?fileId=…` | original; routed placeholder; drawer planned |
 | notices | `/admin/notifications?tab=…` | original; routed placeholder |
 | notice-form / concern | `/admin/notifications/new`, `/admin/notifications/[id]/edit`, `/admin/concerns/[id]` | original; planned |
-| leave + leave drawer | `/admin/leave?requestId=…` | original; routed placeholder; drawer planned |
+| leave + leave drawer | `/admin/leave?requestId=…` | ported pending/all/calendar and development-only request review |
 | reports (incl. audit) | `/admin/reports?tab=…` | original; routed placeholder |
 | settings | `/admin/settings?tab=…` | original; routed placeholder |
 
@@ -183,3 +183,22 @@ Every server page/layout retains `requirePreview`/equivalent development-only ga
 The root development provider preserves one snapshot across these Admin routes and Staff. Initial Staff loads remain scoped. Admin data merges once; mutations update current employee/house/client relationships. Staff house/client/care/roster/notification route boundaries now validate current session scope instead of a stale fixed fixture, including during initial SSR. Existing production refusal, malformed-query and unrelated-record checks remain covered. Browser Back, refresh and breadcrumbs use canonical URLs.
 
 Future operational Admin routes remain labelled placeholders. Admin desktop gating remains UX only. See [Admin contracts](admin-core-data-management.md) for role limits, assignment dependency policy, contacts, transfers, privacy projection and outstanding backend requirements.
+
+## Phase 1E.2 Admin workforce
+
+The existing `/admin/roster` and `/admin/leave` destinations replace their placeholders. No duplicate hierarchy/API is added.
+
+| View | Canonical URL |
+| --- | --- |
+| Calendar / Shift list / Monitor / Timesheets / Corrections | `/admin/roster?tab=calendar\|shifts\|attendance\|timesheets\|corrections` (calendar default) |
+| Shift details | `/admin/roster?tab=shifts&shiftId=[id]` |
+| Create shift / calendar preset | `/admin/roster?action=new&house=[optionalId]&day=[optionalYYYY-MM-DD]` |
+| Edit / confirm cancellation | `/admin/roster?shiftId=[id]&action=edit\|cancel` |
+| Attendance/timesheet details | `/admin/roster?tab=timesheets&attendanceId=[id]` |
+| Attendance review | `/admin/roster?tab=corrections&correctionId=[id]` |
+| Pending / All / Calendar leave | `/admin/leave?tab=pending\|all\|calendar` (pending default) |
+| Leave details/review | `/admin/leave?tab=all&requestId=[id]` |
+
+Back/forward, existing breadcrumbs and employee/house links are retained. Detail close clears panel/action selectors while retaining the tab. Calendar/list filters are mounted view state, not saved URL filters. Malformed/repeated/unknown/conflicting parameters and invalid known-format record IDs return server 404; valid session UUIDs absent after reload show generic unavailable panels after development opt-in. Known seeded deep links can refresh after opt-in. Every page/layout still refuses production even when the preview flag is enabled. These browser role/scope demonstrations are not authenticated server authorisation.
+
+Employee roster/attendance/leave tabs now link to the same Shift, AttendanceRecord and LeaveRequest panels. Dashboard attendance requests link to their workforce correction IDs. Future documentation/template/file/publication/concern/report/settings destinations remain explicitly deferred.

@@ -41,3 +41,11 @@ Node 22 was checked in common local Homebrew/mise/nvm locations and is unavailab
 ## Phase 1D.2 Leave relationship
 
 Staff Leave is now a separate typed collection in the same development snapshot. Requests reference the existing employee and configured leave type, not an attendance record. Roster context derives overlapping own, non-cancelled shifts with explicit NZ/overnight date handling and links to their existing IDs. Creating or displaying approved leave does not cancel/reassign shifts, alter attendance/corrections or deduct balances. Management coordination remains a future workflow. Team Schedule exposes no leave notes, decisions or balances. See [Leave contracts](leave-management.md).
+
+## Phase 1E.2 Admin workforce extension
+
+The same snapshot now supports development management create/edit/cancel, operational attendance/timesheets and attendance correction review. See [Admin workforce contracts](admin-workforce-management.md). Scheduled inputs retain UTC event storage/NZ wall-time conversion; assigned active employee/house, overlap, date/time/DST and break information are validated in pure shared operations. Recorded attendance blocks schedule editing/cancellation; cancellation otherwise preserves IDs/history and excludes active Staff eligibility.
+
+Original AttendanceRecord timestamps are never mutated by approval. An attendance request can hold a reviewed effective version, original/prior values, reviewer/time/notes and a base-correction ID. Staff/Admin effective rows/totals use the same resolver; original values remain visible in details. Manual corrected values are fictional-unverified, never GPS success. A competing request based on an older applied version cannot be approved; reject and resubmit against the latest effective version. Historical status-only fixtures remain unapplied display examples. These are session checks, not transactional concurrency or durable audit. Real attendance, payroll, GPS/eligibility/clock-out policy and authenticated services remain unavailable.
+
+The earlier Node-unavailable and Admin-review-deferred paragraphs describe their historical phase. Current checks use isolated Node 22.23.4; production integration remains outstanding.

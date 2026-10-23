@@ -1,3 +1,4 @@
+import { effectiveAttendance } from "../../staff/roster/effective"
 import { staffJobRoles } from "../../staff/data/permissions"
 import type { StaffSnapshot, ClientContact } from "@/modules/staff/data/types"
 import type { PreviewRole } from "@/modules/preview/context"
@@ -535,7 +536,9 @@ export function dashboardSummary(s: StaffSnapshot) {
     houses: s.houses.filter((h) => h.status !== "Inactive").length,
     clients: s.clients.filter((c) => c.status !== "Inactive").length,
     today,
-    clockedIn: s.attendance.filter((a) => a.clockIn && !a.clockOut).length,
+    clockedIn: s.attendance
+      .map((a) => effectiveAttendance(s, a))
+      .filter((a) => a.clockIn && !a.clockOut).length,
     corrections:
       s.corrections.filter((c) => c.status === "pending").length +
       s.attendanceCorrections.filter((c) => c.status === "pending").length,

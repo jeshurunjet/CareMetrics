@@ -34,3 +34,25 @@
 .ad-app .ad-activity > li:last-child { border-bottom:0; }
 .ad-app .ad-queue a { gap:.75rem; padding:.6rem .7rem; border:1px solid var(--ad-line); border-radius:.65rem; }
 .ad-app .ad-queue a:hover { border-color:color-mix(in srgb,var(--color-brand) 40%,transparent); background:var(--ad-row); }
+
+/* Workforce extensions retain original calendar/drawer/table classes. */
+.ad-app .ad-calendar-scroll { overflow-x: auto; }
+.ad-app .ad-calendar-scroll > .ad-week, .ad-app .ad-calendar-scroll > .ad-day { min-width: 850px; }
+.ad-app .ad-shift-block { overflow-wrap: anywhere; }
+.ad-app .ad-day-track { height: auto; min-height: 95px; padding: 4px 0; }
+.ad-app .ad-day-track .ad-shift-block { min-width: 65px; margin-bottom: 4px; }
+.ad-app .ad-date-filter { display: flex; flex-direction: column; gap: .2rem; font-size: .75rem; color: var(--color-ink-muted); }
+.ad-app .ad-date-filter .cm-input { width: 9.5rem; }
+.ad-app .ad-leave-calendar .ad-month-cell { cursor: default; }
+.ad-app .ad-leave-entry { display: block; width: 100%; margin-top: .35rem; padding: .35rem; border: 1px solid var(--color-border); border-left: 3px solid #2a9d6f; border-radius: .3rem; background: #eff8f4; text-align: left; font: inherit; cursor: pointer; overflow-wrap: anywhere; }
+.ad-app .ad-leave-entry small { display: block; font-size: .65rem; }
+.ad-app .ad-leave-entry.pending { border-left-color: #d97706; background: #fff8eb; }
+.ad-app .ad-drawer .ad-grid-2 { align-items: start; }
+.ad-app .ad-drawer .cm-input { max-width: 100%; }
+.ad-app .ad-workforce-table .ad-table { min-width: 1120px; }
+.ad-app .ad-workforce-table--wide .ad-table { min-width: 1500px; }
+.ad-app .ad-workforce-table .ad-table td:last-child .ad-inline { flex-wrap: nowrap; }
+.ad-app .ad-workforce-table .ad-table td { white-space: normal; }
+.ad-app .ad-shift-block span,.ad-app .ad-shift-block small { white-space: normal; }
+.ad-app .ad-drawer .ad-mini-list a { display: flex; flex-direction: column; gap: .25rem; width: 100%; padding: .6rem .75rem; border-radius: .6rem; border: 1px solid var(--color-border); background: white; cursor: pointer; font-size: .82rem; text-align: left; color: var(--color-ink); text-decoration: none; }
+.ad-app .ad-drawer .ad-mini-list a:hover { border-color: var(--color-brand); }

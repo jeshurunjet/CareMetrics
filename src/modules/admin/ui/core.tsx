@@ -372,7 +372,20 @@ export function DataTable<T extends { id?: string }>({
             {sorted.slice((page - 1) * per, page * per).map((r, i) => (
               <tr
                 key={rowKey ? rowKey(r, i) : (r.id ?? i)}
-                onClick={onRow ? () => onRow(r) : undefined}
+                onClick={
+                  onRow
+                    ? (event) => {
+                        if (
+                          event.target instanceof Element &&
+                          event.target.closest(
+                            "a,button,input,select,textarea,label",
+                          )
+                        )
+                          return
+                        onRow(r)
+                      }
+                    : undefined
+                }
                 className={onRow ? "ad-row-link" : ""}
                 tabIndex={onRow ? 0 : undefined}
                 onKeyDown={

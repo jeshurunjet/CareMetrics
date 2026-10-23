@@ -1,4 +1,5 @@
 "use client"
+import EmployeeWorkforce from "../workforce/EmployeeWorkforce"
 import { formatDateOnly } from "@/lib/time"
 import SessionFeedback from "../ui/SessionFeedback"
 import Image from "next/image"
@@ -249,23 +250,7 @@ export default function EmployeeDetail({
         </div>
       )}
       {["roster", "attendance", "leave"].includes(tab) && (
-        <Panel title={`${tab[0].toUpperCase() + tab.slice(1)} preview`}>
-          <p className="ad-faint">
-            Related shared records:{" "}
-            {tab === "roster"
-              ? s.shifts.filter((x) => x.staffId === id).length
-              : tab === "attendance"
-                ? s.attendance.filter((x) => x.employeeId === id).length
-                : s.leaveRequests.filter((x) => x.employeeId === id).length}
-            . Management workflows are deferred.
-          </p>
-          <Link
-            className="ad-link"
-            href={`/admin/${tab === "leave" ? "leave" : "roster"}`}
-          >
-            Open future management module
-          </Link>
-        </Panel>
+        <EmployeeWorkforce id={id} tab={tab} />
       )}
       {assign && (
         <AssignHouses

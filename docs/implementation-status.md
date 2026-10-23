@@ -1,47 +1,47 @@
-# Implementation status — Phase 1E.1
+# Implementation status — Phase 1E.2
 
-Desktop Admin foundations and core Employee/House/Client management are ported as fictional development previews. They use the same typed domain and in-memory session as Staff. No UI is backend-connected or production-ready. See [Admin contracts](admin-core-data-management.md), [Staff review](staff-ui-completion-review.md), [route map](route-map.md) and the archived [Phase 1D.4 status](history/phase-1d4-status.md).
+Admin workforce UI is ported over the same fictional development records as Staff. No feature is backend-connected or production-ready. [Workforce contracts](admin-workforce-management.md) explain transitions, limitations and changed files; [route map](route-map.md) lists canonical URLs. Earlier results are retained in [Phase 1E.1 status](history/phase-1e1-status.md).
 
 ## Git checkpoint
 
-Completed Phase 1D.4 is preserved at local **b1a0344** on `phase-1d4`. Its Node 22 lint/types/format, 150 units, all 50 Profile/integration cases, build and 74 production-isolation checks passed before that checkpoint; its previous complete 485-case result remains documented. New work is on local `phase-1e1`. Prior branches, original reference/CSS, earlier tests/evidence and unrelated duplicate screenshots are preserved. No reset/discard or remote push. Current phase changes remain uncommitted.
+Phase 1E.1 is preserved locally at **9cf2104169a14d2cd122456f27dcc02568faca11**, branch `phase-1e1`. Baseline Node 22 checks passed before committing: lint/types/format, 203 units, 57 Admin browser passes/45 intentional narrow skips, build and 92 isolation checks. Current work uses `phase-1e2` and remains uncommitted/unpushed. Previous full versions, reference source/CSS/evidence and unrelated duplicate screenshots are preserved.
 
-| Area | Ported UI / development limit |
+| Area | Ported development behaviour |
 | --- | --- |
-| Admin shell | Source sidebar/topbar, collapse, current section/breadcrumbs, core-entity search, review link and labelled account-role disclosure. Desktop gate remains UX only. |
-| Dashboard | Eight shared-data totals; today's shift/attendance projection, linked employees/houses, pending queues and representative submission activity. No roster editing, approvals or audit service. |
-| Employees | Directory/search/role/house/status filters/pagination, create/edit, overview, multi-house assignments, account status/role display and reversible deactivation. No account provisioning/invitation/password services. |
-| Houses | Cards/list/search/status/pagination, create/edit, overview, employee/client relationships, fictional location/map and provisional radius. No GPS verification/geocoding/geofencing. |
-| Clients | Directory/filter/pagination, create/edit, overview, stable Contacts/NOK and confirmed transfer. Sensitive identifiers absent from general rows/search. Documentation tabs show bounded shared summaries only. |
-| Roles | Administrator and Manager core management; Manager cannot grant/edit/deactivate Administrator accounts or change their assignments. Staff/Senior Staff management mutations reject. All are development demonstrations, not authentication. |
-| Relationships | Valid multi-house employee assignments; current/future-shift dependency removal blocked. One current client house; transfer preserves IDs, history, template versions, files and attendance. |
-| Staff propagation | Shared employee contacts/photos, assigned houses/access, edited house information, created clients, NOK and transfers update current projected Staff views during client navigation. |
-| Photos | Existing picker/policy reused; mounted form previews and entity-keyed provider URL ownership revoke on cancellation/replacement/reset/unmount. No real upload or permanent storage. |
-| Future Admin modules | Explicit placeholders for roster/attendance management, leave review, documentation/template building, files, publication/concerns, reports/audit and settings. |
+| Roster | Source day/week/month calendar, employee/house/status/date filters, shift list, create/edit/details/confirmed cancellation, stable IDs and shared Staff updates. |
+| Shift policy | Active employee/house/current assignment required; employee overlaps blocked across houses; explicit NZ overnight/DST semantics; recorded attendance blocks schedule edit/cancel. |
+| Attendance | Source monitor, operational timesheets/details, scheduled versus actual/effective durations, missing events, fictional location and issue states. No real clock-in/GPS/payroll. |
+| Corrections | Same Staff request queue; original/effective/proposed comparison, confirmed approval/rejection, required rejection reason, reviewer/time/notes and stale-base conflict rule; immutable original events. |
+| Leave | Same Staff Pending/All requests, review decisions, roster conflicts/confirmation and private-reason-free month calendar; no roster/balance mutation or cancellation policy. |
+| Integration | Staff roster/My Shifts reflect shift edits/cancellation; Staff-submitted corrections/leave reach Admin and reviewed results return to own Staff views. Employee operational tabs/Dashboard use shared records. |
+| Existing core and Staff | Prior Employee/House/Client/contacts/assignments/profile and mobile-first Staff features retained. Future documentation, files, publication/concerns, reports and settings stay deferred. |
+| Roles | Management operations recheck Administrator/Manager preview role; ordinary Staff/Senior reject. Existing Manager restrictions on Administrator accounts remain. Browser role switching is not security. |
 
 ## Verification
 
-Verification uses isolated **Node 22.23.4 / pnpm 10.15.1**, without changing system-wide Node. The existing user preview continues on its pre-existing host runtime.
+Checks use isolated **Node 22.23.4 / pnpm 10.15.1**, without replacing system Node or the user's running preview.
 
 | Check | Result |
 | --- | --- |
 | Lint / strict TypeScript / formatting | PASS, zero lint warnings |
-| Unit tests | PASS, 203 across 12 files (150 retained + 53 new) |
-| Complete five-width Chromium regression | PASS, 525 tests, including all 485 previous Staff cases; 45 intentional skips for desktop management at narrow widths; 10.4 minutes |
-| Final six-width Admin suite | PASS, 57 tests across 375/390/768/1280/1440/1600px; 45 intentional narrow management skips; includes final source-state capture waits and Admin presentation corrections |
-| Production build / isolation | PASS, 92 preview routes refused in production even with the preview flag enabled; production login inert |
-| Visual evidence | 96 raw PNGs and 18 paired boards, reviewed at all six widths; no collected page errors or document-level overflow in migrated captures |
-| Existing local preview | PASS, HTTP 200 on 13 core Admin URLs plus Staff Dashboard/Profile; existing host runtime |
-| Source / client-bundle integrity | PASS, all 51 reference files and three original CSS copies unchanged; private fixture markers absent from final production client chunks |
+| Unit tests | PASS, **237 across 13 files**, retaining all 203 earlier tests |
+| Complete five-width Chromium regression | PASS, **551 tests**, **69 intentional narrow Admin skips**, 10.5 minutes; all earlier Staff tests retained |
+| Final six-width Admin suite | PASS, **93 tests**, **69 intentional narrow management skips**, 2.2 minutes |
+| Final same-record visual refresh | PASS, **6 cases** at all six widths; capture-only original timesheet selection adjustment |
+| Production build / isolation | PASS, **106 preview URLs refused** with the flag enabled; production login inert |
+| Final conflict-link presentation | PASS, 3 desktop workflows / 3 intentional narrow skips |
+| Existing local preview | PASS, **14 workforce and Staff URLs** return HTTP 200 on the existing 8443 server |
+| Reference / original CSS | PASS, all **51 reference files and three original stylesheet copies unchanged**; zero tracked reference paths |
+| Visual evidence | **87 raw PNGs / 18 paired boards**, reviewed at 375/390/768/1280/1440/1600px; captures collect no page errors or document overflow |
 
-Existing notification tests caught a concern-attachment projection regression during the first full attempt. It was fixed using the existing parent-attachment policy and covered by a new unit test; all five affected browser cases and the restarted complete regression pass. The first interrupted run is not counted as passing. After the complete run, only Admin presentation and capture-readiness details changed; the complete six-width Admin suite, static checks, build and isolation checks passed again. No shared Staff/domain logic changed after that full pass.
+After the complete regression, Admin-only presentation/default-filter/row-interaction/focus refinements were verified through the complete six-width Admin suite, all static/unit/build/isolation checks and the further six-case visual refresh. No Staff domain/layout logic changed after the full pass. The final source-list styling adaptation for conflict links is checked again with the three desktop Staff-leave conflict workflows; narrow management remains deliberately skipped. Private fixture markers are absent from production client chunks. No dependency/lockfile change or earlier passing test/assertion removal.
 
-No previous passing test was weakened or removed. New tests cover core entities/validation/role negatives, shared propagation, assignments/dependencies, transfers/history, contacts/removal/primary flags, pagination/filtering, unavailable IDs, refresh/Back, unsaved forms, source comparisons and narrow gating. The full suite retains existing diary/care/chart/file/roster/attendance/leave/notification integrity, disabled real clock-in and production isolation checks.
+Earlier development runs are not counted as passes. They found an intercepted drawer footer and incorrect new-test selectors/route waits. The first final Admin capture run also exposed shared Monitor/Timesheets date-filter state; independent keyed tab mounts correct it. Pending Leave ignores a hidden status filter from All Requests. The fresh complete Admin run passes after these corrections. See [visual findings](ui-comparisons/phase-1e2/README.md) for intentional differences; no exact parity or independent design acceptance is claimed.
 
 ## Remaining limitations and next step
 
-Everything remains fictional and session-only. Reload/logout resets edits, new IDs, role selection and temporary photos. Once Admin is opened, the browser contains the broader fictional dataset: UI role/scoped views are not a confidentiality or production permission boundary. Current-house access to historical client documentation is a prototype policy awaiting organisational approval. Optional NHI checks are the export's format demonstration, not verification of a health identifier.
+All mutations and role checks are same-session development demonstrations. Reload/logout resets edits. After visiting Admin the broader fictional dataset resides in the browser; projection/role changes are not confidentiality controls. Auth.js, trusted server organisation/role/house checks, Prisma/Neon transactions/persistence, concurrent decisions, durable audit, real GPS/attendance, private Blob files, notifications, payroll and deployment remain unimplemented. Break values are informational, not payroll deductions. Approved-leave changes, pending withdrawal, partial days, entitlements, historical-edit policy and approved GPS/clock-out rules need decisions.
 
-Production Auth.js identity, trusted server organisation/role/house checks, Prisma/Neon persistence, invitations/recovery, private Blob storage, real GPS/attendance, management decisions, notification delivery, durable audit, concurrency/recovery and deployment remain unimplemented. Broader browsers, real devices, exhaustive accessibility, external asset review, independent design acceptance and organisational privacy/security/operational approval remain outstanding. Firefox's earlier local pre-launch profile-folder error is not a passing application result; Safari/physical devices were not tested.
+Firefox remains previously blocked before app launch by its local profile-folder error; no passing Firefox result is claimed. Safari/WebKit, physical devices, exhaustive accessibility, external asset/privacy review, independent design and organisational security/privacy/operational approval remain outstanding. No real personnel/client/health data was introduced.
 
-After review, agree one bounded operational Admin migration using these same contracts, with roster/attendance the likely next slice. Do not automatically begin Phase 1E.2, backend integration or deployment.
+Recommended next step: review this bounded workforce migration and its policies, then agree the next Admin documentation/correction slice. Do not automatically start Phase 1E.3, backend integration or deployment.

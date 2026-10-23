@@ -37,7 +37,7 @@ export default function AttendanceCorrectionForm({
     return (
       <Empty
         title="Correction Pending Review"
-        text="Management review is not connected. Original attendance remains unchanged."
+        text="Development management can review this session request. Original attendance remains unchanged."
       />
     )
   return (
@@ -45,8 +45,8 @@ export default function AttendanceCorrectionForm({
       <h2 className="cm-h3">Request attendance correction</h2>
       <Banner tone="info">
         Development request only · this request resets on reload. Original
-        attendance is not overwritten. Management approval and payroll
-        processing are not connected.
+        attendance is not overwritten. Production management services and
+        payroll processing are not connected.
       </Banner>
       <Card className="cm-panel">
         <h3 className="cm-h3">Original attendance</h3>

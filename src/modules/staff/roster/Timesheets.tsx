@@ -159,8 +159,12 @@ export default function Timesheets() {
                             {correction.status === "pending"
                               ? "Correction Pending Review"
                               : correction.status === "approved"
-                                ? "Correction Approved · fixture"
-                                : "Correction Rejected · fixture"}
+                                ? correction.decision
+                                  ? "Correction Approved · development decision"
+                                  : "Correction Approved · fixture"
+                                : correction.decision
+                                  ? "Correction Rejected · development decision"
+                                  : "Correction Rejected · fixture"}
                           </span>
                         )}
                       </td>

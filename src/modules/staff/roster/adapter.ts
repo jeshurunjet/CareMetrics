@@ -1,3 +1,4 @@
+import { effectiveAttendance, latestAttendanceDecision } from "./effective"
 import type { StaffSnapshot } from "../data/types"
 import type {
   AttendanceRecord,
@@ -19,7 +20,10 @@ export function getOwnAttendance(s: StaffSnapshot, id: string) {
   )
 }
 export function attendanceForShift(s: StaffSnapshot, id: string) {
-  return s.attendance.find((a) => a.shiftId === id && getOwnAttendance(s, a.id))
+  const original = s.attendance.find(
+    (a) => a.shiftId === id && getOwnAttendance(s, a.id),
+  )
+  return original ? effectiveAttendance(s, original) : undefined
 }
 export function attendanceStatus(s: StaffSnapshot, shiftId: string) {
   const shift = getOwnShift(s, shiftId)
@@ -96,7 +100,8 @@ export function validateAttendanceProposal(
   id: string,
   input: AttendanceProposal,
 ) {
-  const a = getOwnAttendance(s, id)
+  const original = getOwnAttendance(s, id)
+  const a = original ? effectiveAttendance(s, original) : undefined
   const errors: Partial<Record<keyof AttendanceProposal | "record", string>> =
     {}
   if (!a || getOwnShift(s, a.shiftId)?.status === "cancelled")
@@ -155,6 +160,7 @@ export function requestAttendanceCorrection(
   const request: AttendanceCorrectionRequest = {
     id,
     attendanceId,
+    baseCorrectionId: latestAttendanceDecision(s, attendanceId)?.id,
     shiftId: a.shiftId,
     requestingEmployeeId: s.meId,
     proposedClockIn: fromNZDateTimeInput(input.clockIn) || undefined,

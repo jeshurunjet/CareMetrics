@@ -77,6 +77,8 @@ export interface Client {
   photo?: string
 }
 export interface Shift {
+  breakMins?: number
+  assignedById?: string
   id: string
   staffId: string
   houseId: string

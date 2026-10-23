@@ -63,8 +63,12 @@ export default function AttendanceDetails({
               {c.status === "pending"
                 ? "Pending Review"
                 : c.status === "approved"
-                  ? "Approved · historical fixture"
-                  : "Rejected · historical fixture"}
+                  ? c.decision
+                    ? "Approved · development decision"
+                    : "Approved · historical fixture"
+                  : c.decision
+                    ? "Rejected · development decision"
+                    : "Rejected · historical fixture"}
             </Status>
             <p>{c.reason}</p>
             <p>
@@ -83,9 +87,17 @@ export default function AttendanceDetails({
               {formatDateTime(c.requestedAt)} ·{" "}
               {s.staff.find((e) => e.id === c.requestingEmployeeId)?.name}
             </small>
+            {c.decision && (
+              <p>
+                Reviewed by {c.decision.reviewerName} ·{" "}
+                {formatDateTime(c.decision.decidedAt)} ·{" "}
+                {c.decision.notes || "No review notes"}
+              </p>
+            )}
             <p className="cm-muted">
-              Original attendance retained. Management review, corrected
-              versions and durable audit are not connected.
+              Original attendance retained. Development decisions apply
+              effective values in this session only. Durable audit and database
+              persistence are not connected.
             </p>
           </section>
         ))

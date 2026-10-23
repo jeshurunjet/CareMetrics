@@ -1,14 +1,17 @@
 import { useStaffData } from "../data/context"
 import type { AttendanceRecord } from "./types"
+import { effectiveAttendance, latestAttendanceDecision } from "./effective"
 import { getOwnShift, attendanceStatus } from "./adapter"
 import { durationText, shiftTime } from "./dates"
 import { formatDateTime } from "@/lib/time"
 export default function AttendanceMetadata({
-  attendance: a,
+  attendance: original,
 }: {
   attendance: AttendanceRecord
 }) {
   const s = useStaffData(),
+    a = effectiveAttendance(s, original),
+    reviewed = latestAttendanceDecision(s, original.id),
     sh = getOwnShift(s, a.shiftId)!
   return (
     <dl className="cm-dl">
@@ -27,6 +30,23 @@ export default function AttendanceMetadata({
           {durationText(sh.start, sh.end)})
         </dd>
       </div>
+      {reviewed && (
+        <div className="cm-dl-full">
+          <dt>Original events retained</dt>
+          <dd>
+            Clock-in:{" "}
+            {original.clockIn
+              ? formatDateTime(original.clockIn)
+              : "Not recorded"}{" "}
+            · Clock-out:{" "}
+            {original.clockOut
+              ? formatDateTime(original.clockOut)
+              : "Not recorded"}
+            . Values below are effective manual corrections, not GPS
+            verification.
+          </dd>
+        </div>
+      )}
       <div>
         <dt>Recorded clock-in</dt>
         <dd>{a.clockIn ? formatDateTime(a.clockIn) : "Not recorded"}</dd>

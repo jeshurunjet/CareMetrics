@@ -8,6 +8,8 @@ export interface AttendanceRecord {
   notes?: string
 }
 export interface AttendanceCorrectionRequest {
+  baseCorrectionId?: string
+  decision?: AttendanceDecision
   id: string
   attendanceId: string
   shiftId: string
@@ -22,4 +24,17 @@ export interface AttendanceProposal {
   clockIn: string
   clockOut: string
   reason: string
+}
+
+export interface AttendanceDecision {
+  reviewerId: string
+  reviewerName: string
+  decidedAt: string
+  notes: string
+  originalClockIn?: string
+  originalClockOut?: string
+  priorClockIn?: string
+  priorClockOut?: string
+  effectiveClockIn?: string
+  effectiveClockOut?: string
 }

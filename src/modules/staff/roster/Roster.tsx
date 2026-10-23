@@ -73,8 +73,9 @@ export default function Roster() {
       />
       <Banner tone="info">
         Development preview · fictional shifts and attendance, Pacific/Auckland.
-        Real clock-in/out, GPS, permanent changes and management approval are
-        not connected. Requests reset on reload.
+        Real clock-in/out, GPS, permanent changes and production management
+        services are not connected. Development decisions share this session.
+        Requests reset on reload.
       </Banner>
       {action === "correction" && attendance ? (
         <AttendanceCorrectionForm

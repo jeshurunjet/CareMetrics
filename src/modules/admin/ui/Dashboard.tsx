@@ -1,4 +1,6 @@
 "use client"
+import { effectiveAttendance } from "../../staff/roster/effective"
+import { managementAttendanceStatus } from "../workforce/adapter"
 import Link from "next/link"
 import { Avatar, Btn } from "@/modules/staff/ui"
 import { PageHead, Panel, Stat, DataTable, Pill, useAdmin } from "./core"
@@ -13,10 +15,6 @@ export default function Dashboard() {
     s.houses.find((h) => h.id === id)?.name ??
     s.clients.find((c) => c.id === id)?.name ??
     "Unavailable"
-  const attendance = (id: string) => {
-    const a = s.attendance.find((a) => a.shiftId === id)
-    return a?.clockOut ? "Completed" : a?.clockIn ? "Clocked in" : "Not started"
-  }
   const corrections = [
     ...s.corrections
       .filter((c) => c.status === "pending")
@@ -24,6 +22,7 @@ export default function Dashboard() {
         id: c.id,
         title: "Documentation correction",
         sub: c.reason,
+        href: "/admin/documentation",
       })),
     ...s.attendanceCorrections
       .filter((c) => c.status === "pending")
@@ -31,6 +30,7 @@ export default function Dashboard() {
         id: c.id,
         title: "Attendance correction",
         sub: c.reason,
+        href: `/admin/roster?tab=corrections&correctionId=${c.id}`,
       })),
   ]
   const leave = s.leaveRequests
@@ -53,7 +53,9 @@ export default function Dashboard() {
         sh.status !== "cancelled" &&
         sh.start < s.now &&
         Date.parse(sh.start) > Date.parse(s.now) - 3 * 86400000 &&
-        !s.attendance.some((a) => a.shiftId === sh.id && a.clockOut),
+        !s.attendance.some(
+          (a) => a.shiftId === sh.id && effectiveAttendance(s, a).clockOut,
+        ),
     )
     .map((sh) => ({
       id: sh.id,
@@ -76,7 +78,7 @@ export default function Dashboard() {
       page: "roster",
     },
     {
-      label: "Clocked in now",
+      label: "Open attendance (fictional)",
       value: t.clockedIn,
       icon: "clock",
       page: "roster",
@@ -149,6 +151,15 @@ export default function Dashboard() {
             </Btn>
           }
         >
+          <p className="ad-faint">
+            {new Set(t.today.map((sh) => sh.staffId)).size} scheduled employees
+            ·{" "}
+            {
+              s.attendanceCorrections.filter((c) => c.status === "pending")
+                .length
+            }{" "}
+            pending attendance corrections
+          </p>
           <DataTable
             rows={t.today}
             per={6}
@@ -196,7 +207,7 @@ export default function Dashboard() {
               {
                 key: "attendance",
                 label: "Attendance (fictional)",
-                render: (r) => <Pill s={attendance(r.id)} />,
+                render: (r) => <Pill s={managementAttendanceStatus(s, r)} />,
               },
             ]}
             empty={
@@ -273,7 +284,7 @@ export default function Dashboard() {
               <ul className="ad-queue">
                 {q.items.slice(0, 4).map((it) => (
                   <li key={it.id}>
-                    <Link href={q.href}>
+                    <Link href={"href" in it ? String(it.href) : q.href}>
                       <div>
                         <strong>{it.title}</strong>
                         <span>{it.sub}</span>

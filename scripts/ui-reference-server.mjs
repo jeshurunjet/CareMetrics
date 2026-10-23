@@ -28,6 +28,7 @@ const sources = [
   "src/modules/staff/leave/adapter.ts",
   "src/modules/staff/roster/seed.ts",
   "src/modules/staff/roster/adapter.ts",
+  "src/modules/staff/roster/effective.ts",
   "src/modules/staff/roster/dates.ts",
   "src/modules/staff/files/seed.ts",
   "src/modules/staff/files/adapter.ts",
@@ -253,10 +254,24 @@ const adminSnapshot = developmentMockAdapter.getSnapshot(
   true,
 )
 const adminFixture = buildFixture(adminSnapshot)
+adminFixture.shifts = adminSnapshot.shifts.map((sh) => ({
+  ...sh,
+  status: sh.status === "cancelled" ? "Cancelled" : "Scheduled",
+}))
+adminFixture.corrections = adminFixture.corrections.map((c) => ({
+  ...c,
+  recordLabel:
+    c.recordType === "Timesheet"
+      ? `${adminSnapshot.houses.find((h) => h.id === adminSnapshot.shifts.find((sh) => sh.id === c.recordId)?.houseId)?.name ?? "Shift"} · ${c.recordId}`
+      : c.recordLabel,
+}))
 adminFixture.admin = { role: "Administrator", userId: "a1" }
 adminFixture.org = { name: "CareMetrics fictional organisation" }
 adminFixture.perms = Object.fromEntries(
   [
+    "Manage rosters & shifts",
+    "Review leave",
+    "Review corrections",
     "Create staff accounts",
     "Assign Administrator role",
     "Deactivate accounts",
