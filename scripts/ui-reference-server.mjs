@@ -19,6 +19,8 @@ const sources = [
   "src/modules/staff/care/adapter.ts",
   "src/modules/staff/care/seed.ts",
   "src/modules/staff/charting/seed.ts",
+  "src/modules/staff/leave/seed.ts",
+  "src/modules/staff/leave/adapter.ts",
   "src/modules/staff/roster/seed.ts",
   "src/modules/staff/roster/adapter.ts",
   "src/modules/staff/roster/dates.ts",
@@ -196,7 +198,21 @@ const fixture = {
         ? fixtureAssetPath(f.assetId)
         : undefined,
   })),
-  leave: [],
+  leave: snapshot.leaveRequests.map((r) => ({
+    id: r.id,
+    staffId: r.employeeId,
+    type: snapshot.leaveTypes.find((t) => t.id === r.typeId)?.name,
+    start: r.start,
+    end: r.end,
+    reason: r.notes,
+    submitted: r.submittedAt,
+    status:
+      r.status === "pending"
+        ? "Pending"
+        : r.status === "approved"
+          ? "Approved"
+          : "Declined",
+  })),
   audit: [],
   profileFields: [],
   org: {},
@@ -219,7 +235,7 @@ await writeFile(
 )
 await writeFile(
   join(root, "comparison.tsx"),
-  `import React from 'react';import {createRoot} from 'react-dom/client';import StaffApp from './staff/StaffApp';import LoginView from './views/LoginView';import './index.css';const login=new URLSearchParams(location.search).get('screen')==='login';createRoot(document.getElementById('root')!).render(login?<LoginView onLogin={()=>{}}/>:<StaffApp onLogout={()=>{}}/>);`,
+  `import React from 'react';import {createRoot} from 'react-dom/client';import StaffApp from './staff/StaffApp';import LoginView from './views/LoginView';import './index.css';import {update} from './staff/store';if(new URLSearchParams(location.search).get('scenario')==='leave-empty')update(()=>({leave:[]}));const login=new URLSearchParams(location.search).get('screen')==='login';createRoot(document.getElementById('root')!).render(login?<LoginView onLogin={()=>{}}/>:<StaffApp onLogout={()=>{}}/>);`,
 )
 const require = createRequire(import.meta.url)
 const fromVitest = createRequire(require.resolve("vitest/package.json"))

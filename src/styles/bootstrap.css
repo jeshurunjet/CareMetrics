@@ -101,3 +101,20 @@
 .cm-app .cm-roster .cm-filter input { width: 100%; }
 .cm-app .cm-roster .cm-roster-date-filter { flex-direction: column; align-items: stretch; gap: .25rem; font-size: .8rem; }
 .cm-app .cm-roster .cm-toolbar { align-items: flex-end; }
+/* Phase 1D.2 source leave cards/forms with scoped wrapping and read-only context. */
+.cm-app .cm-leave, .cm-app .cm-leave .cm-grow { min-width: 0; }
+.cm-app .cm-leave-row .cm-grow { min-width: 0; }
+.cm-app .cm-leave-row strong, .cm-app .cm-leave-row span, .cm-app .cm-leave-row small { overflow-wrap: anywhere; }
+.cm-app .cm-leave-notes { white-space: pre-wrap; overflow-wrap: anywhere; }
+.cm-app .cm-leave .cm-toolbar { align-items: flex-end; }
+.cm-app .cm-leave .cm-toolbar > * { flex: 1 1 12rem; min-width: 0; }
+.cm-app .cm-leave .cm-leave-date-filter { flex-direction: column; align-items: stretch; gap: .25rem; font-size: .8rem; }
+.cm-app .cm-leave .cm-filter input { width: 100%; min-width: 0; }
+.cm-app .cm-leave .cm-stat strong { overflow-wrap: anywhere; }
+.cm-app .cm-leave-roster { margin-top: 1rem; min-width: 0; }
+.cm-app .cm-leave-roster ul { padding-left: 1.2rem; overflow-wrap: anywhere; }
+.cm-app .cm-leave-roster a { display: inline-block; padding-block: .35rem; }
+.cm-app .cm-leave nav { font-size: .8rem; }
+@media (max-width: 600px) {
+ .cm-app .cm-leave .cm-leave-row > .cm-grow { flex-basis: 100%; }
+}

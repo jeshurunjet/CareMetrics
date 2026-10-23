@@ -1,3 +1,5 @@
+import { leaveTypes, seedLeave } from "../leave/seed"
+import { leaveQueries } from "../leave/adapter"
 import { seedScheduleHistory } from "../roster/seed"
 import {
   rosterQueries,
@@ -26,6 +28,7 @@ import { seedDiary, diaryCategories } from "./diary-seed"
 import { myHouses, myClients, visibleNotices } from "./selectors"
 /** FICTIONAL DEVELOPMENT DATA ONLY. Not an API, database, identity or permission control. */
 export const developmentMockAdapter = {
+  ...leaveQueries,
   ...rosterQueries,
   ...fileQueries,
   ...diaryQueries,
@@ -40,8 +43,12 @@ export const developmentMockAdapter = {
   getSnapshot(employeeId: string, now: string): StaffSnapshot {
     const at = (hours: number) =>
       new Date(Date.parse(now) + hours * 3600000).toISOString()
+    const leave = seedLeave(now)
     const history = seedScheduleHistory(now)
     const s: StaffSnapshot = {
+      leaveTypes,
+      leaveRequests: leave.requests,
+      leaveBalances: leave.balances,
       attendance: history.attendance,
       attendanceCorrections: history.corrections,
       attachments: seedAttachments(now),
@@ -346,6 +353,8 @@ export const developmentMockAdapter = {
     return {
       ...s,
       houses,
+      leaveRequests: leaveQueries.getMyLeave(s),
+      leaveBalances: leaveQueries.getMyLeaveBalances(s),
       attendance: s.attendance.filter((a) => !!getOwnAttendance(s, a.id)),
       attendanceCorrections: s.attendance.flatMap((a) =>
         getAttendanceCorrections(s, a.id),

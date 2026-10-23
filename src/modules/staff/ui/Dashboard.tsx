@@ -218,6 +218,17 @@ export default function Home() {
 
           <Card className="cm-panel">
             <SectionTitle
+              title="My Leave"
+              action="View leave"
+              onAction={() => nav.go({ page: "leave" })}
+            />
+            <p className="cm-muted">
+              Review your own leave requests or request leave.
+            </p>
+          </Card>
+
+          <Card className="cm-panel">
+            <SectionTitle
               title="Notifications"
               action="View all"
               onAction={() => nav.go({ page: "notifications" })}

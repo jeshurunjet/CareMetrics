@@ -37,3 +37,7 @@ Corrections reuse existing form controls, status/modal conventions and unsaved-c
 Auth.js trusted sessions, server organisation/role/house checks on each read and write, Prisma/Neon persistence, stable assignment history, transactions/concurrency constraints, policy-approved event-location validation, management review and durable audit remain unimplemented. GPS is event-only, not continuous tracking. Payroll integration, shift-swap workflows, leave and Admin roster editing are outside this phase; the exported Staff roster has no shift-swap control to migrate.
 
 Node 22 was checked in common local Homebrew/mise/nvm locations and is unavailable; host verification uses Node 25.9.0/pnpm 10.15.1. Intended Node 22 CI remains outstanding. Chromium viewport emulation does not certify physical devices, Safari/Firefox, exhaustive accessibility or independent visual acceptance.
+
+## Phase 1D.2 Leave relationship
+
+Staff Leave is now a separate typed collection in the same development snapshot. Requests reference the existing employee and configured leave type, not an attendance record. Roster context derives overlapping own, non-cancelled shifts with explicit NZ/overnight date handling and links to their existing IDs. Creating or displaying approved leave does not cancel/reassign shifts, alter attendance/corrections or deduct balances. Management coordination remains a future workflow. Team Schedule exposes no leave notes, decisions or balances. See [Leave contracts](leave-management.md).

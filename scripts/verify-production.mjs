@@ -33,6 +33,13 @@ try {
   )
   assert.ok(!login.includes("staff2fa"), "no prototype credentials")
   const paths = [
+    "/leave",
+    "/leave?action=new",
+    "/leave?requestId=leave-pending",
+    "/leave?requestId=leave-approved",
+    "/leave?requestId=leave-rejected",
+    "/leave?requestId=leave-other-employee",
+    "/leave?requestId=leave-restricted",
     "/roster",
     "/roster?tab=team&house=h1",
     "/roster?tab=timesheets",
@@ -94,6 +101,9 @@ try {
     for (const marker of [
       "Private coworker attendance example",
       "Fictional recorded attendance",
+      "Private coworker leave example",
+      "Restricted leave history example",
+      "Fictional request awaiting review",
       "Jamie Taufa",
       "Taylor Reed",
       "Riverside Lodge",

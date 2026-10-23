@@ -16,6 +16,10 @@ export default function Modal({
   children: React.ReactNode
   footer?: React.ReactNode
 }) {
+  const onCloseRef = useRef(onClose)
+  useEffect(() => {
+    onCloseRef.current = onClose
+  }, [onClose])
   const ref = useRef<HTMLDivElement>(null)
   const id = useId()
   useEffect(() => {
@@ -23,11 +27,11 @@ export default function Modal({
     const el = ref.current
     el?.querySelector<HTMLButtonElement>("button")?.focus()
     const key = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose()
+      if (e.key === "Escape") onCloseRef.current()
       if (e.key === "Tab" && el) {
         const items = Array.from(
           el.querySelectorAll<HTMLElement>(
-            'button:not(:disabled),a[href],select,input,[tabindex="0"]',
+            'button:not(:disabled),a[href],select,input,textarea,[tabindex="0"]',
           ),
         )
         const first = items[0],
@@ -46,7 +50,7 @@ export default function Modal({
       window.removeEventListener("keydown", key)
       previous?.focus()
     }
-  }, [onClose])
+  }, [])
   return (
     <div className="cm-modal-layer">
       <button

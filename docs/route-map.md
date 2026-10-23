@@ -11,14 +11,14 @@ Statuses: `original` = reference retained, `ported` = code adapted, `UI-matched`
 | clock | `/shift-check` | ported, tested; source-derived UI with disabled real attendance |
 | home | `/dashboard` | ported, tested; full source-derived dashboard |
 | houses | `/houses` | ported, UI-matched, tested; all assigned houses |
-| house | `/houses/[houseId]?tab=…` | ported, UI-matched, tested; overview and contacts where applicable; documentation tabs are Phase 1C placeholders |
-| client | `/clients/[clientId]?tab=…&sub=…&item=…` | ported, UI-matched, tested; overview, contacts and diary; other documentation tabs are placeholders |
+| house | `/houses/[houseId]?tab=…` | ported, UI-matched, tested; overview, Diary and Gallery migrated; concerns remain placeholder-only |
+| client | `/clients/[clientId]?tab=…&sub=…&item=…` | ported, UI-matched, tested; overview, contacts, Diary, Care Plan, Charting and Gallery migrated |
 | new-diary (house) | `/houses/[houseId]/diary/new?draft=…` | ported; development draft/create/submit form |
 | new-diary (client) | `/clients/[clientId]/diary/new?draft=…` | ported; development draft/create/submit form |
 | new-record | `/clients/[clientId]/records/new?templateId=…&draft=…` | ported; configurable assessment create/draft form, development only |
 | search | `/search?q=…` | ported, UI-matched, tested; scoped house/client query |
-| roster | `/roster?tab=…` | original; routed placeholder |
-| leave | `/leave` | original; routed placeholder |
+| roster | `/roster?tab=…` | ported, UI-matched, tested; roster/team/own timesheets and attendance correction preview |
+| leave | `/leave` | ported, UI-matched, tested; own requests, fictional balances and pending submission preview |
 | notifications | `/notifications` | original; routed placeholder |
 | profile | `/profile` | original; routed placeholder |
 | settings | `/settings` | original; routed placeholder |
@@ -143,3 +143,19 @@ The existing `/roster?tab=…` placeholder is replaced by one Staff destination.
 Dashboard → Roster/Team, My Shifts → View full roster, calendar/list → Shift Details → House, and Timesheets → Attendance → Correction are connected. Shift/attendance modals support Escape, Back and direct refresh. Closing a modal retains its selected calendar/team context. Calendar/team house/day/month selection is URL-backed; timesheet range/house/page filters are view state and reset on refresh or opening the full-page correction editor.
 
 The server preview gate validates scalar query values, tab/date/month/house and own shift/attendance scope before rendering. Unknown/unassigned house, coworker/unrelated/missing shift or attendance IDs, repeated parameters and invalid action/association combinations return generic HTTP 404 without unrelated record metadata. There is no streamed loading boundary that converts these validation failures into HTTP 200. Seeded deep links resolve; requests are session-only additions attached to a seeded attendance ID. Production still refuses all preview routes, even with the flag enabled. These are fixed fictional lookups, not production identity/authorisation.
+
+## Phase 1D.2 Staff Leave
+
+The existing `/leave` destination now renders the shared Staff Leave overview/history. Desktop sidebar and mobile Menu retain their existing Leave entry; Dashboard adds a source-styled My Leave shortcut.
+
+| View | URL |
+| --- | --- |
+| Overview, upcoming approved periods and own history | `/leave` |
+| New request modal | `/leave?action=new` |
+| Request details modal | `/leave?requestId=[requestId]` |
+
+No competing route hierarchy or leave API was introduced. The form/details preserve browser Back, breadcrumbs, direct entry and refresh. Closing returns to `/leave`; valid submission replaces the form URL with the new details URL. History filter/page state is client view state. Dirty form Cancel/Escape/navigation/Back require discard confirmation; successful submission disarms the guard.
+
+The preview gate refuses production. Repeated/non-scalar parameters, unsupported action and simultaneous new-form/request queries return HTTP 404. Missing/unknown/other-employee request IDs show the same generic unavailable state within the own Leave page (HTTP 200), without any other employee metadata. This also supports session-created IDs which resolve during client navigation but become unavailable on reload. These fixed fictional employee checks are not production authentication/authorisation.
+
+Roster-context links use existing `/roster?shiftId=…`; they never grant roster editing or expose coworker leave. No withdrawal, approval, cancellation or decision-editing route exists.

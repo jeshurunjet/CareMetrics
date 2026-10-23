@@ -1,3 +1,4 @@
+import type { LeaveType, LeaveRequest, LeaveBalance } from "../leave/types"
 import type {
   AttendanceRecord,
   AttendanceCorrectionRequest,
@@ -77,6 +78,9 @@ export interface Notice {
   status: "Published" | "Draft"
 }
 export interface StaffSnapshot {
+  leaveTypes: LeaveType[]
+  leaveRequests: LeaveRequest[]
+  leaveBalances: LeaveBalance[]
   attendance: AttendanceRecord[]
   attendanceCorrections: AttendanceCorrectionRequest[]
   attachments: FileRecord[]
