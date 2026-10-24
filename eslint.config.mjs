@@ -6,6 +6,7 @@ export default defineConfig([
   ...nextTypescript,
   globalIgnores([
     "reference/**",
+    "src/generated/**",
     ".ui-reference/**",
     ".next*/**",
     "node_modules/**",

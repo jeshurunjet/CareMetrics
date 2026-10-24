@@ -5,25 +5,42 @@
   "type": "module",
   "scripts": {
     "dev": "next dev -p ${PORT:-8443}",
-    "build": "NEXT_BUILD_DIR=.next-build next build --webpack",
+    "build": "pnpm db:generate && NEXT_BUILD_DIR=.next-build next build --webpack",
     "start": "NEXT_BUILD_DIR=.next-build next start -p ${PORT:-8443}",
-    "typecheck": "NEXT_BUILD_DIR=.next-build next typegen && tsc --noEmit",
-    "format": "oxfmt src tests scripts next.config.ts vitest.config.ts playwright.config.ts playwright.firefox.config.ts playwright.admin.config.ts eslint.config.mjs postcss.config.mjs",
+    "typecheck": "pnpm db:generate && NEXT_BUILD_DIR=.next-build next typegen && tsc --noEmit",
+    "format": "node scripts/format.mjs",
     "lint": "eslint . --max-warnings=0",
-    "format:check": "oxfmt --check src tests scripts next.config.ts vitest.config.ts playwright.config.ts playwright.firefox.config.ts playwright.admin.config.ts eslint.config.mjs postcss.config.mjs",
+    "format:check": "node scripts/format.mjs --check",
     "test": "vitest run",
     "test:e2e": "playwright test",
     "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
     "test:production": "node scripts/verify-production.mjs",
     "test:e2e:admin": "playwright test --config=playwright.admin.config.ts",
-    "test:e2e:firefox": "playwright test --config=playwright.firefox.config.ts"
+    "test:e2e:firefox": "playwright test --config=playwright.firefox.config.ts",
+    "db:generate": "prisma generate",
+    "db:validate": "prisma validate",
+    "db:migrate": "prisma migrate deploy",
+    "db:seed": "prisma db seed",
+    "test:backend": "vitest run --config vitest.backend.config.ts",
+    "postinstall": "prisma generate",
+    "test:backend:local": "node scripts/test-backend.mjs",
+    "test:backend:neon": "node scripts/test-backend-neon.mjs"
   },
   "dependencies": {
+    "@neon/config": "^1.9.3",
+    "@neon/env": "^1.6.4",
+    "@prisma/adapter-pg": "7.10.1",
+    "@prisma/client": "7.10.1",
+    "@vercel/functions": "3.10.3",
+    "argon2": "0.45.1",
     "leaflet": "^1.9.4",
     "next": "^16.3.8",
+    "next-auth": "5.0.0-beta.32",
+    "pg": "8.23.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
-    "react-leaflet": "^5.0.0"
+    "react-leaflet": "^5.0.0",
+    "server-only": "0.0.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.7",
@@ -31,17 +48,29 @@
     "@tailwindcss/postcss": "^4.3.3",
     "@types/leaflet": "^1.9.22",
     "@types/node": "^22.0.0",
+    "@types/pg": "^8.23.1",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "dotenv": "^17.4.2",
     "eslint": "^9.39.5",
     "eslint-config-next": "16.3.8",
     "oxfmt": "^0.2.0",
+    "prisma": "7.10.1",
     "tailwindcss": "^4.0.0",
+    "tsx": "^4.23.15",
     "typescript": "^5.7.0",
     "vitest": "^5.0.5"
   },
   "engines": {
-    "node": ">=22.13.0 <23 || >=24.0.0"
+    "node": ">=22.18.0 <23 || >=24.0.0"
   },
-  "packageManager": "pnpm@10.15.1"
+  "packageManager": "pnpm@10.15.1",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "argon2",
+      "@prisma/engines",
+      "prisma",
+      "esbuild"
+    ]
+  }
 }

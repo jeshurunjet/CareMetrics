@@ -6,10 +6,15 @@ type Screen = "login" | "forgot"
 
 interface Props {
   onLogin: (role: Role) => void
+  onAuthenticate?: (email: string, password: string) => Promise<void>
   previewEnabled: boolean
 }
 
-export default function LoginView({ onLogin, previewEnabled }: Props) {
+export default function LoginView({
+  onLogin,
+  previewEnabled,
+  onAuthenticate,
+}: Props) {
   const [screen, setScreen] = useState<Screen>("login")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -26,6 +31,18 @@ export default function LoginView({ onLogin, previewEnabled }: Props) {
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setError("Enter a valid email address.")
+      return
+    }
+    if (onAuthenticate) {
+      setLoading(true)
+      try {
+        await onAuthenticate(email.trim(), password)
+      } catch {
+        setError("Unable to sign in. Check your details or contact management.")
+      } finally {
+        setPassword("")
+        setLoading(false)
+      }
       return
     }
     if (!previewEnabled) {
@@ -212,7 +229,7 @@ export default function LoginView({ onLogin, previewEnabled }: Props) {
                     className="login-input"
                     id="login-email"
                     type="email"
-                    autoComplete="off"
+                    autoComplete={onAuthenticate ? "username" : "off"}
                     aria-required="true"
                     value={email}
                     onChange={(e) => {
@@ -229,7 +246,7 @@ export default function LoginView({ onLogin, previewEnabled }: Props) {
                       className="login-input"
                       id="login-password"
                       type={showPw ? "text" : "password"}
-                      autoComplete="off"
+                      autoComplete={onAuthenticate ? "current-password" : "off"}
                       aria-required="true"
                       value={password}
                       onChange={(e) => {
@@ -352,10 +369,12 @@ export default function LoginView({ onLogin, previewEnabled }: Props) {
                   lineHeight: 1.6,
                 }}
               >
-                <strong>UI ONLY:</strong>{" "}
-                {previewEnabled
-                  ? "Development mock session. Use any fictional email and non-empty password. No credentials are checked, stored or sent. Do not enter real credentials."
-                  : "Authentication is not configured. Do not enter real credentials."}
+                <strong>{onAuthenticate ? "SIGN IN:" : "UI ONLY:"}</strong>{" "}
+                {onAuthenticate
+                  ? "Use your organisation-provisioned account. Public registration and password recovery are unavailable."
+                  : previewEnabled
+                    ? "Development mock session. Use any fictional email and non-empty password. No credentials are checked, stored or sent. Do not enter real credentials."
+                    : "Authentication is not configured. Do not enter real credentials."}
                 {previewEnabled && (
                   <div
                     style={{

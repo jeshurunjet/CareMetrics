@@ -37,3 +37,9 @@ coverage/
 test-results-firefox/
 
 test-results-admin/
+
+# Generated Prisma client; regenerated during install/build.
+/src/generated/prisma/
+.next-backend/
+test-results-backend/
+.neon

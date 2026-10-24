@@ -8,6 +8,7 @@ const server = spawn(
       ...process.env,
       NODE_ENV: "production",
       CAREMETRICS_UI_PREVIEW: "true",
+      CAREMETRICS_BACKEND_MODE: "disabled",
       NEXT_BUILD_DIR: ".next-build",
     },
     stdio: ["ignore", "pipe", "pipe"],
@@ -217,6 +218,27 @@ try {
       "Restricted house file example",
     ])
       assert.ok(!body.includes(marker), "no fictional data exposed")
+  }
+  for (const path of [
+    "/api/me",
+    "/api/houses",
+    "/api/clients/20000000-0000-4000-8000-000000000031",
+    "/api/admin/foundation",
+    "/api/auth/session",
+  ]) {
+    const response = await fetch(`http://localhost:8556${path}`, {
+      headers: {
+        Cookie: "authjs.session-token=forged",
+        "x-role": "ADMINISTRATOR",
+      },
+    })
+    assert.equal(response.status, 503, "disabled backend API fails closed")
+    assert.ok(response.headers.get("cache-control")?.includes("no-store"))
+    const text = await response.text()
+    assert.ok(
+      !text.includes("passwordHash") && !text.includes("postgresql://"),
+      "no internal credentials or records",
+    )
   }
   console.log(
     `Production HTTP checks passed: login inert, ${paths.length} preview routes refused with flag enabled.`,

@@ -131,3 +131,9 @@ Firefox remains blocked before launch by its profile-folder error. Safari and ph
 ## 14. Recommended first backend instruction
 
 Separately authorise a small Auth.js + Prisma/Neon vertical slice using fictional data: trusted account/employee/organisation sessions, current house assignments and authorised house/client/NOK reads behind existing screens. Establish negative cross-tenant/role/house tests, safe DTOs and central server capabilities before enabling submissions. Keep the existing development preview isolated and previous branches intact. After that foundation, approve GPS/clock-out policies and implement real shifts/attendance, then persistent Client Diary and seeded-version Care Plan submissions/history with transaction/idempotency tests. Do not begin Phase 2 automatically.
+
+## Phase 2A implementation update
+
+The freeze above records Phase 1E.5's historical state. [Backend foundation](backend-foundation.md) now implements Prisma/PostgreSQL, database-backed Auth.js credentials/JWT sessions, active server identity/capabilities and scoped house/client/NOK read services. It documents the current dependencies, actual Neon development setup, migration/seed, permissions, real versus preview modes and checks. Production never trusts preview roles; in explicit database mode the mock provider is disabled and deferred pages remain unavailable. Real entry views are bounded foundation pages; the complete business frontend is not yet connected.
+
+The submission scope is unchanged. No GPS/attendance write, Diary/Care submission backend or deferred management service is implied. Phase 2B requires separate authorisation.

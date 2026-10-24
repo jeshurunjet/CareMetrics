@@ -288,3 +288,23 @@ Action-level and unregistered classifications:
 | Unrecognised IDs/invalid context/deep routes | Blocked/unsupported action | Scoped unavailable/404 states, not an alternative module |
 
 All Staff navigation destinations and Admin groups are represented. The source desktop gate applies to Admin on narrow screens; Staff retains responsive layouts. Deferred backend scope does not remove completed preview routes: see [submission boundary](submission-mvp-scope.md) and [handover](ui-freeze-and-backend-handover.md).
+
+## Phase 2A backend-mode update
+
+The Phase 1E.5 classifications above continue to describe the full **development preview**. In explicit `CAREMETRICS_BACKEND_MODE=database`, that provider/role preview is disabled even if its flag is set:
+
+| Route | Database-mode behaviour |
+| --- | --- |
+| `/login` | Original Login appearance with real Auth.js Credentials; generic rejection, no preview Administration button |
+| `/shift-check` | Active authenticated foundation entry; attendance unavailable, Continue to dashboard remains possible |
+| `/dashboard` | Authenticated foundation entry; full Dashboard data migration deferred |
+| `/admin/dashboard` | Active Manager/Admin foundation entry; original desktop viewport gate retained |
+| Other existing Staff/Admin features | Preview-only; unavailable/not-found in database mode, no mock mutations exposed after real login |
+| `GET /api/me` | Current safe employee DTO |
+| `GET /api/houses` | Current authorised active houses |
+| `GET /api/houses/[id]/clients` | Active authorised parent and client list |
+| `GET /api/clients/[id]` | Authorised current client profile/NOK |
+| `GET /api/admin/foundation` | Management capability check, bounded metadata only |
+| `/api/auth/[...nextauth]` | Auth.js GET/POST with configuration/origin guards, CSRF and active session endpoint |
+
+No new UI page families were added; there are still 43 page files. Disabled mode remains inert in production, and the original 141-route production-preview isolation regression is retained. APIs independently recheck server identity, organisation, role and house/client access with explicit private/no-store responses. Invalid/out-of-scope identifiers cannot grant permission. See [backend foundation](backend-foundation.md) for exact boundaries and streamed unavailable-page behaviour. Scope and approved designs are unchanged; full data integration is a later phase.

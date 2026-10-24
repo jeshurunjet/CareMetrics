@@ -1,0 +1,281 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMINISTRATOR
+  MANAGER
+  SENIOR_STAFF
+  STAFF
+}
+
+enum AccountStatus {
+  ACTIVE
+  INACTIVE
+  INVITED
+}
+
+enum ShiftStatus {
+  SCHEDULED
+  CANCELLED
+}
+
+enum RecordStatus {
+  DRAFT
+  SUBMITTED
+}
+
+enum TemplateKind {
+  CARE
+  CHART
+}
+
+model Organisation {
+  id        String         @id @default(uuid()) @db.Uuid
+  name      String
+  active    Boolean        @default(true)
+  createdAt DateTime       @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime       @updatedAt @db.Timestamptz(3)
+  employees User[]
+  templates CareTemplate[]
+  houses    House[]
+}
+
+// Credentials + JWT strategy: no OAuth Account/Session/VerificationToken tables are used.
+model User {
+  id             String                    @id @default(uuid()) @db.Uuid
+  organisationId String                    @db.Uuid
+  employeeCode   String
+  email          String                    @unique
+  name           String
+  role           Role                      @default(STAFF)
+  status         AccountStatus             @default(INVITED)
+  passwordHash   String?
+  sessionVersion Int                       @default(1)
+  createdAt      DateTime                  @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime                  @updatedAt @db.Timestamptz(3)
+  organisation   Organisation              @relation(fields: [organisationId], references: [id], onDelete: Restrict)
+  assignments    EmployeeHouseAssignment[]
+  shifts         Shift[]
+  diaryEntries   ClientDiaryEntry[]
+  careRecords    CareRecord[]
+
+  @@unique([organisationId, id])
+  @@unique([organisationId, employeeCode])
+  @@index([organisationId, status, role])
+}
+
+model House {
+  id             String                    @id @default(uuid()) @db.Uuid
+  organisationId String                    @db.Uuid
+  code           String
+  name           String
+  address        String
+  phone          String?
+  email          String?
+  active         Boolean                   @default(true)
+  latitude       Decimal?                  @db.Decimal(10, 7)
+  longitude      Decimal?                  @db.Decimal(10, 7)
+  createdAt      DateTime                  @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime                  @updatedAt @db.Timestamptz(3)
+  organisation   Organisation              @relation(fields: [organisationId], references: [id], onDelete: Restrict)
+  assignments    EmployeeHouseAssignment[]
+  clients        Client[]
+  shifts         Shift[]
+  diaryEntries   ClientDiaryEntry[]
+
+  @@unique([organisationId, id])
+  @@unique([organisationId, code])
+  @@index([organisationId, active])
+}
+
+model EmployeeHouseAssignment {
+  organisationId String   @db.Uuid
+  employeeId     String   @db.Uuid
+  houseId        String   @db.Uuid
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime @updatedAt @db.Timestamptz(3)
+  employee       User     @relation(fields: [organisationId, employeeId], references: [organisationId, id], onDelete: Restrict)
+  house          House    @relation(fields: [organisationId, houseId], references: [organisationId, id], onDelete: Restrict)
+
+  @@id([organisationId, employeeId, houseId])
+  @@index([organisationId, houseId, active])
+}
+
+model Client {
+  id                  String                     @id @default(uuid()) @db.Uuid
+  organisationId      String                     @db.Uuid
+  houseId             String                     @db.Uuid
+  reference           String
+  name                String
+  preferredName       String?
+  dateOfBirth         DateTime?                  @db.Date
+  summary             String?
+  active              Boolean                    @default(true)
+  createdAt           DateTime                   @default(now()) @db.Timestamptz(3)
+  updatedAt           DateTime                   @updatedAt @db.Timestamptz(3)
+  house               House                      @relation(fields: [organisationId, houseId], references: [organisationId, id], onDelete: Restrict)
+  contacts            ClientContact[]
+  templateAssignments ClientTemplateAssignment[]
+  diaryEntries        ClientDiaryEntry[]
+  careRecords         CareRecord[]
+
+  @@unique([organisationId, id])
+  @@unique([organisationId, reference])
+  @@index([organisationId, houseId, active])
+}
+
+model ClientContact {
+  id             String   @id @default(uuid()) @db.Uuid
+  organisationId String   @db.Uuid
+  clientId       String   @db.Uuid
+  name           String
+  relationship   String
+  phone          String?
+  email          String?
+  isPrimary      Boolean  @default(false)
+  isEmergency    Boolean  @default(false)
+  createdAt      DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime @updatedAt @db.Timestamptz(3)
+  client         Client   @relation(fields: [organisationId, clientId], references: [organisationId, id], onDelete: Restrict)
+
+  @@index([organisationId, clientId])
+}
+
+model Shift {
+  id             String            @id @default(uuid()) @db.Uuid
+  organisationId String            @db.Uuid
+  employeeId     String            @db.Uuid
+  houseId        String            @db.Uuid
+  startsAt       DateTime          @db.Timestamptz(3)
+  endsAt         DateTime          @db.Timestamptz(3)
+  status         ShiftStatus       @default(SCHEDULED)
+  createdAt      DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime          @updatedAt @db.Timestamptz(3)
+  employee       User              @relation(fields: [organisationId, employeeId], references: [organisationId, id], onDelete: Restrict)
+  house          House             @relation(fields: [organisationId, houseId], references: [organisationId, id], onDelete: Restrict)
+  attendance     AttendanceRecord?
+
+  @@unique([organisationId, id, employeeId])
+  @@index([organisationId, employeeId, startsAt])
+  @@index([organisationId, houseId, startsAt])
+}
+
+model AttendanceRecord {
+  id             String    @id @default(uuid()) @db.Uuid
+  organisationId String    @db.Uuid
+  shiftId        String    @unique @db.Uuid
+  employeeId     String    @db.Uuid
+  clockIn        DateTime? @db.Timestamptz(3)
+  clockOut       DateTime? @db.Timestamptz(3)
+  createdAt      DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime  @updatedAt @db.Timestamptz(3)
+  shift          Shift     @relation(fields: [organisationId, shiftId, employeeId], references: [organisationId, id, employeeId], onDelete: Restrict)
+
+  @@unique([organisationId, shiftId, employeeId])
+  @@index([organisationId, employeeId, createdAt])
+}
+
+model CareTemplate {
+  id             String                @id @default(uuid()) @db.Uuid
+  organisationId String                @db.Uuid
+  name           String
+  kind           TemplateKind          @default(CARE)
+  archived       Boolean               @default(false)
+  createdAt      DateTime              @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime              @updatedAt @db.Timestamptz(3)
+  organisation   Organisation          @relation(fields: [organisationId], references: [id], onDelete: Restrict)
+  versions       CareTemplateVersion[]
+
+  @@unique([organisationId, id])
+  @@index([organisationId, kind, archived])
+}
+
+model CareTemplateVersion {
+  id             String                     @id @default(uuid()) @db.Uuid
+  organisationId String                     @db.Uuid
+  templateId     String                     @db.Uuid
+  version        Int
+  definition     Json
+  publishedAt    DateTime                   @default(now()) @db.Timestamptz(3)
+  template       CareTemplate               @relation(fields: [organisationId, templateId], references: [organisationId, id], onDelete: Restrict)
+  assignments    ClientTemplateAssignment[]
+  records        CareRecord[]
+
+  @@unique([organisationId, templateId, version])
+}
+
+model ClientTemplateAssignment {
+  organisationId  String              @db.Uuid
+  clientId        String              @db.Uuid
+  templateId      String              @db.Uuid
+  version         Int
+  active          Boolean             @default(true)
+  createdAt       DateTime            @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime            @updatedAt @db.Timestamptz(3)
+  client          Client              @relation(fields: [organisationId, clientId], references: [organisationId, id], onDelete: Restrict)
+  templateVersion CareTemplateVersion @relation(fields: [organisationId, templateId, version], references: [organisationId, templateId, version], onDelete: Restrict)
+
+  @@id([organisationId, clientId, templateId])
+  @@index([organisationId, templateId, version])
+}
+
+model ClientDiaryEntry {
+  id             String       @id @default(uuid()) @db.Uuid
+  organisationId String       @db.Uuid
+  clientId       String       @db.Uuid
+  houseId        String       @db.Uuid
+  authorId       String       @db.Uuid
+  title          String
+  category       String
+  content        String
+  coveredAt      DateTime     @db.Timestamptz(3)
+  status         RecordStatus @default(DRAFT)
+  offShiftReason String?
+  submittedAt    DateTime?    @db.Timestamptz(3)
+  createdAt      DateTime     @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime     @updatedAt @db.Timestamptz(3)
+  client         Client       @relation(fields: [organisationId, clientId], references: [organisationId, id], onDelete: Restrict)
+  house          House        @relation(fields: [organisationId, houseId], references: [organisationId, id], onDelete: Restrict)
+  author         User         @relation(fields: [organisationId, authorId], references: [organisationId, id], onDelete: Restrict)
+
+  @@index([organisationId, clientId, submittedAt, id])
+  @@index([organisationId, authorId, status])
+}
+
+model CareRecord {
+  id              String              @id @default(uuid()) @db.Uuid
+  organisationId  String              @db.Uuid
+  clientId        String              @db.Uuid
+  authorId        String              @db.Uuid
+  templateId      String              @db.Uuid
+  templateVersion Int
+  values          Json
+  status          RecordStatus        @default(DRAFT)
+  coveredAt       DateTime            @db.Timestamptz(3)
+  offShiftReason  String?
+  submittedAt     DateTime?           @db.Timestamptz(3)
+  createdAt       DateTime            @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime            @updatedAt @db.Timestamptz(3)
+  client          Client              @relation(fields: [organisationId, clientId], references: [organisationId, id], onDelete: Restrict)
+  author          User                @relation(fields: [organisationId, authorId], references: [organisationId, id], onDelete: Restrict)
+  version         CareTemplateVersion @relation(fields: [organisationId, templateId, templateVersion], references: [organisationId, templateId, version], onDelete: Restrict)
+
+  @@index([organisationId, clientId, submittedAt, id])
+  @@index([organisationId, authorId, status])
+}
+
+// Shared across app instances; identifiers are HMACs, never email addresses or IPs.
+model LoginAttempt {
+  key       String   @id
+  attempts  Int
+  expiresAt DateTime @db.Timestamptz(3)
+
+  @@index([expiresAt])
+}

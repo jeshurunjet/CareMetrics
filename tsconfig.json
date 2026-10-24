@@ -47,7 +47,14 @@
     ".next-e2e/types/**/*.ts",
     ".next-e2e/dev/types/**/*.ts",
     ".next-local/types/**/*.ts",
-    ".next-local/dev/types/**/*.ts"
+    ".next-local/dev/types/**/*.ts",
+    "prisma/*.ts",
+    "prisma.config.ts",
+    "vitest.backend.config.ts",
+    "playwright.backend.config.ts",
+    ".next-backend/types/**/*.ts",
+    ".next-backend/dev/types/**/*.ts",
+    "neon.ts"
   ],
   "exclude": [
     "node_modules",

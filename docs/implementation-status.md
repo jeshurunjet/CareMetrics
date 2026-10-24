@@ -1,64 +1,59 @@
-# Implementation status — Phase 1E.5
+# Implementation status — Phase 2A
 
-Phase 1E.5 freezes the existing fictional Staff/Admin UI and documents the reduced submission backend. This phase changes documentation only: no runtime, adapter, styles, dependency, test or capability implementation. Previous final results are preserved in [Phase 1E.4B status](history/phase-1e4b-status.md).
+Phase 2A establishes the database/authentication/access-control foundation, with actual Neon development connectivity and bounded real read APIs. The complete Staff/Admin business frontend remains preserved in development-preview mode; it is not fully backend-connected. [Backend foundation](backend-foundation.md) contains configuration, schema, migration, accounts, access rules, commands, verification and limitations. [Phase 1E.5 status](history/phase-1e5-status.md) preserves the UI freeze.
 
-## Git safety
+## Git and preservation
 
-Completed Phase 1E.4B is committed at **0de1bbbb8bdd1b372b8ce1672a14a15806282513** and was already pushed with the user's previous authorisation. The brief's uncommitted note is superseded. The new local **phase-1e5** branch preserves that complete application and all earlier branches, including Phase 1E.4A at **9fb28d99ae7406640162b09b1e91aa5382833b5e**. No reset, discard or Phase 1E.5 push. Fifty pre-existing untracked duplicate screenshots remain untouched and outside this phase.
+Checkpoint **a66b54612898009b4cabd71fbbc55325fb61d204**, working branch **phase-2a**. All previous branches/reference/CSS/evidence/tests remain. The user subsequently authorised committing and pushing the full Phase 2A version on this branch; no reset/discard or frontend deployment. Fifty unrelated untracked duplicate screenshots remain outside this phase. The user's later Neon instruction separately authorised CLI/MCP and PostgreSQL infrastructure setup.
 
-## Completed review and contracts
+A planning summary is available in [context for the next phase](phase-2a-next-phase-brief.md).
 
-- [Final route classification](route-map.md#phase-1e5-final-route-classification): all Staff/Admin page families, contextual subviews, placeholders, future routes and blocked actions.
-- [Frozen submission scope](submission-mvp-scope.md): real login, assigned data/shifts, GPS attendance, Client Diary/Care Plan persistence and essential Admin only. Both attendance and care-record correction approval remain future backend work.
-- [Backend handover](ui-freeze-and-backend-handover.md): shared entities/invariants, server identity/scope, direct mock-state replacement map, GPS/clock-out policy decisions, Diary/Care Plan contracts, seed approach, proposed capabilities and privacy/security acceptance.
+## Implemented
 
-No material new UI defect was confirmed. The handover ambiguity about correction workflows was fixed in documentation. Existing shared state/navigation and immutable originals/exact versions remain intact. A read-only seed relationship check passed: unique IDs; four current client-house links; five employee-house assignments; eighteen employee/house shift links; ten matching attendance/shift/employee links; thirty-five exact care version references and ten client-template assignments. Negative/legacy fixtures are intentionally retained for existing unavailable/privacy tests and excluded from the proposed valid backend seed approach.
+- Matching Prisma 7.10.1 schema/client/pg adapter, versioned transactional initial migration, tenant foreign keys/uniqueness/indexes/checks, exact immutable template/submitted-original relationships.
+- Auth.js 5.0.0-beta.32 Credentials with Argon2id hashes, encrypted JWT sessions, server-derived employee identity, current role/status/assignment checks, session-version invalidation, sign-out and durable atomic login throttling.
+- Server-only Prisma/pg pool with Neon pooled runtime/direct migration URLs, verified TLS and Vercel pool lifecycle wiring. Missing security configuration fails closed.
+- Minimal safe current-employee/house/client/NOK read APIs, management/capability helpers, generic errors and private/no-store responses. No generic CRUD API.
+- Original Login appearance with real mode; protected My Shifts → Dashboard without clock-in; bounded management entry and desktop gate. The remaining completed UI stays development-only until its data is integrated.
+- Repeatable nonproduction fictional seed, no default passwords or automatic production privileged accounts; safe private credential provisioning and disposable local PostgreSQL verification.
+- Neon CLI 8.11.1, official Neon/Postgres skills and project-scoped OAuth MCP configuration. CLI setup verified after the user's sign-in; MCP first-use connection is not claimed.
+
+Next/React/TypeScript remain **16.3.8 / 19.3.1 / 5.9.3**; package manager remains pnpm 10.15.1. Dependencies/lockfile are updated; no framework redesign/upgrade. Auth.js v5 beta status is explicit. The formatter now excludes generated Prisma files while retaining authored source/tests/configuration checks.
+
+## Neon evidence
+
+Specified org/project linked and environment pulled privately. `neon config plan` and `neon deploy` reported **No changes — branch production already matches the policy**, utilised service **Postgres**. No unrelated Neon service or frontend was deployed.
+
+New isolated **phase-2a** Neon branch was verified empty before applying migration **202610250001_initial_foundation** and seeding fictional accounts twice. The production schema/data was not migrated/reset/seeded. Real Neon login, authenticated queries and role/house denial passed all **10 two-width browser tests** in the focused run. CLI-created development branch has a seven-day TTL; review lifecycle before relying on it long term. Ignored `.env.local` and `.neon` point to this development branch, with the normal mock preview still the default locally.
 
 ## Final verification
 
-Established isolated runtime: **Node 22.23.4 / pnpm 10.15.1**. Final checks ran after stabilisation with no source/test/config changes during browser execution. The complete Chromium and separate Admin suites each ran once; all results below are fresh Phase 1E.5 results.
+Verified on **Node 22.23.4 / pnpm 10.15.1**. Final source was frozen before database/browser checks; all **385 authored source/test/tooling hashes** remained unchanged. Existing assertions were retained.
 
 | Check | Final result |
 | --- | --- |
 | Lint | Pass, zero warnings |
-| Strict TypeScript | Pass, including restoration of canonical generated types after servers/build |
-| Formatting | Pass |
-| Unit tests | **389 passed / 16 files** |
-| Full five-width Chromium | **619 passed / 126 intentional skips**, 745 total; 12.8 minutes; zero failures |
-| Six-width Admin Chromium | **186 passed / 126 intentional skips**, 312 total; 5.2 minutes; zero failures |
-| Production build | Pass |
-| Production isolation | Inert login; **141 distinct preview URLs refused** even with preview flag enabled |
-| Source freeze | **354 source/test/tooling hashes unchanged** from completed 4B through verification |
-| Reference integrity | All **51 archive files** and **three original CSS copies** byte-identical |
-| Production client chunks | **10 restricted fixture markers absent from 90 chunks** |
-| Repository checks | git diff --check clean; no dependency/lockfile/generated next-env/source/test diff; reference remains untracked/ignored |
+| Strict TypeScript | Pass, canonical generated types restored after servers stopped |
+| Authored-file formatting | Pass |
+| Unit tests | **393 passed / 17 files** |
+| Disposable PostgreSQL integration | Migration and repeat seed pass; **12 service/constraint/security tests** passed |
+| Disposable PostgreSQL real-auth browser | **10 passed** at 375/1280px |
+| Actual Neon development real-auth browser | **10 passed** at 375/1280px after the successful build |
+| Full original Chromium preview regression | **619 passed / 126 intentional narrow-Admin skips**, 745 total, 12.6 minutes; zero failures |
+| Explicit `npm run build` | Pass: **Compiled successfully in 4.0s**, TypeScript and route generation completed |
+| Production isolation | All **141 original preview URLs refused** even with flag enabled; inert disabled-mode login; **five added API probes** fail closed with forged browser identity |
+| Client bundle isolation | **Nine configured secret values and ten restricted fixture markers absent from 98 chunks** |
+| Source/reference preservation | **51 original export files and three CSS copies unchanged**; no existing unit/e2e assertions edited |
+| Repository | git diff --check clean; no tracked env secrets, Neon pointer, generated Prisma client or reference files |
 
-Full regression widths: 375/390/768/1280/1440; Admin adds 1600. The 126 skips in each run are intentional management workflow skips below the original 1024px breakpoint; narrow gate/negative-route cases still run. Existing assertions were retained without edits. Build and production HTTP checks followed browser completion. Existing 8443 preview was not restarted or replaced. No new tests or large visual collection were introduced for this documentation-only freeze.
+The complete original five-width regression ran once after stabilisation. Admin workflows/gating are included at its 375/390/768/1280/1440 widths; the separate six-width Admin repetition was not needed for this bounded backend phase. Real auth was independently exercised at mobile/desktop widths against both temporary PostgreSQL and the actual isolated Neon branch. No application/test/config edits occurred during the final browser runs; no new large visual collection was created.
 
-The final integrity check additionally confirmed the existing 4B evidence remains 37 raw captures / nine comparison boards, alongside all earlier evidence. No failed final run required a rerun.
+Focused development failures were new-test type/alert-locator assumptions and the fact that Next.js streams a deferred unavailable page as HTTP 200 with a 404 signal after the authenticated layout waits. Those were corrected in the new tests without weakening old assertions; APIs continue to enforce explicit error statuses. Initial Neon linking was offline until the user signed in; it was subsequently verified and deployed successfully. No failed final checks remain.
 
-## Representative visual review
+## Remaining boundaries
 
-Reused existing evidence on unchanged source; no new large screenshot collection. Reviewed:
+No real GPS/geofencing/attendance writes, Diary or Care Plan submission service, full Admin CRUD, private files, Leave/correction/builder/delivery/concern/reporting backend or frontend deployment. Real entry pages are bounded foundation views, not finished business-data integration. Current preview role switching and session CRUD remain fictional and unavailable in real mode. No Phase 2B starts automatically.
 
-| Area | Existing evidence |
-| --- | --- |
-| Staff mobile menu, Settings and Dashboard | [390px integration board](ui-comparisons/phase-1d4/comparison-390-integration.png) |
-| Mobile My Shifts and unavailable clock-in | [375px My Shifts](ui-comparisons/width-375-migrated-shifts.png) |
-| Client and House Diary forms | [375px Diary board](ui-comparisons/phase-1c1/comparison-375-forms.png) |
-| Care Plan fields and conditional validation | [375px Care Plan board](ui-comparisons/phase-1c2/comparison-375-forms.png) |
-| Admin Dashboard/directory/employee details | [1280px overview board](ui-comparisons/phase-1e1/comparison-1280-overview.png) |
-| Employee create/edit/house assignment | [1280px employee board](ui-comparisons/phase-1e1/comparison-1280-employees.png) |
-| House create/edit/location presentation | [1280px house board](ui-comparisons/phase-1e1/comparison-1280-houses.png) |
-| Client directory/profile and house context | [1280px client board](ui-comparisons/phase-1e1/comparison-1280-clients.png) |
-| Admin narrow-screen presentation gate | [375px desktop-required board](ui-comparisons/phase-1e1/comparison-375-desktop-notice.png) |
+No infrastructure credential blocker remains for the verified Neon development branch. MCP OAuth first-use connection/reload remains unverified; CLI provides verified access. Production account provisioning, least-privilege roles, HTTPS/Vercel deployment, organisational session/attendance/privacy/security policies, backups/restoration and operational acceptance remain prerequisites. Auth.js beta monitoring is required. Firefox remains blocked before launch; Safari, physical devices, exhaustive accessibility and penetration/production acceptance remain unverified.
 
-The original typography/colours/components/layouts remain. Added development notices and safe unavailable actions explain differences from source; Admin tables retain contained scrolling. The 375px My Shifts viewport keeps Continue to dashboard reachable above bottom navigation; full feedback/actions remain scrollable. No new visual defect was identified in this representative review. Earlier comparison indices retain detailed findings and all original assets/evidence.
-
-## Remaining limitations and next step
-
-Everything operational remains development-only: mock authentication/role selection, browser projections, fictional GPS/attendance, session writes/reviews, file simulations, notices/concerns and metadata audit. No Auth.js, Prisma/Neon, real GPS, private Blob, delivery, durable audit or deployment exists. Production remains inert/preview-isolated, not a working submission backend. Settings/recovery/unsupported actions are intentionally unavailable.
-
-Firefox's pre-launch profile-folder failure remains unresolved; Safari, physical devices, exhaustive accessibility and independent design acceptance remain unverified. GPS distance/accuracy/freshness/window/retention and clock-out policies need organisational approval before activation; draft persistence scope also needs an explicit backend decision. No policy threshold is invented.
-
-Recommended first backend instruction: separately authorise an Auth.js + Prisma/Neon fictional-data slice establishing trusted account/employee/organisation identity, current house assignments and scoped house/client/NOK reads, with negative cross-scope tests and server capability enforcement. Then approved GPS/shifts/attendance, followed by persistent Client Diary and seeded exact-version Care Plans. Phase 2 is not started automatically.
+Recommended next: separately authorise Phase 2B's bounded Employee/House/Client frontend integration using the trusted server DTOs, preserving the frozen design and development preview. Do not begin GPS, Diary/Care submission or deferred backends until their own scope is authorised.
