@@ -1,6 +1,6 @@
-# Configurable form foundation — Phase 1C.3
+# Configurable form foundation — through Phase 1E.3
 
-This is a typed, development-only rendering model, not an Admin builder, clinical standard or production validation service. `src/modules/forms` contains the presentation-independent types/engine and source-derived controls. Care Plan owns assignments/record workflows under `src/modules/staff/care`; Charting reuses the form engine without depending on category names.
+This is a typed, development-only rendering model, not a clinical standard or production validation service. Phase 1E.3 adds an Admin builder over this same engine; historical phase descriptions below are retained. `src/modules/forms` contains the presentation-independent types/engine and source-derived controls. Care Plan owns assignments/record workflows under `src/modules/staff/care`; Charting reuses the form engine without depending on category names.
 
 ```mermaid
 flowchart LR
@@ -85,3 +85,11 @@ The shared renderer branches on `repeatingTable`, not category name. Source `.cm
 ## Chart corrections
 
 Charting records use the same CareRecord domain, so correction `recordType: care` also covers Charting; Diary remains separately discriminated. `CorrectionTarget` optionally stores `fieldId`, `rowId` and `columnId`. The shared correction form offers original-version field/cell targets for Charting, alongside reason and proposed values in text. The adapter validates the target against that scoped original record/version and stores it separately with Pending Review. Multiple affected values can be described in the proposal; the UI currently selects one structured target. No original row/cell is mutated, and no staff review/approval/delete operation exists. Management review, revised record creation and durable audit remain unimplemented.
+
+## Phase 1E.3 Admin configuration extension
+
+The Admin builder reuses these types and DynamicFormRenderer, with one CareTemplate optional draft embedding ConfigurableFormVersion. Version metadata includes exact name/description/history, publication actor/time/summary; legacy versions remain compatible. Draft management, publication validation and client assignments are pure management-role-checked operations. No second renderer/storage model is introduced. Staff projections omit management drafts while scoped merges preserve them.
+
+Publication requires supported operational fields, safe distinct section/field/column IDs, meaningful sections/questions, valid options/defaults/bounds/conditions/table settings and no cycles. Errors reference selected outline items; incomplete drafts may be saved. Conditions retain the existing typed semantics and hidden-value policy. `allowRemoveDraftRows` is optional and defaults true; false hides row removal in the shared repeating control. Scale display now honours its configured integer step. Numeric history excludes observations whose original-version unit/field configuration differs from the displayed series.
+
+Publication deep-copies a new immutable version. New drafts copy published definitions with stable IDs; publishing does not reassign clients. Explicit assignment updates select another published version; old submitted records and own drafts retain their exact versions. Existing behaviour permitting old-version draft submission under an active assignment remains. Pausing blocks new entries/submission, preserves history and permits read-only existing URLs within current client/house scope. Historical access after house removal and final draft/retention/concurrency policies remain unresolved. Categories snapshot submitted names; category rename/deactivation preserves history. Full architecture, preview/error behaviour, provisional bounds and future service requirements are in [Admin documentation contracts](admin-documentation-builder.md).

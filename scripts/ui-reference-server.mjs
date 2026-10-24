@@ -270,6 +270,7 @@ adminFixture.org = { name: "CareMetrics fictional organisation" }
 adminFixture.perms = Object.fromEntries(
   [
     "Manage rosters & shifts",
+    "Configure care templates",
     "Review leave",
     "Review corrections",
     "Create staff accounts",

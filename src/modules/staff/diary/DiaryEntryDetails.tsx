@@ -41,7 +41,8 @@ export default function DiaryEntryDetails({
           <RecordStatus entry={entry} />
         </div>
         <p className="cm-muted">
-          {s.diaryCategories.find((c) => c.id === entry.categoryId)?.name ??
+          {entry.categoryName ??
+            s.diaryCategories.find((c) => c.id === entry.categoryId)?.name ??
             "Uncategorised"}
         </p>
         <p className="cm-body cm-diary-text">

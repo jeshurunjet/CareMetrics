@@ -2,7 +2,11 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useStaffData } from "../data/context"
-import { getAssignedCareTemplate, getCareRecords } from "../care/adapter"
+import {
+  getAssignedCareTemplate,
+  getReadableCareTemplate,
+  getCareRecords,
+} from "../care/adapter"
 import { careListHref, careFormHref, careDetailHref } from "../care/navigation"
 import { AssessmentPreviewNotice, UnavailableAssessment } from "../care/shared"
 import { RecordStatus } from "../diary/shared"
@@ -26,7 +30,7 @@ export default function ChartingHistoryTable({
     [range, setRange] = useState("all"),
     [author, setAuthor] = useState("all"),
     [page, setPage] = useState(1)
-  const assigned = getAssignedCareTemplate(s, clientId, templateId, "chart")
+  const assigned = getReadableCareTemplate(s, clientId, templateId, "chart")
   if (!assigned)
     return <UnavailableAssessment clientId={clientId} kind="chart" />
   const { template, version } = assigned,
@@ -61,13 +65,15 @@ export default function ChartingHistoryTable({
               {template.description} · Template v{version.version}
             </p>
           </div>
-          <Link
-            className="cm-btn cm-btn--primary cm-btn--md"
-            href={careFormHref(clientId, templateId)}
-          >
-            <Icon name="plus" size={17} />
-            Add entry
-          </Link>
+          {getAssignedCareTemplate(s, clientId, templateId, template.kind) && (
+            <Link
+              className="cm-btn cm-btn--primary cm-btn--md"
+              href={careFormHref(clientId, templateId)}
+            >
+              <Icon name="plus" size={17} />
+              Add entry
+            </Link>
+          )}
         </div>
       </div>
       <AssessmentPreviewNotice kind="chart" />

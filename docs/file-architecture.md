@@ -53,3 +53,7 @@ The existing picker/policy is reused without a second upload component. StaffDat
 ## Phase 1E.1 shared management photos
 
 Admin entity forms reuse ProfilePhotoPicker and the same selection policy. Pending selections use the existing mounted-form photo hook. Applied employee/house/client URLs use an entity-keyed resource registry in the shared provider, in the same photo module, so replacing an employee photo from either interface revokes the previous applied URL. Different employees' photos retain independent lifetimes. Session reset/logout/unmount revokes all applied resources. No File/Blob contents, browser storage database, attachment upload or durable file metadata is introduced. Staff Client/House selection still has mounted-profile lifetime; an Admin-saved demonstration photo is a shared domain display value for the development session. This is not secure storage or real upload functionality.
+
+## Phase 1E.3 configurable-form boundary
+
+The documentation builder reuses the existing field model and renderer. Photo/file palette entries remain reserved and unavailable; publication blocks unsupported attachment fields/cells even if optional. No upload/storage service, new public private-file path or alternate gallery store was introduced. Existing harmless demo assets and photo lifetimes remain unchanged.

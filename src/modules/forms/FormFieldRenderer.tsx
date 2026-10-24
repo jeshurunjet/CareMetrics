@@ -34,10 +34,14 @@ export default function FormFieldRenderer({
             ]
           : f.type === "scale"
             ? Array.from(
-                { length: (f.max ?? 5) - (f.min ?? 1) + 1 },
+                {
+                  length:
+                    Math.floor(((f.max ?? 5) - (f.min ?? 1)) / (f.step ?? 1)) +
+                    1,
+                },
                 (_, i) => ({
-                  value: String((f.min ?? 1) + i),
-                  label: String((f.min ?? 1) + i),
+                  value: String((f.min ?? 1) + i * (f.step ?? 1)),
+                  label: String((f.min ?? 1) + i * (f.step ?? 1)),
                 }),
               )
             : "options" in f

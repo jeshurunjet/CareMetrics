@@ -75,18 +75,20 @@ export default function RepeatingTableField({
               />
             </div>
           ))}
-          <button
-            type="button"
-            className="cm-repeat-remove"
-            aria-label={`Remove draft row ${i + 1}`}
-            onClick={() => {
-              const next = rows.filter((r) => r.id !== row.id)
-              onChange(next)
-              focusRow(next[Math.min(i, next.length - 1)]?.id)
-            }}
-          >
-            <Icon name="x" size={16} />
-          </button>
+          {field.allowRemoveDraftRows !== false && (
+            <button
+              type="button"
+              className="cm-repeat-remove"
+              aria-label={`Remove draft row ${i + 1}`}
+              onClick={() => {
+                const next = rows.filter((r) => r.id !== row.id)
+                onChange(next)
+                focusRow(next[Math.min(i, next.length - 1)]?.id)
+              }}
+            >
+              <Icon name="x" size={16} />
+            </button>
+          )}
         </div>
       ))}
       {field.allowAdd !== false && (

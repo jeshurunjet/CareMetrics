@@ -2,6 +2,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useStaffData } from "../data/context"
+import { getAssignedCareTemplate } from "./adapter"
 import type { CareRecord, CareTemplate } from "./types"
 import { Icon } from "../ui"
 import { RecordStatus, RecordMetadata } from "../diary/shared"
@@ -29,12 +30,13 @@ export default function AssessmentRecordCard({
         aria-expanded={open}
         aria-label={`${
           open ? "Collapse" : "Expand"
-        } ${template.name} ${formatDate(record.coveredAt)}`}
+        } ${version.name ?? template.legacyMetadata?.name ?? template.name} ${formatDate(record.coveredAt)}`}
         onClick={() => setOpen((v) => !v)}
       >
         <div>
           <div className="cm-history-title">
-            {template.name} — {formatDate(record.coveredAt)}
+            {version.name ?? template.legacyMetadata?.name ?? template.name} —{" "}
+            {formatDate(record.coveredAt)}
             <RecordStatus entry={record} recordType="care" />
           </div>
           <div className="cm-history-meta">
@@ -72,18 +74,24 @@ export default function AssessmentRecordCard({
             >
               View assessment
             </Link>
-            {record.status === "draft" && (
-              <Link
-                className="cm-btn cm-btn--primary cm-btn--sm"
-                href={careFormHref(
-                  record.clientId,
-                  record.templateId,
-                  record.id,
-                )}
-              >
-                Continue draft
-              </Link>
-            )}
+            {record.status === "draft" &&
+              getAssignedCareTemplate(
+                s,
+                record.clientId,
+                record.templateId,
+                template.kind,
+              ) && (
+                <Link
+                  className="cm-btn cm-btn--primary cm-btn--sm"
+                  href={careFormHref(
+                    record.clientId,
+                    record.templateId,
+                    record.id,
+                  )}
+                >
+                  Continue draft
+                </Link>
+              )}
           </div>
         </div>
       )}

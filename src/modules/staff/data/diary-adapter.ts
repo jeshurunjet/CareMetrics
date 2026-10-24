@@ -110,6 +110,8 @@ export function saveDiary(
     ...input,
     id: existing?.id ?? id,
     authorId: s.meId,
+    categoryName: s.diaryCategories.find((c) => c.id === input.categoryId)
+      ?.name,
     title: input.title.trim(),
     body: input.body.trim(),
     coveredAt: input.coveredAt || now,

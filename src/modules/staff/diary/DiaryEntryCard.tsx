@@ -28,7 +28,9 @@ export default function DiaryEntryCard({
           <div className="cm-history-title">
             {entry.title}
             <Status tone="brand" dot={false}>
-              {s.diaryCategories.find((c) => c.id === entry.categoryId)?.name ??
+              {entry.categoryName ??
+                s.diaryCategories.find((c) => c.id === entry.categoryId)
+                  ?.name ??
                 "Uncategorised"}
             </Status>
             <RecordStatus entry={entry} />

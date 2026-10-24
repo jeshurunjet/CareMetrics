@@ -37,8 +37,8 @@ Development sign-in → My Shifts → Dashboard is implemented; continuing witho
 | clients | `/admin/clients` | ported directory/search/filter/pagination |
 | client / client-form | `/admin/clients/[id]`, `/admin/clients/new`, `/admin/clients/[id]/edit` | ported profile/contacts/confirmed transfer, create/edit and bounded documentation summaries |
 | roster + shift drawer | `/admin/roster?tab=…&shiftId=…` | ported roster/shift/attendance/timesheet/correction views and development-only query drawers |
-| docs | `/admin/documentation?tab=…` | original; routed placeholder |
-| template | `/admin/documentation/templates/[id]` | original; planned |
+| docs | `/admin/documentation?tab=…` | ported overview/categories/libraries/assignments; record review deferred |
+| template | `/admin/documentation/templates/[id]` | ported draft builder/preview/publishing/versions/assignments |
 | record | `/admin/documentation/records/[id]` | original; planned |
 | correction | `/admin/documentation/corrections/[id]` | original; planned |
 | files + file drawer | `/admin/files?fileId=…` | original; routed placeholder; drawer planned |
@@ -202,3 +202,9 @@ The existing `/admin/roster` and `/admin/leave` destinations replace their place
 Back/forward, existing breadcrumbs and employee/house links are retained. Detail close clears panel/action selectors while retaining the tab. Calendar/list filters are mounted view state, not saved URL filters. Malformed/repeated/unknown/conflicting parameters and invalid known-format record IDs return server 404; valid session UUIDs absent after reload show generic unavailable panels after development opt-in. Known seeded deep links can refresh after opt-in. Every page/layout still refuses production even when the preview flag is enabled. These browser role/scope demonstrations are not authenticated server authorisation.
 
 Employee roster/attendance/leave tabs now link to the same Shift, AttendanceRecord and LeaveRequest panels. Dashboard attendance requests link to their workforce correction IDs. Future documentation/template/file/publication/concern/report/settings destinations remain explicitly deferred.
+
+## Phase 1E.3 Admin documentation
+
+`/admin/documentation?tab=overview|categories|care|chart|assignments` renders the shared documentation manager. `records|corrections` explicitly remain Phase 1E.4 placeholders. Templates use `/admin/documentation/templates/[id]?tab=builder|preview|versions|assign`, with builder default. Create/category/property/publish/assignment confirmations are local dialogs within these canonical destinations, not new APIs. Breadcrumbs, sidebar active state, Back and existing valid links remain. Server preview gates reject production and unknown/repeated query selectors. Missing session templates after reload show generic unavailable content following explicit role opt-in.
+
+Staff URLs are unchanged. Active assignments select new-entry versions; paused assignments hide categories/new actions while existing exact-version record URLs remain readable within current house/client scope. New entries/old draft submission require an active assignment; version reassignment preserves old drafts. See [documentation contracts](admin-documentation-builder.md) for historical-read and unresolved production policies.

@@ -1,5 +1,22 @@
 import type { ConfigurableFormVersion, FormValues } from "@/modules/forms/types"
+export interface TemplateDraft {
+  name: string
+  description: string
+  form: ConfigurableFormVersion
+  summary: string
+  history?: CareTemplate["history"]
+}
 export interface CareTemplate {
+  legacyMetadata?: {
+    name: string
+    description: string
+  }
+  draft?: TemplateDraft
+  archived?: boolean
+  createdAt?: string
+  createdBy?: string
+  updatedAt?: string
+  updatedBy?: string
   id: string
   kind: "care" | "chart"
   name: string
@@ -19,6 +36,8 @@ export interface ClientCareTemplateAssignment {
   templateId: string
   version: number
   status: "active" | "paused"
+  updatedAt?: string
+  updatedBy?: string
 }
 export interface CareRecord {
   id: string

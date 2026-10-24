@@ -174,6 +174,11 @@ export interface DiarySubject {
   targetId: string
 }
 export interface DiaryCategory {
+  description?: string
+  createdAt?: string
+  createdBy?: string
+  updatedAt?: string
+  updatedBy?: string
   id: string
   name: string
   scope: DiaryScope
@@ -184,6 +189,7 @@ export interface DiaryEntry extends DiarySubject {
   authorId: string
   title: string
   categoryId: string
+  categoryName?: string
   body: string
   coveredAt: string
   createdAt: string

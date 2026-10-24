@@ -23,12 +23,30 @@ export function getAssignedCareTemplates(
     .filter((a) => a.clientId === clientId && a.status === "active")
     .flatMap((a) => {
       const template = s.careTemplates.find(
-          (t) => t.id === a.templateId && t.kind === kind,
+          (t) => t.id === a.templateId && t.kind === kind && !t.archived,
         ),
         version = template?.versions.find(
           (v) => v.version === a.version && v.published,
         )
-      return template && version ? [{ template, version }] : []
+      return template && version
+        ? [
+            {
+              template: {
+                ...template,
+                name:
+                  version.name ??
+                  template.legacyMetadata?.name ??
+                  template.name,
+                description:
+                  version.description ??
+                  template.legacyMetadata?.description ??
+                  template.description,
+                history: version.name ? version.history : template.history,
+              },
+              version,
+            },
+          ]
+        : []
     })
 }
 export const getAssignedCareTemplate = (
@@ -40,12 +58,54 @@ export const getAssignedCareTemplate = (
   getAssignedCareTemplates(s, clientId, kind).find(
     (t) => t.template.id === templateId,
   )
+/** Historical reads require current client/house scope and a retained assignment, even when paused. */
+export function getReadableCareTemplate(
+  s: StaffSnapshot,
+  clientId: string,
+  templateId: string,
+  kind: "care" | "chart" = "care",
+) {
+  const active = getAssignedCareTemplate(s, clientId, templateId, kind)
+  if (active) return active
+  if (!getClient(s, clientId)) return undefined
+  const assignment = s.careAssignments.find(
+    (a) => a.clientId === clientId && a.templateId === templateId,
+  )
+  const template = s.careTemplates.find(
+    (t) => t.id === templateId && t.kind === kind,
+  )
+  const version = template?.versions.find(
+    (v) => v.version === assignment?.version && v.published,
+  )
+  return assignment &&
+    template &&
+    version &&
+    s.careRecords.some(
+      (r) =>
+        r.clientId === clientId &&
+        r.templateId === templateId &&
+        (r.status !== "draft" || r.authorId === s.meId),
+    )
+    ? {
+        template: {
+          ...template,
+          name: version.name ?? template.legacyMetadata?.name ?? template.name,
+          description:
+            version.description ??
+            template.legacyMetadata?.description ??
+            template.description,
+          history: version.name ? version.history : template.history,
+        },
+        version,
+      }
+    : undefined
+}
 export function getCareRecords(
   s: StaffSnapshot,
   clientId: string,
   templateId: string,
 ) {
-  const assigned = getAssignedCareTemplate(
+  const assigned = getReadableCareTemplate(
     s,
     clientId,
     templateId,

@@ -49,6 +49,7 @@ export interface RepeatingTableDefinition {
   minRows?: number
   maxRows?: number
   allowAdd?: boolean
+  allowRemoveDraftRows?: boolean
 }
 type FieldKind = {
   type: "text" | "textarea" | "date" | "time" | "datetime"
@@ -74,6 +75,18 @@ export interface FormSectionDefinition {
   fields: readonly FormFieldDefinition[]
 }
 export interface ConfigurableFormVersion {
+  history?: {
+    columns: readonly string[]
+    chart?: {
+      fieldId: string
+      unit: string
+    }
+  }
+  name?: string
+  description?: string
+  publishedAt?: string
+  publishedBy?: string
+  summary?: string
   reference?: {
     label: string
     items: readonly FormOption[]

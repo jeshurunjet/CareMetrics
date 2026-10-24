@@ -130,8 +130,10 @@ export default function AssessmentForm({
         }
         title={
           existing
-            ? `Continue draft — ${assigned.template.name}`
-            : assigned.template.name
+            ? `Continue draft — ${version.name ?? assigned.template.legacyMetadata?.name ?? assigned.template.name}`
+            : (version.name ??
+              assigned.template.legacyMetadata?.name ??
+              assigned.template.name)
         }
         subtitle={assigned.template.description}
         crumbs={[
@@ -145,7 +147,10 @@ export default function AssessmentForm({
             },
           },
           {
-            label: assigned.template.name,
+            label:
+              version.name ??
+              assigned.template.legacyMetadata?.name ??
+              assigned.template.name,
             route: {
               page: "client",
               id: clientId,

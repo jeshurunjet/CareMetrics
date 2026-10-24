@@ -8,7 +8,11 @@ import {
 import { leaveQueries } from "../leave/adapter"
 import { getOwnAttendance, getAttendanceCorrections } from "../roster/adapter"
 import { fileQueries } from "../files/adapter"
-import { careQueries } from "../care/adapter"
+import {
+  getReadableCareTemplate,
+  getCareRecords,
+  careQueries,
+} from "../care/adapter"
 import { diaryQueries } from "./diary-adapter"
 import { myHouses, myClients, visibleNotices } from "./selectors"
 export function projectStaffSnapshot(s: StaffSnapshot): StaffSnapshot {
@@ -65,16 +69,17 @@ export function projectStaffSnapshot(s: StaffSnapshot): StaffSnapshot {
     careAssignments: s.careAssignments.filter((a) =>
       clients.some((c) => c.id === a.clientId),
     ),
-    careTemplates: s.careTemplates.filter((t) =>
-      clients.some((c) =>
-        careQueries.getAssignedCareTemplate(s, c.id, t.id, t.kind),
-      ),
-    ),
+    careTemplates: s.careTemplates
+      .filter((t) =>
+        clients.some((c) => getReadableCareTemplate(s, c.id, t.id, t.kind)),
+      )
+      .map((t) => {
+        const projected = { ...t }
+        delete projected.draft
+        return projected
+      }),
     careRecords: clients.flatMap((c) =>
-      careQueries
-        .getAssignedCareTemplates(s, c.id, "care")
-        .concat(careQueries.getAssignedCareTemplates(s, c.id, "chart"))
-        .flatMap((t) => careQueries.getCareRecords(s, c.id, t.template.id)),
+      s.careTemplates.flatMap((t) => getCareRecords(s, c.id, t.id)),
     ),
     corrections: s.corrections.filter((c) =>
       c.recordType === "care"

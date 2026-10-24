@@ -2,7 +2,11 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useStaffData } from "../data/context"
-import { getAssignedCareTemplate, queryCareHistory } from "./adapter"
+import {
+  getAssignedCareTemplate,
+  getReadableCareTemplate,
+  queryCareHistory,
+} from "./adapter"
 import { Icon, Empty } from "../ui"
 import SearchInput from "../ui/SearchInput"
 import Select from "../ui/Select"
@@ -21,7 +25,7 @@ export default function AssessmentHistory({
     [query, setQuery] = useState(""),
     [range, setRange] = useState("all"),
     [page, setPage] = useState(1)
-  const assigned = getAssignedCareTemplate(s, clientId, templateId)
+  const assigned = getReadableCareTemplate(s, clientId, templateId)
   if (!assigned) return <UnavailableAssessment clientId={clientId} />
   const { template, version } = assigned,
     history = queryCareHistory(s, clientId, templateId, {
@@ -43,13 +47,15 @@ export default function AssessmentHistory({
               {template.description} · Template v{version.version}
             </p>
           </div>
-          <Link
-            className="cm-btn cm-btn--primary cm-btn--md"
-            href={careFormHref(clientId, templateId)}
-          >
-            <Icon name="plus" size={17} />
-            New assessment
-          </Link>
+          {getAssignedCareTemplate(s, clientId, templateId, template.kind) && (
+            <Link
+              className="cm-btn cm-btn--primary cm-btn--md"
+              href={careFormHref(clientId, templateId)}
+            >
+              <Icon name="plus" size={17} />
+              New assessment
+            </Link>
+          )}
         </div>
       </div>
       <AssessmentPreviewNotice />

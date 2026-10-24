@@ -1,47 +1,59 @@
-# Implementation status — Phase 1E.2
+# Implementation status — Phase 1E.3
 
-Admin workforce UI is ported over the same fictional development records as Staff. No feature is backend-connected or production-ready. [Workforce contracts](admin-workforce-management.md) explain transitions, limitations and changed files; [route map](route-map.md) lists canonical URLs. Earlier results are retained in [Phase 1E.1 status](history/phase-1e1-status.md).
+Admin care documentation is implemented over the existing fictional Staff model and renderer. This is development-session UI, with no production backend connection. [Documentation-builder contracts](admin-documentation-builder.md) describe behaviour, limitations and future services. Prior workforce results are retained in [Phase 1E.2 status](history/phase-1e2-status.md).
 
 ## Git checkpoint
 
-Phase 1E.1 is preserved locally at **9cf2104169a14d2cd122456f27dcc02568faca11**, branch `phase-1e1`. Baseline Node 22 checks passed before committing: lint/types/format, 203 units, 57 Admin browser passes/45 intentional narrow skips, build and 92 isolation checks. Current work uses `phase-1e2` and remains uncommitted/unpushed. Previous full versions, reference source/CSS/evidence and unrelated duplicate screenshots are preserved.
+Completed Phase 1E.2 is preserved at local **3f7b147c45a570f48fd16efa9d1f740d9f359a41** on `phase-1e2`. Work is on **phase-1e3**, without reset/discard or remote push. Reference files, original styles, previous evidence/tests and unrelated duplicate screenshots remain preserved.
 
-| Area | Ported development behaviour |
+## Implemented scope
+
+| Area | State |
 | --- | --- |
-| Roster | Source day/week/month calendar, employee/house/status/date filters, shift list, create/edit/details/confirmed cancellation, stable IDs and shared Staff updates. |
-| Shift policy | Active employee/house/current assignment required; employee overlaps blocked across houses; explicit NZ overnight/DST semantics; recorded attendance blocks schedule edit/cancel. |
-| Attendance | Source monitor, operational timesheets/details, scheduled versus actual/effective durations, missing events, fictional location and issue states. No real clock-in/GPS/payroll. |
-| Corrections | Same Staff request queue; original/effective/proposed comparison, confirmed approval/rejection, required rejection reason, reviewer/time/notes and stale-base conflict rule; immutable original events. |
-| Leave | Same Staff Pending/All requests, review decisions, roster conflicts/confirmation and private-reason-free month calendar; no roster/balance mutation or cancellation policy. |
-| Integration | Staff roster/My Shifts reflect shift edits/cancellation; Staff-submitted corrections/leave reach Admin and reviewed results return to own Staff views. Employee operational tabs/Dashboard use shared records. |
-| Existing core and Staff | Prior Employee/House/Client/contacts/assignments/profile and mobile-first Staff features retained. Future documentation, files, publication/concerns, reports and settings stay deferred. |
-| Roles | Management operations recheck Administrator/Manager preview role; ordinary Staff/Senior reject. Existing Manager restrictions on Administrator accounts remain. Browser role switching is not security. |
+| Documentation hub | Ported overview, derived counts, available session metadata and quick actions |
+| Diary categories | Client/House add/edit/activate/deactivate, uniqueness/context validation, related-record preview and retained historical names |
+| Template libraries | Separate Care Plan/Charting navigation over one model, search/status, draft/publication/archive and assignment/version actions |
+| Form builder | Three source-derived panels, stable section/field structure, keyboard reordering, duplicate/remove, properties, defaults/options, conditions and repeating columns |
+| Preview/validation | Existing Staff DynamicFormRenderer, interactive mobile/desktop frame, shared answer validation and central publication checks with linked errors |
+| Publication | Confirmed immutable versions, new draft from a selected published version, supplied actor/time/summary and exact-version previews |
+| Assignments | Published-version selection, client/house search/filter, explicit assign/update/deactivate, no automatic version rollout |
+| Staff integration | Admin-created Care Plan and Charting form submission; configurable table cells; correct diary contexts; exact historical labels/values/versions |
+| Permissions/isolation | Existing development-role checks repeated in every pure mutation; Staff/Senior denied; existing server preview refusal retained |
+| Deferred | Submitted-record reviews/correction approvals, Auth.js, Prisma/Neon, secure files, durable audit and deployment |
 
 ## Verification
 
-Checks use isolated **Node 22.23.4 / pnpm 10.15.1**, without replacing system Node or the user's running preview.
+Use isolated Node **22.23.4** / pnpm **10.15.1**. System Node and the user's existing 8443 preview are unchanged.
+
+Final verification on the completed implementation:
 
 | Check | Result |
 | --- | --- |
-| Lint / strict TypeScript / formatting | PASS, zero lint warnings |
-| Unit tests | PASS, **237 across 13 files**, retaining all 203 earlier tests |
-| Complete five-width Chromium regression | PASS, **551 tests**, **69 intentional narrow Admin skips**, 10.5 minutes; all earlier Staff tests retained |
-| Final six-width Admin suite | PASS, **93 tests**, **69 intentional narrow management skips**, 2.2 minutes |
-| Final same-record visual refresh | PASS, **6 cases** at all six widths; capture-only original timesheet selection adjustment |
-| Production build / isolation | PASS, **106 preview URLs refused** with the flag enabled; production login inert |
-| Final conflict-link presentation | PASS, 3 desktop workflows / 3 intentional narrow skips |
-| Existing local preview | PASS, **14 workforce and Staff URLs** return HTTP 200 on the existing 8443 server |
-| Reference / original CSS | PASS, all **51 reference files and three original stylesheet copies unchanged**; zero tracked reference paths |
-| Visual evidence | **87 raw PNGs / 18 paired boards**, reviewed at 375/390/768/1280/1440/1600px; captures collect no page errors or document overflow |
+| ESLint | Pass, zero warnings |
+| Strict TypeScript / formatting | Pass |
+| Unit tests | **294 passed** across 14 files (237 retained + 57 new) |
+| Complete five-width Chromium regression | **571 passed / 84 intentional narrow Admin skips** |
+| Final six-width Admin Chromium suite | **120 passed / 84 intentional narrow skips**, including 1600px |
+| Production build | Pass |
+| Production isolation | Login inert; **119 preview URLs refused** even with preview flag enabled |
+| Existing local preview | HTTP 200 on 12 representative Admin documentation and Staff URLs |
+| Evidence | **132 raw captures / 24 paired boards**, all boards visually reviewed |
+| Reference integrity | All 51 archive files and three original CSS copies byte-identical |
+| Production client chunks | Nine restricted fixture markers absent from all 78 chunks |
+| Repository integrity | No tracked reference, dependency/lockfile changes or generated next-env diff; git diff --check passes |
 
-After the complete regression, Admin-only presentation/default-filter/row-interaction/focus refinements were verified through the complete six-width Admin suite, all static/unit/build/isolation checks and the further six-case visual refresh. No Staff domain/layout logic changed after the full pass. The final source-list styling adaptation for conflict links is checked again with the three desktop Staff-leave conflict workflows; narrow management remains deliberately skipped. Private fixture markers are absent from production client chunks. No dependency/lockfile change or earlier passing test/assertion removal.
+The complete regression ran at 375/390/768/1280/1440px. The final Admin run also covered 1600px and the final Admin metadata/link refinements and focused evidence captures. No Staff runtime/domain changes followed the complete regression. A final type-only cleanup removed a record-owned category-name property from the editable DiaryInput contract; lint/types/format/294 units/build and production isolation were rerun afterwards. The canonical generated TypeScript file was restored by typecheck. No earlier passing assertion was weakened.
 
-Earlier development runs are not counted as passes. They found an intercepted drawer footer and incorrect new-test selectors/route waits. The first final Admin capture run also exposed shared Monitor/Timesheets date-filter state; independent keyed tab mounts correct it. Pending Leave ignores a hidden status filter from All Requests. The fresh complete Admin run passes after these corrections. See [visual findings](ui-comparisons/phase-1e2/README.md) for intentional differences; no exact parity or independent design acceptance is claimed.
+[Visual evidence and findings](ui-comparisons/phase-1e3/README.md) document source comparisons, intentional extensions and limits. No collected migrated page errors or document-level overflow were reported by the successful browser runs. This is representative Chromium verification, not exhaustive accessibility, browser/device or independent design acceptance.
+
+The earlier full browser attempt lasted 4.5 hours and finished with 38 failures/533 passes/84 intentional skips, including repeated stalled navigation/unstable controls following the interrupted session. It is not counted as passing. The fresh complete run prevents idle sleep for the command's lifetime and retains every previous assertion. Earlier focused attempts and source-capture selector/fixture corrections are also excluded from final passing totals. A final Admin attempt exposed a mixed nullish/logical-operator parse error in a name fallback; it was stopped, corrected and superseded by the successful static/build and complete final Admin runs.
 
 ## Remaining limitations and next step
 
-All mutations and role checks are same-session development demonstrations. Reload/logout resets edits. After visiting Admin the broader fictional dataset resides in the browser; projection/role changes are not confidentiality controls. Auth.js, trusted server organisation/role/house checks, Prisma/Neon transactions/persistence, concurrent decisions, durable audit, real GPS/attendance, private Blob files, notifications, payroll and deployment remain unimplemented. Break values are informational, not payroll deductions. Approved-leave changes, pending withdrawal, partial days, entitlements, historical-edit policy and approved GPS/clock-out rules need decisions.
+Everything remains session-only and resets on reload/logout. Preview roles/projections are not trusted authorisation or confidentiality; after Admin opt-in broader fictional records reside in the browser. Photo/file questions are unavailable and block publication. Medication templates are documentation only. No database, real GPS, private uploads, production audit, delivery or deployment exists.
 
-Firefox remains previously blocked before app launch by its local profile-folder error; no passing Firefox result is claimed. Safari/WebKit, physical devices, exhaustive accessibility, external asset/privacy review, independent design and organisational security/privacy/operational approval remain outstanding. No real personnel/client/health data was introduced.
+Old-version drafts retain their original values/version. Existing behaviour permits their submission while an active template assignment remains; deactivation blocks submission/new entries and retains scoped historical reads. Final draft-expiry/deactivation, historical access after house removal, retention, concurrency and organisational acceptance policies remain outstanding. Firefox's prior pre-launch profile-folder failure remains unresolved; Safari/physical devices/exhaustive accessibility and independent design acceptance are unverified.
 
-Recommended next step: review this bounded workforce migration and its policies, then agree the next Admin documentation/correction slice. Do not automatically start Phase 1E.3, backend integration or deployment.
+Recommended next: review the completed bounded UI and its policies, then separately authorise Phase 1E.4 submitted-record/correction review. No later phase begins automatically.
+
+Phase 1E.3 is complete within this development-only UI scope. There are no known blockers to reviewing this phase locally. Current Phase 1E.3 changes remain uncommitted on `phase-1e3`; nothing was pushed and no later phase began. The checkpoint hash above preserves the full preceding tracked application.

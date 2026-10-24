@@ -3,6 +3,7 @@ import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { useStaffData } from "../data/context"
 import {
+  getReadableCareTemplate,
   getAssignedCareTemplate,
   getCareRecord,
   canRequestCareCorrection,
@@ -31,7 +32,7 @@ export default function AssessmentDetails({
   const s = useStaffData(),
     params = useSearchParams(),
     record = getCareRecord(s, clientId, templateId, id),
-    assigned = getAssignedCareTemplate(s, clientId, templateId, kind)
+    assigned = getReadableCareTemplate(s, clientId, templateId, kind)
   if (!record || !assigned)
     return <UnavailableAssessment clientId={clientId} kind={kind} />
   const version = assigned.template.versions.find(
@@ -44,7 +45,11 @@ export default function AssessmentDetails({
     return (
       <RecordCorrectionForm
         key={id}
-        title={assigned.template.name}
+        title={
+          version.name ??
+          assigned.template.legacyMetadata?.name ??
+          assigned.template.name
+        }
         original={answers}
         allowed={canRequestCareCorrection(s, record)}
         unavailable={<UnavailableAssessment clientId={clientId} kind={kind} />}
@@ -103,7 +108,11 @@ export default function AssessmentDetails({
         </Banner>
       )}
       <Card className="cm-panel">
-        <h2 className="cm-h2">{assigned.template.name}</h2>
+        <h2 className="cm-h2">
+          {version.name ??
+            assigned.template.legacyMetadata?.name ??
+            assigned.template.name}
+        </h2>
         <p className="cm-muted">
           Template v{record.templateVersion} ·{" "}
           {s.clients.find((c) => c.id === clientId)?.name}
@@ -114,7 +123,8 @@ export default function AssessmentDetails({
         {answers}
         <RecordMetadata entry={record} />
         <div className="cm-row-actions">
-          {record.status === "draft" ? (
+          {record.status === "draft" &&
+          getAssignedCareTemplate(s, clientId, templateId, kind) ? (
             <Link
               className="cm-btn cm-btn--primary cm-btn--md"
               href={careFormHref(clientId, templateId, id)}

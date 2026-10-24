@@ -10,10 +10,17 @@ export function chartPoints(template: CareTemplate, records: CareRecord[]) {
       const version = template.versions.find(
         (v) => v.version === r.templateVersion,
       )
+      const originalChart = version?.name ? version.history?.chart : chart
+      if (
+        !originalChart ||
+        originalChart.fieldId !== chart.fieldId ||
+        originalChart.unit !== chart.unit
+      )
+        return []
       const field =
         version && allFields(version).find((f) => f.id === chart.fieldId)
       const value = r.values[chart.fieldId]
-      return field?.type === "number" &&
+      return (field?.type === "number" || field?.type === "scale") &&
         typeof value === "number" &&
         Number.isFinite(value)
         ? [{ id: r.id, at: r.coveredAt, value }]
