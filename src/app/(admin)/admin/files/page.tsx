@@ -1,11 +1,15 @@
 import AdminAccess from "@/modules/admin/ui/AdminAccess"
-import { requirePreview } from "@/lib/require-preview"
-import FutureModule from "@/modules/admin/ui/FutureModule"
-export default function Page() {
-  requirePreview()
+import FilesPage from "@/modules/admin/files/FilesPage"
+import { validateQuery } from "@/modules/admin/governance/route-validation"
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}) {
+  const q = validateQuery(await searchParams, "files")
   return (
     <AdminAccess>
-      <FutureModule title="Files & Galleries" />
+      <FilesPage fileId={q.fileId} />
     </AdminAccess>
   )
 }

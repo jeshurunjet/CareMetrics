@@ -101,7 +101,25 @@ export interface Notice {
   attachmentIds?: string[]
   relatedId?: string
   audience?: string
-  status: "Published" | "Draft"
+  createdById?: string
+  createdAt?: string
+  history?: Array<{
+    id: string
+    actorId: string
+    actorName: string
+    at: string
+    action: "Draft saved" | "Published" | "Withdrawn"
+    previous?: {
+      title: string
+      body?: string
+      status: Notice["status"]
+      targetAudience: NoticeAudience
+      category: Notice["category"]
+      relatedId?: string
+      priority: NoticePriority
+    }
+  }>
+  status: "Published" | "Draft" | "Withdrawn"
 }
 export interface Organisation {
   id: string

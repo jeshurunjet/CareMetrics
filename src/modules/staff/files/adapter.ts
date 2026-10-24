@@ -18,6 +18,7 @@ export function getGalleryFiles(s: StaffSnapshot, subject: GallerySubject) {
   return s.attachments
     .filter(
       (f) =>
+        !f.removed &&
         f.association.scope === subject.scope &&
         f.association.targetId === subject.targetId,
     )
@@ -29,7 +30,8 @@ export const getGalleryFile = (
   id: string,
 ) => getGalleryFiles(s, subject).find((f) => f.id === id)
 export function getDemoAsset(file: FileRecord) {
-  return file.availability === "bundled" &&
+  return !file.removed &&
+    file.availability === "bundled" &&
     file.assetId &&
     Object.prototype.hasOwnProperty.call(demoAssets, file.assetId)
     ? demoAssets[file.assetId]

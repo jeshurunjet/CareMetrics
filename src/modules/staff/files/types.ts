@@ -18,6 +18,12 @@ export interface FileRecord {
   uploadedById: string
   association: AttachmentAssociation
   availability: "bundled" | "unavailable" | "sessionOnly"
+  removed?: {
+    byId: string
+    byName: string
+    at: string
+    reason: string
+  }
   assetId?: DemoAssetId
 }
 export interface FileSelectionMetadata {

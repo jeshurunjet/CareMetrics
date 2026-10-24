@@ -12,10 +12,12 @@ const pages: Record<string, string> = {
   "client-form": "clients",
   docs: "documentation",
   notices: "notifications",
+  "notice-form": "notifications",
+  concern: "concerns",
 }
 export function adminHref(r: AdminRoute) {
   const group = pages[r.page] ?? r.page
-  const entity = ["employee", "house", "client"].includes(r.page)
+  const entity = ["employee", "house", "client", "concern"].includes(r.page)
   const form = r.page.endsWith("-form")
   const path = `/admin/${group}${
     entity

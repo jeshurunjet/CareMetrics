@@ -1,6 +1,6 @@
 # Staff Notifications and Concerns — Phase 1D.3
 
-This is a fictional development-only UI migration. There is no real notification delivery, trusted authentication, production authorisation, database, audit service or management review connection.
+This is the original fictional Phase 1D.3 Staff UI contract, extended by the Phase 1E.4B management integration below. There is no real notification delivery, trusted authentication, production authorisation, database or durable audit service.
 
 ## Source and structure
 
@@ -72,3 +72,9 @@ Existing integrations: `src/app/(staff)/notifications/page.tsx`, `src/components
 Documentation: README, implementation-status, route-map, ui-migration-notes, file-architecture, this contract, historical Phase 1D.2 status and the Phase 1D.3 comparison evidence. No dependencies, original reference assets/CSS, Admin screens or backend services changed.
 
 Future persistence should enforce a unique `(notificationId, employeeId)` read relation plus trusted organisation and parent/author scope. Concern status transitions and response/internal-note visibility require approved management permissions and durable review history; client-side fixture IDs are not database authorisation.
+
+## Phase 1E.4B management integration
+
+The same Notice/Concern/read arrays now support official drafts, validated audiences/publication and controlled withdrawal, plus concern review/private notes/author-visible outcomes. Explicit client audience extends the existing organisation/employee/house/role model; category/related subject independently constrains visibility. Draft revisions and publication/withdrawal previous-state metadata are management-only and preserved through scoped merges. Published and withdrawn messages cannot be silently rewritten or hard-deleted.
+
+Concern management appends reviewer/action/time/status events while retaining original submission. `internalNotes` is now a typed reviewer/text/time array; the original private marker fixture uses that shape. `projectConcern` still explicitly omits internal notes and review events; only the author's current status and explicit response are projected within current subject access. Previous management responses remain in review events. Review never creates an official notice. Employee-specific reads and existing exact-parent attachments remain unchanged. No delivery, database, trusted permissions or durable audit was connected. The earlier “review not connected” statements describe the previous phase; this is session-only UI integration. See [management contracts](admin-files-notifications-audit.md) and [submission scope](submission-mvp-scope.md).

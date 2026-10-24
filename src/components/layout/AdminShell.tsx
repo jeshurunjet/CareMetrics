@@ -65,7 +65,10 @@ export default function AdminShell({
       .length,
   }
   const [collapsed, setCollapsed] = useState(false)
-  const path = usePathname()
+  const pathname = usePathname()
+  const path = pathname.startsWith("/admin/concerns")
+    ? "/admin/notifications"
+    : pathname
   const title =
     groups
       .flatMap((g) => g.items)

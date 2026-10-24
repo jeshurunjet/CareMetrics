@@ -97,7 +97,9 @@ export default function NotificationDetails({
                   ? "You"
                   : n.targetAudience.kind === "role"
                     ? n.targetAudience.role
-                    : contextName(s, "house", n.targetAudience.houseId)}
+                    : n.targetAudience.kind === "house"
+                      ? contextName(s, "house", n.targetAudience.houseId)
+                      : contextName(s, "client", n.targetAudience.clientId)}
             </dd>
           </div>
         )}

@@ -23,8 +23,13 @@ interface Selected extends FileSelectionMetadata {
 }
 export default function FileUploadArea({
   subject,
+  service,
 }: {
   subject: GallerySubject
+  service?: {
+    name: string
+    complete: (files: FileSelectionMetadata[], at: string) => void
+  }
 }) {
   const s = useStaffData(),
     update = useUpdateStaffData(),
@@ -51,7 +56,7 @@ export default function FileUploadArea({
       allocated.clear()
     }
   }, [])
-  if (!canSelectFiles(s, subject)) return null
+  if (!service && !canSelectFiles(s, subject)) return null
   const busy = phase === "validating" || phase === "uploading"
   function select(list: FileList | null) {
     if (!list || busy) return
@@ -107,19 +112,16 @@ export default function FileUploadArea({
       if (value < 100) timer.current = setTimeout(tick, 250)
       else {
         try {
-          const next = addDemoFileMetadata(
-            s,
-            subject,
-            files.map((f) => ({
-              id: f.id,
-              name: f.name,
-              type: f.type,
-              size: f.size,
-              description,
-            })),
-            new Date().toISOString(),
-          )
-          update(next)
+          const selected = files.map((f) => ({
+            id: f.id,
+            name: f.name,
+            type: f.type,
+            size: f.size,
+            description,
+          }))
+          const at = new Date().toISOString()
+          if (service) service.complete(selected, at)
+          else update(addDemoFileMetadata(s, subject, selected, at))
           release()
           setFiles([])
           setDescription("")
@@ -204,7 +206,8 @@ export default function FileUploadArea({
       {files.length > 0 && (
         <>
           <p className="cm-hint">
-            Selected context: {getGallerySubject(s, subject)?.name}. Only
+            Selected context:{" "}
+            {service?.name ?? getGallerySubject(s, subject)?.name}. Only
             fictional or non-sensitive demonstration files.
           </p>
           {files.map((f) => (

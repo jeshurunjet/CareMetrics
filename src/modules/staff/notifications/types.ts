@@ -16,7 +16,10 @@ interface RoleAudience {
   kind: "role"
   role: string
 }
-export type NoticeAudience = OrganisationAudience | EmployeeAudience | HouseAudience | RoleAudience
+export type NoticeAudience = OrganisationAudience | EmployeeAudience | HouseAudience | RoleAudience | {
+  kind: "client"
+  clientId: string
+}
 interface ConcernResponse {
   reviewerName: string
   text: string
@@ -40,6 +43,14 @@ export interface Concern {
   submittedAt: string
   status: ConcernStatus
   response?: ConcernResponse
+  reviewEvents?: ConcernReviewEvent[]
+  reviewerId?: string
+  internalNotes?: Array<{
+    reviewerId: string
+    reviewerName: string
+    text: string
+    at: string
+  }>
   resolvedAt?: string
   attachmentIds?: string[]
 }
@@ -50,4 +61,16 @@ export interface ConcernInput {
   targetId: string
   priority: string
   attachment?: Pick<FileSelectionMetadata, "name" | "type" | "size">
+}
+
+export interface ConcernReviewEvent {
+  id: string
+  reviewerId: string
+  reviewerName: string
+  at: string
+  action: string
+  before: ConcernStatus
+  after: ConcernStatus
+  text?: string
+  visibility: "internal" | "staff"
 }

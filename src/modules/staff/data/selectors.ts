@@ -42,6 +42,8 @@ export const visibleNotices = (s: StaffSnapshot) =>
         (audience?.kind === "employee" && audience.employeeId === s.meId) ||
         (audience?.kind === "house" &&
           myHouses(s).some((h) => h.id === audience.houseId)) ||
+        (audience?.kind === "client" &&
+          myClients(s).some((c) => c.id === audience.clientId)) ||
         (audience?.kind === "role" && audience.role === me(s).role)
       return (
         audienceOk &&

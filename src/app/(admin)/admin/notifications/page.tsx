@@ -1,11 +1,15 @@
 import AdminAccess from "@/modules/admin/ui/AdminAccess"
-import { requirePreview } from "@/lib/require-preview"
-import FutureModule from "@/modules/admin/ui/FutureModule"
-export default function Page() {
-  requirePreview()
+import NoticesPage from "@/modules/admin/notices/NoticesPage"
+import { validateQuery } from "@/modules/admin/governance/route-validation"
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}) {
+  const q = validateQuery(await searchParams, "notices")
   return (
     <AdminAccess>
-      <FutureModule title="Notifications & Concerns" />
+      <NoticesPage tab={q.tab} />
     </AdminAccess>
   )
 }

@@ -41,11 +41,11 @@ Development sign-in → My Shifts → Dashboard is implemented; continuing witho
 | template | `/admin/documentation/templates/[id]` | ported draft builder/preview/publishing/versions/assignments |
 | record | `/admin/documentation/records/[id]?kind=diary\|care` | ported original/effective submitted details and revision history |
 | correction | `/admin/documentation/corrections/[id]` | ported comparison and development-only approve/reject |
-| files + file drawer | `/admin/files?fileId=…` | original; routed placeholder; drawer planned |
-| notices | `/admin/notifications?tab=…` | original; routed placeholder |
-| notice-form / concern | `/admin/notifications/new`, `/admin/notifications/[id]/edit`, `/admin/concerns/[id]` | original; planned |
+| files + file drawer | `/admin/files?fileId=…` | ported shared gallery directory and query-backed details/removal drawer |
+| notices | `/admin/notifications?tab=…` | ported development notices/concerns |
+| notice-form / concern | `/admin/notifications/new`, `/admin/notifications/[id]/edit`, `/admin/concerns/[id]` | ported draft/read-only publication/withdrawal and concern review |
 | leave + leave drawer | `/admin/leave?requestId=…` | ported pending/all/calendar and development-only request review |
-| reports (incl. audit) | `/admin/reports?tab=…` | original; routed placeholder |
+| reports (incl. audit) | `/admin/reports?tab=…` | ported read-only summaries and Development Audit Preview |
 | settings | `/admin/settings?tab=…` | original; routed placeholder |
 
 Admin width gate comes from the preserved export CSS. It is not authorization. Both preview layouts and every preview page refuse requests unless NODE_ENV is development AND CAREMETRICS_UI_PREVIEW is exactly true. No route exposes real records; production login is inert until Auth.js is implemented. Unknown/deep routes not listed as implemented return 404.
@@ -224,3 +224,17 @@ The existing Documentation `tab=records|corrections` placeholders are ported. Ea
 The required kind discriminator prevents diary/care ID collisions. New server pages reject production, malformed/repeated/unknown selectors and invalid ID syntax; missing session IDs show generic unavailable after management opt-in. Wrong kind, draft/missing/invalid-association records and invalid requests reveal no record DTO. No API or second detail hierarchy is added. Existing Back/forward/refresh/breadcrumbs, subject/house/author links and Staff URLs remain unchanged. Filters are mounted view state; list/history pagination bounds rendered records.
 
 Staff requests now optionally include explicit typed fields/cells/whole tables. Approved revisions derive effective displays without replacing raw submitted entries in the shared snapshot/projection. Current client/house access controls original/revision visibility; no historical-access exception is added. Attendance correction routes and collections remain independent. See [record review contracts](admin-record-review.md). No backend-connected status is claimed.
+
+## Phase 1E.4B remaining management UI
+
+| View | Canonical URL |
+| --- | --- |
+| File directory / detail drawer | `/admin/files`, `/admin/files?fileId=[id]` |
+| Client / House gallery | `/admin/clients/[id]?tab=files`, `/admin/houses/[id]?tab=files` |
+| Official notices / Concern queue | `/admin/notifications?tab=notices\|concerns` |
+| Create notice / edit draft or inspect publication | `/admin/notifications/new`, `/admin/notifications/[id]/edit` |
+| Concern review | `/admin/concerns/[id]` |
+| Context notices / concerns | `/admin/clients/[id]?tab=notices`, `/admin/houses/[id]?tab=notices` |
+| Summary reports / development metadata | `/admin/reports?tab=reports\|audit` |
+
+Default tabs are notices/reports. New server pages retain requirePreview and reject malformed/repeated/unknown selectors and invalid ID syntax with 404. Existing seeded and well-formed session IDs resolve after management opt-in; missing IDs return generic unavailable content without unrelated metadata. Details close to the directory; parent gallery links/browser Back return through canonical URLs. Draft Save/Publish replaces new with its session edit/detail URL. Published/withdrawn notices remain read-only. Confirmation, upload selection, report-event details and filters are mounted view state. Reload resets changes and requires fresh opt-in; no persistence or production authorisation is implied. Staff URLs remain unchanged and recheck current audience/author/parent scope. No API or duplicate store was introduced.

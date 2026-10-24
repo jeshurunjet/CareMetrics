@@ -8,6 +8,7 @@ export function Field({
   value,
   onChange,
   type = "text",
+  rows = 3,
   required = false,
   error,
   help,
@@ -17,6 +18,7 @@ export function Field({
   value: string
   onChange: (value: string) => void
   type?: string
+  rows?: number
   required?: boolean
   error?: string
   help?: string
@@ -35,7 +37,7 @@ export function Field({
         <textarea
           id={id}
           className="cm-input"
-          rows={3}
+          rows={rows}
           maxLength={4000}
           value={value}
           disabled={disabled}

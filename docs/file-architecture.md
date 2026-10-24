@@ -57,3 +57,9 @@ Admin entity forms reuse ProfilePhotoPicker and the same selection policy. Pendi
 ## Phase 1E.3 configurable-form boundary
 
 The documentation builder reuses the existing field model and renderer. Photo/file palette entries remain reserved and unavailable; publication blocks unsupported attachment fields/cells even if optional. No upload/storage service, new public private-file path or alternate gallery store was introduced. Existing harmless demo assets and photo lifetimes remain unchanged.
+
+## Phase 1E.4B management galleries
+
+Admin now consumes the same attachment array through `admin/governance/adapter.ts` and FilesPage/AdminGallery/FilePanel. Exact client/house relations, validation policy and bundled asset registry remain shared. FileUploadArea accepts a narrow completion callback for the authorised management metadata operation; temporary contents/resources stay in the existing component. No second picker/storage architecture is added.
+
+`FileRecord.removed` retains management actor ID/name/time/reason. Management confirmation and adapter validation permit logical removal only, retaining all original metadata. Ordinary Staff gallery reads/detail projections exclude removed records and getDemoAsset refuses them; management can filter and inspect retained rows. No hard deletion, real object deletion or restoration is implemented. Retention/restoration and private-storage/durable-audit policies remain provisional. This supersedes earlier notes that Admin removal was unimplemented, for development UI only. See [management contracts](admin-files-notifications-audit.md).

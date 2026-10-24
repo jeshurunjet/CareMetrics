@@ -1,68 +1,68 @@
-# Implementation status — Phase 1E.4A
+# Implementation status — Phase 1E.4B
 
-Admin Submitted Records and Correction Review are implemented as fictional development-session UI over the existing shared Staff model. [Review contracts](admin-record-review.md) explain architecture, permissions, historical guarantees, policies and future services. Previous final results are preserved in [Phase 1E.3 status](history/phase-1e3-status.md).
+Phase 1E.4B is complete within its fictional development-session UI scope. Files/Galleries, official notices, concern review and bounded Reports/Audit use the existing shared snapshot. [Management contracts](admin-files-notifications-audit.md) define behaviour, permissions and future services; [submission MVP scope](submission-mvp-scope.md) records the reduced later backend plan. Previous final results are preserved in [Phase 1E.4A status](history/phase-1e4a-status.md).
 
 ## Git checkpoint
 
-Full Phase 1E.3 application is checkpointed locally at **e3fd92554b646543e98ddbd5501ba250aee07693** on `phase-1e3`. Current work is on **phase-1e4a**, uncommitted and not pushed. Previous checkpoint `3f7b147` and earlier branches remain preserved. References, original CSS, prior screenshots/docs and unrelated duplicate screenshots are untouched.
+Full Phase 1E.4A is locally committed at **9fb28d99ae7406640162b09b1e91aa5382833b5e** on `phase-1e4a`. Phase 1E.4B is on **phase-1e4b**, prepared for the user-authorised commit and push as a full application version. Previous `e3fd925`/earlier branches, original references/CSS, tests/docs/evidence and fifty unrelated duplicate screenshots remain preserved. No reset/discard or remote push.
+
+Before checkpointing, all 333 source/test/tooling hashes matched 1E.4A's successful final browser runs; fresh lint/types/format and all 340 units passed. The earlier complete results remain archived rather than unnecessarily rerunning that entire preceding phase before implementation.
 
 ## Implemented scope
 
-| Area | State |
+| Area | Development UI state |
 | --- | --- |
-| Submitted records | Four distinct contexts, derived counts, search/type/house/client/author/category/date/correction filters, sorting and 12-row pagination |
-| Record details | Read-only original/effective content, exact published version, structured answers/tables, original metadata/off-shift reason, subject/author links |
-| Correction queue | Same Staff requests; pending/approved/rejected/all, contextual/date/search filters and pagination |
-| Review | Source-derived side-by-side original/proposed, stable field/cell/table references, labelled differences, confirmations and visible notes |
-| Approval | Original-version validation, baseline check, separate deep-copied effective revision; original arrays/metadata/definitions preserved |
-| Rejection | Required reason, immutable outcome metadata, unchanged effective content |
-| History/conflicts | Original disclosure, request/decision/revision history, explicit effective chain, stale/repeated decisions rejected |
-| Staff integration | Effective Diary/Care/Chart displays, typed proposals, approved/rejected outcomes and original history within current scope |
-| Whole tables | Prefilled effective rows, stable retained IDs/new UUIDs, explicit add/remove/edit proposals and labelled row/cell differences |
-| Dashboard | Shared documentation counts/review links; attendance requests remain independent |
-| Removal | Disabled controlled-removal placeholder; no hard deletion or invented retention policy |
-| Deferred | Auth.js/server authorisation, Prisma/Neon persistence/transactions, secure files, durable audit, delivery, deployment and Phase 1E.4B |
+| Files | Shared metadata directory, type/client/house/uploader/NZ upload-date/status filters, sort/pagination and source drawer |
+| Galleries | Exact Client/House Files tabs, source grid, shared selection/validation/simulation/error/cancel/preview/download components |
+| Logical removal | Management-only confirmation/reason, retained original metadata and actor/time event; hidden from ordinary Staff galleries |
+| Notices | Shared directory, draft editing, configured audience validation, publication confirmation and Staff feed/context visibility |
+| Publication history | Read-only published/withdrawn content, controlled withdrawal and retained previous-state metadata; no hard delete |
+| Concerns | Shared Staff submissions, filtered queue, original details, review/status/internal note/explicit author response and retained events |
+| Privacy demonstrations | Staff projection omits internal notes/management events; own concern history and exact notice audiences remain scoped |
+| Reports/Audit | Read-only fictional summaries and labelled metadata-only Development Audit Preview; unsupported exports/controls disabled |
+| Submission boundary | Later mobile-first backend MVP documented; no global feature locking in this phase |
 
-## Verification
+New Admin files/notices/reports modules reuse existing shell, tables, panels, forms, drawer/confirmation, Staff selection/image/download/policy and shared session/provider. Governance adapter/filters/audit/route-validation keep relationships and operations separate from presentation. Existing core Administrator-account limits remain. No backend is connected. Auth.js, Prisma/Neon, real GPS attendance, private Blob, durable audit, delivery, deployment and Phase 1E.5 remain outside this assignment.
 
-Use isolated Node **22.23.4** / pnpm **10.15.1**. System Node and the existing 8443 preview are unchanged.
+## Final verification
 
-Fresh baseline before the checkpoint: lint/types/format, 294 units, six-width Admin 120 passes/84 intentional narrow skips, build and 119 production-isolation URLs passed.
+Established runtime: isolated Node **22.23.4** / pnpm **10.15.1**; system environment and existing 8443 preview are unchanged.
 
-Final verification on the frozen source:
-
-| Check | Result |
+| Check | Final result |
 | --- | --- |
 | ESLint | Pass, zero warnings |
-| Strict TypeScript / formatting | Pass |
-| Units | **340 passed** across 15 files (294 retained + 46 new) |
-| Complete five-width Chromium | **597 passed / 108 intentional narrow Admin skips** (705 total, 13.1 minutes) |
-| Final six-width Admin Chromium | **156 passed / 108 intentional narrow skips** (264 total, 5.2 minutes), including 1600px |
+| Strict TypeScript | Pass; canonical generated types restored after browser servers stopped |
+| Formatting | Pass |
+| Unit tests | **389 passed / 16 files**: 340 retained + 49 new |
+| One complete five-width Chromium regression | **619 passed / 126 intentional narrow Admin skips**, 745 total, 12.8 minutes; zero failures |
+| Complete six-width Admin Chromium suite | **186 passed / 126 intentional narrow skips**, 312 total, 5.2 minutes; zero failures, includes 1600px |
 | Production build | Pass |
-| Production isolation | Login inert; **128 distinct preview URLs refused** with flag enabled |
-| Evidence | **90 raw captures / 15 paired boards**, all boards visually reviewed |
-| Reference/CSS integrity | 51 archive files and three original stylesheets byte-identical |
-| Source freeze | All **333 source/test/tooling hashes unchanged** through both final browser runs |
-| Client bundle check | Nine restricted fixture markers absent from all **132 production client chunks** |
-| Existing local preview | All 12 representative Admin/Staff URLs return HTTP 200 on the unchanged 8443 server |
-| Repository checks | git diff --check passes; no dependency/lockfile/generated next-env diff or tracked reference |
+| Production isolation | Login inert; **141 distinct preview URLs refused** even with preview flag enabled |
+| Source freeze | All **354 source/test/tooling hashes unchanged** through both final browser runs/build |
+| Original integrity | All **51 archive files / three original CSS copies** unchanged |
+| Production client chunks | **10 restricted fixture markers absent from 90 chunks** |
+| Existing local preview | **12 representative new Admin/related Staff URLs return HTTP 200** on unchanged port 8443 |
+| Evidence | **37 raw captures / 9 reviewed paired boards**, including three mobile Staff integrations |
+| Repository checks | git diff --check clean; no reference tracking, dependency/lockfile/generated next-env diff or old test assertion edits |
 
-Widths: 375/390/768/1280/1440 for the complete suite; the final Admin suite adds 1600px. Existing Staff/core/workforce/builder assertions remain. The nine new functional cases cover Client Diary approval and Staff effective/original display; House Diary rejection and Staff feedback; original-version field correction; stable table-cell correction; new assessment submission → v2 publication → v1 review; newly submitted multirow Charting → cell correction → explicit whole-table row add/remove revision; permission restrictions, list filters/pagination and direct-route negatives. Unit tests construct competing pending requests (the ordinary Staff UI prevents duplicates) and verify stale/repeated decision rejection, raw projection/merge, original immutability, invalid references/values and clock progression. A later request/decision is exercised with an advanced browser clock.
+Widths are 375/390/768/1280/1440 for the full regression, plus 1600px in Admin. The 126 skips are intentional management workflow skips below the source's 1024px desktop breakpoint. Gate/negative-route tests and narrow captures still run. All existing Staff/core/workforce/builder/record-review assertions remain intact. See [evidence index](ui-comparisons/phase-1e4b/README.md) for source mappings and visual limits.
 
-The full run and final six-width Admin run occurred with source/tests/tooling held fixed. All app refinements, including current review event time, reviewer display-name metadata and unavailable attachment-target exclusion, precede the frozen runs. Final build/static/units used that same source. Typecheck restored canonical generated types after servers stopped. Earlier desktop focused runs (10 new functional/visual cases and 30 existing Diary/Care/Chart cases) are additional evidence, not added to the complete-suite totals. The original 130-path isolation list contained two duplicate URLs; final checks use 128 distinct paths.
+Development used focused checks rather than repeated complete suites: all new workflows passed at 1280px, followed by the six-width new-module run (**30 passes / 18 intentional skips**). After stabilisation, the established complete regression and complete Admin suite each ran once on frozen source. Static/unit/build/isolation checks passed on that same source. No application source or test changes occurred during either final browser run.
 
-[Comparison evidence](ui-comparisons/phase-1e4a/README.md) documents source mappings and required extensions. Successful captures collected no migrated page errors or document-level overflow. This is representative Chromium/source review, not exhaustive accessibility, browser/device or independent design approval.
+Superseded focused failures were new-test assumptions about parent gallery labels, house-card/button versus link, notice/concern card semantics, modal-scoped submit, exact search/close labels and route readiness. A directory Type filter was briefly selected before New Notification loaded; tests now wait for the actual editor heading/value. The comparison renderer initially lacked three original management permissions and its Save Draft required the source's own discard-navigation confirmation. A Staff mobile notice capture needed the actual Overview route before scrolling. These attempts are not counted as passing final runs; existing assertions were not weakened. Visual refinements to spacing, table-cell widths, source textarea rows and effective audience labels preceded the frozen final checks.
 
-Superseded attempts are excluded from passing totals: new-test Empty/House diary labels, route readiness and collapsed history-card assumptions; original-reference module graph/label-selector adaptation; and a detail screenshot captured before navigation settled. The first full run finished with 596 passes/108 intentional skips/one Diary failure; its trace contains Fast Refresh performing a full reload while edits were being made, resetting that form. That run is superseded by a fresh source-frozen complete regression. Existing content/version/permission assertions remain intact. No earlier passing test was weakened.
+## Integration and coverage
 
-## Limitations and unresolved policies
+New units cover exact file association/shared identity, configured type/size policy, logical removal/retained metadata, invalid IDs/roles/events and Staff omission/merge; draft/history/content validation, audience IDs/context/employee restrictions, publication/read counts, withdrawal immutability and history projection; same Staff concerns, management status validation, original preservation/internal-note privacy/author response, no automatic notice or care/workforce changes; audit derivation without invented events.
 
-Everything resets on reload/logout. Browser preview roles/projections are not trusted authorisation or confidentiality; broader fictional data remains in the opted-in Admin browser. No real client information or production services are used. Photo/file answers remain unavailable, medication templates remain documentation only, and attendance/GPS are not created or verified by record review.
+Browser workflows exercise shared file directory/filter/details/removal → mobile Staff exclusion; exact Client/House galleries and selection validation/failure/retry/cancel/completion; draft/edit/house publication → Staff read state → withdrawal; invalid employee/client audience → valid contextual client notice; Staff concern submission → management internal note/start/resolve → own Staff outcome without internal text; unavailable report exports and bounded audit search; desktop gating and malformed direct routes. Existing full tests preserve care revisions, immutable versions, workforce, leave and form-builder behaviour. Read/role/parent protections remain development demonstrations, not trusted server enforcement.
 
-Text-only structured requests cannot be approved automatically; management can reject with a visible reason and obtain a new typed proposal. UI handles one field/cell or whole table per request; dependent multi-field combinations not expressible there are blocked instead of silently clearing answers. The typed service supports explicit multi-change payloads. Historical records always use their original published definitions.
+## Limitations and next step
 
-First valid approval wins; stale pending requests require rejection/new review, with no automatic rebase. Final reviewer/self-review scope, access after house transfers, retention/logical removal/restoration, draft expiry, transactional concurrency and organisational acceptance remain outstanding. Existing current client/house scope applies to originals and revisions. Firefox's prior pre-launch profile-folder failure remains unresolved; Safari/physical-device/exhaustive accessibility and independent design acceptance are unverified.
+Browser roles/projections, timestamps, file metadata, saves, review and publication are session-only demonstrations. The opted-in Admin browser contains broader fictional data; it is not a confidentiality boundary. No real upload/object deletion, private retrieval, notification delivery, durable audit or database write occurs. File retention/restoration, formal notice revision/retention, concern handling/escalation and organisational permissions need policy approval. Current Staff house/client access continues to apply to history. Existing Settings/unsupported controls remain intentional future placeholders. No real data may be introduced.
 
-Recommended next: review Phase 1E.4A, then separately authorise the supplied Phase 1E.4B scope. No next phase, backend integration or deployment begins automatically.
+There is no known local UI implementation blocker for this phase. Firefox's previously documented pre-launch profile-folder failure remains unresolved. Safari, physical devices, exhaustive accessibility and independent design acceptance remain unverified. Recommended next, after review: separately authorised **Phase 1E.5 Final Integration and UI Freeze**, then the reduced mobile-first backend implementation. No next phase starts automatically, and no global submission locking was introduced.
 
-Phase 1E.4A is complete within this development-only scope, with no known local UI implementation blocker. Current work remains uncommitted on `phase-1e4a`; nothing was pushed and Phase 1E.4B did not begin. The checkpoint above preserves the full preceding application.
+## User-authorised Git publication
+
+After phase verification, the user requested committing and pushing `phase-1e4b`. This checkpoint contains the full tracked application and its history, including Phase 1E.4A, the Phase 1E.4B implementation, tests, documentation and representative evidence. Earlier branches remain preserved. Local reference source, generated output, environment secrets and fifty unrelated duplicate screenshots are excluded. No force-push or reset is used.

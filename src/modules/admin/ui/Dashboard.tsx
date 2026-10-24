@@ -49,6 +49,7 @@ export default function Dashboard() {
       id: c.id,
       title: c.title,
       sub: `${name(c.targetId)} · ${c.status}`,
+      href: `/admin/concerns/${encodeURIComponent(c.id)}`,
     }))
   const issues = s.shifts
     .filter(

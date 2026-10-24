@@ -1,4 +1,6 @@
 "use client"
+import AdminGallery from "../files/AdminGallery"
+import RelatedNotices from "../notices/RelatedNotices"
 import { formatDateOnly } from "@/lib/time"
 import SessionFeedback from "../ui/SessionFeedback"
 import Link from "next/link"
@@ -218,9 +220,7 @@ export default function ClientDetail({
           </p>
         </Panel>
       )}
-      {["diary", "care", "chart", "files", "notices", "activity"].includes(
-        tab,
-      ) && (
+      {["diary", "care", "chart", "activity"].includes(tab) && (
         <Panel title="Shared documentation preview">
           {tab === "diary" ? (
             <p>
@@ -304,6 +304,10 @@ export default function ClientDetail({
           </p>
         </Panel>
       )}
+      {tab === "files" && (
+        <AdminGallery subject={{ scope: "client", targetId: id }} />
+      )}
+      {tab === "notices" && <RelatedNotices scope="client" id={id} />}
       {transfer && (
         <TransferClient
           clientId={id}

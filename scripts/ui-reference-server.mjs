@@ -288,6 +288,9 @@ adminFixture.perms = Object.fromEntries(
     "System configuration",
     "Manage houses & clients",
     "View client NHI",
+    "Remove files",
+    "Publish notices",
+    "View audit log",
   ].map((action) => [
     action,
     {

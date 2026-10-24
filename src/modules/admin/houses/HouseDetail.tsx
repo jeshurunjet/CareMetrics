@@ -1,4 +1,6 @@
 "use client"
+import AdminGallery from "../files/AdminGallery"
+import RelatedNotices from "../notices/RelatedNotices"
 import SessionFeedback from "../ui/SessionFeedback"
 import Image from "next/image"
 import Link from "next/link"
@@ -226,7 +228,7 @@ export default function HouseDetail({
           />
         </Panel>
       )}
-      {["diary", "files", "notices"].includes(tab) && (
+      {["diary"].includes(tab) && (
         <Panel title="Related development records">
           <p className="ad-faint">
             {tab === "diary"
@@ -257,6 +259,10 @@ export default function HouseDetail({
           </Link>
         </Panel>
       )}
+      {tab === "files" && (
+        <AdminGallery subject={{ scope: "house", targetId: id }} />
+      )}
+      {tab === "notices" && <RelatedNotices scope="house" id={id} />}
       {pick && (
         <Modal
           title="Add employee to house"

@@ -76,7 +76,8 @@ export default function ConcernDetails({
       <ParentAttachments parent={c} scope="concern" />
       <p className="cm-hint">
         Staff can view their own submissions. Review, resolution and publication
-        are management-only and are not connected.
+        are management-only development previews; no production service is
+        connected.
       </p>
     </Modal>
   )

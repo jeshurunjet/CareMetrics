@@ -64,7 +64,11 @@ export function projectStaffSnapshot(s: StaffSnapshot): StaffSnapshot {
       houses.some((h) => h.id === a.houseId),
     ),
     shifts: s.shifts.filter((sh) => houses.some((h) => h.id === sh.houseId)),
-    notices: visibleNotices(s),
+    notices: visibleNotices(s).map((n) => {
+      const projected = { ...n }
+      delete projected.history
+      return projected
+    }),
     diary: diaryQueries.getHistory(s, undefined),
     careAssignments: s.careAssignments.filter((a) =>
       clients.some((c) => c.id === a.clientId),

@@ -1,8 +1,6 @@
 import type { Concern } from "./types"
 /** Server seed only. Internal notes deliberately never enter the staff projection. */
-interface SeedConcern extends Concern {
-  internalNotes?: string
-}
+type SeedConcern = Concern
 export function seedConcerns(now: string): SeedConcern[] {
   const at = (hours: number) =>
     new Date(Date.parse(now) + hours * 3600000).toISOString()
@@ -35,7 +33,14 @@ export function seedConcerns(now: string): SeedConcern[] {
         text: "Fictional response: reviewing the demonstration arrangements.",
         at: at(-12),
       },
-      internalNotes: "INTERNAL_MANAGEMENT_CONCERN_NOTE",
+      internalNotes: [
+        {
+          reviewerId: "m1",
+          reviewerName: "Mere Walker (demo)",
+          text: "INTERNAL_MANAGEMENT_CONCERN_NOTE",
+          at: at(-12),
+        },
+      ],
     },
     {
       id: "concern-resolved",

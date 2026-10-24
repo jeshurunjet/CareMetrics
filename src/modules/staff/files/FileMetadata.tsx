@@ -36,7 +36,10 @@ export default function FileMetadata({
               ? "Development session metadata only; selected contents were not retained"
               : "Demonstration asset unavailable",
         ],
-        ["Removal", "Management / administrators only; not implemented"],
+        [
+          "Removal",
+          "Management / administrators only; development logical removal is available in Admin",
+        ],
       ].map(([label, value]) => (
         <div key={label}>
           <dt>{label}</dt>
