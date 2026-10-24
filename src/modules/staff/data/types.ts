@@ -203,6 +203,15 @@ export interface CorrectionTarget {
   columnId?: string
 }
 export interface CorrectionRequest {
+  baseRevisionId?: string
+  proposal?: import("../documentation/revisions").CorrectionProposal
+  decision?: {
+    reviewerName?: string
+    reviewerId: string
+    at: string
+    notes: string
+    revision?: import("../documentation/revisions").RecordRevision
+  }
   targets?: readonly CorrectionTarget[]
   recordType?: "diary" | "care"
   id: string

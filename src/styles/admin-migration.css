@@ -94,3 +94,12 @@
 .ad-document-builder .ad-canvas details { padding: 1rem; background: white; border: 1px solid var(--ad-line); border-radius: var(--ad-radius); }
 .ad-document-builder .ad-canvas details summary { cursor: pointer; font-weight: 600; }
 .ad-document-builder .ad-palette, .ad-document-builder .ad-props { max-height: calc(100dvh - 8rem); }
+/* Phase 1E.4A source-derived records/review, contained desktop tables. */
+.ad-app .ad-records-table .ad-table { min-width: 1250px; }
+.ad-app .ad-records-table .ad-table td { max-width: 22rem; overflow-wrap: anywhere; }
+.ad-app .ad-records-table .ad-table td:nth-last-child(2) { min-width: 10rem; }
+.ad-app .ad-compare { align-items: start; }
+.ad-app .ad-compare .cm-dl, .ad-app .ad-grid-main .cm-dl { min-width: 0; }
+.ad-app .ad-pre, .ad-app .ad-compare ins, .ad-app .ad-compare del { overflow-wrap: anywhere; white-space: pre-wrap; }
+.ad-app .ad-compare details, .ad-app .ad-grid-main details { margin-top: 1rem; }
+.ad-app .ad-compare summary, .ad-app .ad-grid-main summary { cursor: pointer; color: var(--color-brand); }

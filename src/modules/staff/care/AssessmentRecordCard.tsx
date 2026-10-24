@@ -1,4 +1,5 @@
 "use client"
+import { effectiveCare } from "../documentation/revisions"
 import { useState } from "react"
 import Link from "next/link"
 import { useStaffData } from "../data/context"
@@ -10,7 +11,7 @@ import ReadOnlyFormValues from "../../forms/ReadOnlyFormValues"
 import { formatDate, formatDateTime } from "@/lib/time"
 import { careDetailHref, careFormHref } from "./navigation"
 export default function AssessmentRecordCard({
-  record,
+  record: original,
   template,
   defaultOpen,
 }: {
@@ -19,6 +20,7 @@ export default function AssessmentRecordCard({
   defaultOpen: boolean
 }) {
   const s = useStaffData(),
+    record = effectiveCare(s, original),
     [open, setOpen] = useState(defaultOpen)
   const version = template.versions.find(
     (v) => v.version === record.templateVersion,

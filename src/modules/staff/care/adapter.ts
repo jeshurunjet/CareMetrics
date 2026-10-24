@@ -1,3 +1,6 @@
+import { effectiveCare } from "../documentation/revisions"
+import { applyCareProposal } from "../documentation/proposals"
+import type { FormValue } from "../../forms/types"
 import type { StaffSnapshot, CorrectionTarget } from "../data/types"
 import type { CareRecordInput, CareRecord } from "./types"
 import { getClient } from "../data/queries"
@@ -280,6 +283,7 @@ export function requestCareCorrection(
   requestId: string,
   now: string,
   target?: CorrectionTarget,
+  proposedValue?: FormValue,
 ) {
   const record = getCareRecord(s, clientId, templateId, id)
   if (!record || !canRequestCareCorrection(s, record))
@@ -290,7 +294,7 @@ export function requestCareCorrection(
       (v) => v.version === record.templateVersion,
     )!
     const field = allFields(version).find((f) => f.id === target.fieldId)
-    const rows = field && record.values[field.id]
+    const rows = field && effectiveCare(s, record).values[field.id]
     if (
       !field ||
       ((target.rowId || target.columnId) &&
@@ -303,6 +307,11 @@ export function requestCareCorrection(
     )
       throw new Error("Correction target unavailable")
   }
+  const proposal =
+    target && proposedValue !== undefined
+      ? { kind: "care" as const, changes: [{ target, value: proposedValue }] }
+      : undefined
+  if (proposal) applyCareProposal(s, record, proposal)
   return appendCorrectionRequest(
     s,
     "care",
@@ -312,6 +321,7 @@ export function requestCareCorrection(
     requestId,
     now,
     target ? [target] : undefined,
+    proposal,
   )
 }
 export const careQueries = {

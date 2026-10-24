@@ -37,6 +37,16 @@ try {
     "no production Administration preview entry",
   )
   const paths = [
+    "/admin/documentation/records/client-c1-1?kind=diary",
+    "/admin/documentation/records/house-h1-1?kind=diary",
+    "/admin/documentation/records/care-c1-skin-7?kind=care",
+    "/admin/documentation/records/chart-equipment-1?kind=care",
+    "/admin/documentation/records/unknown?kind=care",
+    "/admin/documentation/records/client-c1-1?kind=diary&action=delete",
+    "/admin/documentation/corrections/chart-correction",
+    "/admin/documentation/corrections/unknown",
+    "/admin/documentation/corrections/chart-correction?action=approve",
+
     "/admin",
     "/admin/documentation?tab=overview",
     "/admin/documentation?tab=categories",

@@ -59,3 +59,7 @@ Global CSS defines DM Sans, DM Serif Display, DM Mono, teal brand `#1a6b7a`, ora
 ## Bootstrap boundary
 
 Port only safe login presentation and application chrome at this checkpoint, with explicitly labelled local fictional read-only shift fixtures and placeholders. Do not silently reactivate the old UI or run the entire export as a competing client app. No full-screen parity claims without screenshots/browser review at 390/1280/1440. Staff migration is the next phase, before backend services.
+
+## Phase 1E.4A source inspection
+
+Active Docs.tsx SubmittedRecords/useAllRecords/DiaryTable, RecordDetail, Corrections/CorrectionReview and Dashboard/core are the record-review source; unreachable legacy care views remain unused. Source review marks request outcomes but does not create corrected record values. Its structured comparison flattens non-table fields; its attachment association guesses from a three-hour timestamp proximity. The migration retains source layout/classes while introducing explicit typed proposals/revisions, original-version table differences and safe original/effective views. It does not adopt timestamp-guessed record attachments or the unbounded word-diff matrix. See [review contracts](admin-record-review.md); original export/CSS remain preserved.

@@ -1,4 +1,6 @@
 "use client"
+import { recordReviewSummary } from "../records/adapter"
+import { correctionHref } from "../records/SubmittedRecords"
 import { effectiveAttendance } from "../../staff/roster/effective"
 import { managementAttendanceStatus } from "../workforce/adapter"
 import Link from "next/link"
@@ -9,7 +11,8 @@ import { formatTime, formatDateTime } from "@/lib/time"
 export default function Dashboard() {
   const nav = useAdmin(),
     s = nav.data,
-    t = dashboardSummary(s)
+    t = dashboardSummary(s),
+    documentation = recordReviewSummary(s, nav.role)
   const name = (id: string) =>
     s.staff.find((e) => e.id === id)?.name ??
     s.houses.find((h) => h.id === id)?.name ??
@@ -22,7 +25,7 @@ export default function Dashboard() {
         id: c.id,
         title: "Documentation correction",
         sub: c.reason,
-        href: "/admin/documentation",
+        href: correctionHref(c.id),
       })),
     ...s.attendanceCorrections
       .filter((c) => c.status === "pending")
@@ -84,8 +87,8 @@ export default function Dashboard() {
       page: "roster",
     },
     {
-      label: "Pending corrections",
-      value: t.corrections,
+      label: "Pending care-record corrections",
+      value: documentation.pending,
       icon: "flag",
       page: "docs",
     },
@@ -133,7 +136,12 @@ export default function Dashboard() {
                     ? "warning"
                     : "brand"
             }
-            onClick={() => nav.go({ page: st.page })}
+            onClick={() =>
+              nav.go({
+                page: st.page,
+                tab: st.page === "docs" ? "corrections" : undefined,
+              })
+            }
           />
         ))}
       </div>
@@ -255,10 +263,24 @@ export default function Dashboard() {
           </ul>
         </Panel>
       </div>
+      <Panel title="Documentation review summary">
+        <Link className="ad-link" href="/admin/documentation?tab=records">
+          {documentation.total} submitted documentation records
+        </Link>
+        <p>
+          {documentation.pending} pending care-record corrections ·{" "}
+          {s.attendanceCorrections.filter((c) => c.status === "pending").length}{" "}
+          pending attendance corrections
+        </p>
+        <p>
+          {documentation.requests.filter((x) => x.request.decision).length}{" "}
+          reviewed documentation requests in this session
+        </p>
+      </Panel>
       <div className="ad-grid-4">
         {[
           {
-            title: "Correction requests",
+            title: "Correction requests (care / attendance)",
             items: corrections,
             href: "/admin/documentation",
           },

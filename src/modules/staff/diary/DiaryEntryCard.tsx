@@ -1,4 +1,5 @@
 "use client"
+import { effectiveDiary } from "../documentation/revisions"
 import { useState } from "react"
 import Link from "next/link"
 import { useStaffData } from "../data/context"
@@ -8,13 +9,14 @@ import { formatDateTime } from "@/lib/time"
 import { RecordStatus, RecordMetadata } from "./shared"
 import { diaryEntryHref, diaryFormHref } from "./navigation"
 export default function DiaryEntryCard({
-  entry,
+  entry: original,
   defaultOpen,
 }: {
   entry: DiaryEntry
   defaultOpen: boolean
 }) {
-  const s = useStaffData()
+  const s = useStaffData(),
+    entry = effectiveDiary(s, original)
   const [open, setOpen] = useState(defaultOpen)
   return (
     <article className={`cm-history ${open ? "open" : ""}`}>

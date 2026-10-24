@@ -35,6 +35,8 @@ const sources = [
   "src/modules/staff/files/policy.ts",
   "src/modules/staff/files/demo-assets.ts",
   "src/modules/forms/engine.ts",
+  "src/modules/staff/documentation/revisions.ts",
+  "src/modules/staff/documentation/proposals.ts",
   "src/lib/time.ts",
 ]
 const compiled = new Map(
@@ -263,7 +265,14 @@ adminFixture.corrections = adminFixture.corrections.map((c) => ({
   recordLabel:
     c.recordType === "Timesheet"
       ? `${adminSnapshot.houses.find((h) => h.id === adminSnapshot.shifts.find((sh) => sh.id === c.recordId)?.houseId)?.name ?? "Shift"} · ${c.recordId}`
-      : c.recordLabel,
+      : (adminSnapshot.diary.find((d) => d.id === c.recordId)?.title ??
+        adminSnapshot.careTemplates.find(
+          (t) =>
+            t.id ===
+            adminSnapshot.careRecords.find((r) => r.id === c.recordId)
+              ?.templateId,
+        )?.name ??
+        c.recordLabel),
 }))
 adminFixture.admin = { role: "Administrator", userId: "a1" }
 adminFixture.org = { name: "CareMetrics fictional organisation" }
@@ -292,6 +301,93 @@ adminFixture.perms = Object.fromEntries(
   ]),
 )
 await writeFile(join(root, "admin-fixture.json"), JSON.stringify(adminFixture))
+// Dedicated comparison fixture only: the same pure Staff request operations over fictional records.
+const { requestCorrection } = await import(
+  pathToFileURL(
+    compiled.get(resolve("src/modules/staff/data/diary-adapter.ts")),
+  )
+)
+const { requestCareCorrection } = await import(
+  pathToFileURL(compiled.get(resolve("src/modules/staff/care/adapter.ts")))
+)
+let reviewSnapshot = developmentMockAdapter.getSnapshot(
+  "s1",
+  "2026-10-22T01:00:00.000Z",
+  true,
+)
+for (const [scope, targetId, recordId, id, reason, proposed] of [
+  [
+    "client",
+    "c1",
+    "client-c1-1",
+    "visual-diary-request",
+    "Review Client Diary wording",
+    "Approved fictional replacement diary body.",
+  ],
+  [
+    "house",
+    "h1",
+    "house-h1-1",
+    "visual-house-request",
+    "Review House Diary wording",
+    "Proposed operational note for rejection.",
+  ],
+])
+  reviewSnapshot = requestCorrection(
+    reviewSnapshot,
+    { scope, targetId },
+    recordId,
+    reason,
+    proposed,
+    id,
+    reviewSnapshot.now,
+  )
+reviewSnapshot = requestCareCorrection(
+  reviewSnapshot,
+  "c1",
+  "t1",
+  "care-c1-skin-7",
+  "Review v1 assessment answer",
+  "Replace the original v1 text answer.",
+  "visual-field-request",
+  reviewSnapshot.now,
+  { fieldId: "condition" },
+  "Revised fictional v1 observation",
+)
+reviewSnapshot = requestCareCorrection(
+  reviewSnapshot,
+  "c1",
+  "t6",
+  "chart-equipment-1",
+  "Review equipment serial cell",
+  "Serial number is REVISED-103.",
+  "visual-table-request",
+  reviewSnapshot.now,
+  { fieldId: "equipment", rowId: "equipment-row-a", columnId: "serial" },
+  "REVISED-103",
+)
+const reviewFixture = {
+  ...adminFixture,
+  ...buildFixture(reviewSnapshot),
+  admin: adminFixture.admin,
+  perms: adminFixture.perms,
+  org: adminFixture.org,
+}
+reviewFixture.corrections = reviewFixture.corrections.map((c) => ({
+  ...c,
+  recordLabel:
+    reviewSnapshot.diary.find((d) => d.id === c.recordId)?.title ??
+    reviewSnapshot.careTemplates.find(
+      (t) =>
+        t.id ===
+        reviewSnapshot.careRecords.find((r) => r.id === c.recordId)?.templateId,
+    )?.name ??
+    c.recordId,
+}))
+await writeFile(
+  join(root, "record-review-fixture.json"),
+  JSON.stringify(reviewFixture),
+)
 
 const store = await readFile(join(root, "staff/store.ts"), "utf8")
 await writeFile(
@@ -308,7 +404,7 @@ await writeFile(
 )
 await writeFile(
   join(root, "comparison.tsx"),
-  `import React from 'react';import {createRoot} from 'react-dom/client';import StaffApp from './staff/StaffApp';import AdminApp from './admin/AdminApp';import adminFixture from './admin-fixture.json';import LoginView from './views/LoginView';import './index.css';import {update} from './staff/store';if(new URLSearchParams(location.search).get('scenario')==='leave-empty')update(()=>({leave:[]}));const screen=new URLSearchParams(location.search).get('screen');const login=screen==='login';if(screen==='admin')update(()=>adminFixture);createRoot(document.getElementById('root')!).render(screen==='admin'?<AdminApp initialRole='Administrator' onLogout={()=>{}}/>:login?<LoginView onLogin={()=>{}}/>:<StaffApp onLogout={()=>{}}/>);`,
+  `import React from 'react';import {createRoot} from 'react-dom/client';import StaffApp from './staff/StaffApp';import AdminApp from './admin/AdminApp';import adminFixture from './admin-fixture.json';import reviewFixture from './record-review-fixture.json';import LoginView from './views/LoginView';import './index.css';import {update} from './staff/store';if(new URLSearchParams(location.search).get('scenario')==='leave-empty')update(()=>({leave:[]}));const screen=new URLSearchParams(location.search).get('screen');const login=screen==='login';if(screen==='admin')update(()=>new URLSearchParams(location.search).get('scenario')==='record-review'?reviewFixture:adminFixture);createRoot(document.getElementById('root')!).render(screen==='admin'?<AdminApp initialRole='Administrator' onLogout={()=>{}}/>:login?<LoginView onLogin={()=>{}}/>:<StaffApp onLogout={()=>{}}/>);`,
 )
 const require = createRequire(import.meta.url)
 const fromVitest = createRequire(require.resolve("vitest/package.json"))

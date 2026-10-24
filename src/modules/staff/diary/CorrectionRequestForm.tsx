@@ -1,4 +1,5 @@
 "use client"
+import { latestRevision } from "../documentation/revisions"
 import { useStaffData } from "../data/context"
 import { canRequestCorrection, requestCorrection } from "../data/diary-adapter"
 import type { DiaryEntry, DiarySubject } from "../data/types"
@@ -16,6 +17,11 @@ export default function CorrectionRequestForm({
   return (
     <RecordCorrectionForm
       title={entry.title}
+      baselineLabel={
+        latestRevision(s, "diary", entry.id)
+          ? "Current effective record"
+          : "Original submitted entry"
+      }
       original={<p className="cm-body cm-diary-text">{entry.body}</p>}
       allowed={canRequestCorrection(s, entry)}
       unavailable={<UnavailableDiary subject={subject} />}

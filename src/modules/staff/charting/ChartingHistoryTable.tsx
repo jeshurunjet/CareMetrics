@@ -1,4 +1,5 @@
 "use client"
+import { effectiveCare } from "../documentation/revisions"
 import { useState } from "react"
 import Link from "next/link"
 import { useStaffData } from "../data/context"
@@ -34,7 +35,9 @@ export default function ChartingHistoryTable({
   if (!assigned)
     return <UnavailableAssessment clientId={clientId} kind="chart" />
   const { template, version } = assigned,
-    all = getCareRecords(s, clientId, templateId)
+    all = getCareRecords(s, clientId, templateId).map((r) =>
+      effectiveCare(s, r),
+    )
   const list = all.filter(
     (r) =>
       (!query ||

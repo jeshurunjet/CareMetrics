@@ -123,3 +123,7 @@ Phase 1E.1 is preserved at checkpoint `9cf2104` on `phase-1e1`. New work on `pha
 ## Phase 1E.3 documentation extension
 
 Completed workforce is checkpointed locally at `3f7b147`; `phase-1e3` adds documentation management on the same snapshot/provider. CareTemplate gains an optional draft/archive/configuration metadata and published version metadata; DiaryCategory gains description/metadata and submitted diary names are retained. Shared role/organisation checks protect every pure mutation. Staff projections omit drafts without deleting them during scoped merges, and historical care reads are separated from active new-entry assignments. Existing Employee/House/Client/Manager-account/workforce contracts remain. See [documentation-builder contracts](admin-documentation-builder.md); no production service or Phase 1E.4 approval was added.
+
+## Phase 1E.4A record-review extension
+
+Submitted documentation and management correction review now use the same snapshot/request collection. Core Employee/House/Client and Administrator-account permissions are unchanged. Client/house/author detail links use the existing routes. Dashboard care-record counts/links resolve the shared review adapter, separately from attendance corrections. Current Staff scope applies to original/revision visibility after transfers; no unrestricted historical access is added. See [record-review contracts](admin-record-review.md).

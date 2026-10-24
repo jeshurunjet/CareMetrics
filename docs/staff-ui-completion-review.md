@@ -138,3 +138,7 @@ The desktop Admin now manages the same fictional shifts, attendance corrections 
 ## Phase 1E.3 documentation integration
 
 Admin-created Care Plan/Charting forms and Client/House diary categories now flow through the same session snapshot and Staff renderer. Active assignments choose new-entry versions; published records and old drafts retain their exact version definitions. Staff projections omit management drafts while merges preserve them. Deactivation removes new-entry choices and blocks submissions without deleting historical records; current house/client scope still applies. No Staff template-management grant, real file handling, production identity or persistence was introduced. See [documentation-builder contracts](admin-documentation-builder.md).
+
+## Phase 1E.4A correction outcomes
+
+Desktop management now approves/rejects the same Staff documentation requests. Staff layouts and ordinary privileges remain unchanged; there is no Staff approval action. Diary/Care/Chart details and history derive approved effective content with a Corrected indicator and original/revision history, reviewer/time/visible notes and rejected outcomes. Structured requests optionally use original-version typed controls and stable table references. Originals remain raw in the snapshot/projection; current scope still applies. See [record-review contracts](admin-record-review.md). These are session-only demonstrations, not persisted clinical records or trusted review decisions.

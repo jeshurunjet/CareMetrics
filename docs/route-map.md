@@ -37,10 +37,10 @@ Development sign-in → My Shifts → Dashboard is implemented; continuing witho
 | clients | `/admin/clients` | ported directory/search/filter/pagination |
 | client / client-form | `/admin/clients/[id]`, `/admin/clients/new`, `/admin/clients/[id]/edit` | ported profile/contacts/confirmed transfer, create/edit and bounded documentation summaries |
 | roster + shift drawer | `/admin/roster?tab=…&shiftId=…` | ported roster/shift/attendance/timesheet/correction views and development-only query drawers |
-| docs | `/admin/documentation?tab=…` | ported overview/categories/libraries/assignments; record review deferred |
+| docs | `/admin/documentation?tab=…` | ported overview/categories/libraries/assignments/submitted records/correction review; development only |
 | template | `/admin/documentation/templates/[id]` | ported draft builder/preview/publishing/versions/assignments |
-| record | `/admin/documentation/records/[id]` | original; planned |
-| correction | `/admin/documentation/corrections/[id]` | original; planned |
+| record | `/admin/documentation/records/[id]?kind=diary\|care` | ported original/effective submitted details and revision history |
+| correction | `/admin/documentation/corrections/[id]` | ported comparison and development-only approve/reject |
 | files + file drawer | `/admin/files?fileId=…` | original; routed placeholder; drawer planned |
 | notices | `/admin/notifications?tab=…` | original; routed placeholder |
 | notice-form / concern | `/admin/notifications/new`, `/admin/notifications/[id]/edit`, `/admin/concerns/[id]` | original; planned |
@@ -208,3 +208,19 @@ Employee roster/attendance/leave tabs now link to the same Shift, AttendanceReco
 `/admin/documentation?tab=overview|categories|care|chart|assignments` renders the shared documentation manager. `records|corrections` explicitly remain Phase 1E.4 placeholders. Templates use `/admin/documentation/templates/[id]?tab=builder|preview|versions|assign`, with builder default. Create/category/property/publish/assignment confirmations are local dialogs within these canonical destinations, not new APIs. Breadcrumbs, sidebar active state, Back and existing valid links remain. Server preview gates reject production and unknown/repeated query selectors. Missing session templates after reload show generic unavailable content following explicit role opt-in.
 
 Staff URLs are unchanged. Active assignments select new-entry versions; paused assignments hide categories/new actions while existing exact-version record URLs remain readable within current house/client scope. New entries/old draft submission require an active assignment; version reassignment preserves old drafts. See [documentation contracts](admin-documentation-builder.md) for historical-read and unresolved production policies.
+
+## Phase 1E.4A Admin submitted records and corrections
+
+The existing Documentation `tab=records|corrections` placeholders are ported. Earlier phase notes describe their historical state. Records uses four distinct type filters; corrections uses Pending Review/Approved/Rejected/All. Overview/categories/libraries/assignments and template routes remain canonical.
+
+| View | Canonical URL |
+| --- | --- |
+| Submitted overview, bounded four-context list | `/admin/documentation?tab=records` |
+| Care documentation correction queue | `/admin/documentation?tab=corrections` |
+| Client/House Diary original/effective details | `/admin/documentation/records/[id]?kind=diary` |
+| Care Plan/Charting exact-version details | `/admin/documentation/records/[id]?kind=care` |
+| Request comparison/review | `/admin/documentation/corrections/[id]` |
+
+The required kind discriminator prevents diary/care ID collisions. New server pages reject production, malformed/repeated/unknown selectors and invalid ID syntax; missing session IDs show generic unavailable after management opt-in. Wrong kind, draft/missing/invalid-association records and invalid requests reveal no record DTO. No API or second detail hierarchy is added. Existing Back/forward/refresh/breadcrumbs, subject/house/author links and Staff URLs remain unchanged. Filters are mounted view state; list/history pagination bounds rendered records.
+
+Staff requests now optionally include explicit typed fields/cells/whole tables. Approved revisions derive effective displays without replacing raw submitted entries in the shared snapshot/projection. Current client/house access controls original/revision visibility; no historical-access exception is added. Attendance correction routes and collections remain independent. See [record review contracts](admin-record-review.md). No backend-connected status is claimed.

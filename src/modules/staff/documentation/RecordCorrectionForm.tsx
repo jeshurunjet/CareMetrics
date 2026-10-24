@@ -1,5 +1,7 @@
 "use client"
 import { useState, type ReactNode } from "react"
+import type { FormValue, FormFieldDefinition } from "../../forms/types"
+import FormFieldRenderer from "../../forms/FormFieldRenderer"
 import { useRouter } from "next/navigation"
 import { useStaffData, useUpdateStaffData } from "../data/context"
 import type { StaffSnapshot, CorrectionTarget } from "../data/types"
@@ -15,7 +17,13 @@ export default function RecordCorrectionForm({
   onRequest,
   proposalHelp,
   targets,
+  proposalField,
+  proposalValue,
+  baselineLabel = "Original submitted entry",
 }: {
+  baselineLabel?: string
+  proposalValue?: (target: CorrectionTarget) => FormValue | undefined
+  proposalField?: (target: CorrectionTarget) => FormFieldDefinition
   targets?: readonly {
     label: string
     target: CorrectionTarget
@@ -32,6 +40,7 @@ export default function RecordCorrectionForm({
     id: string,
     now: string,
     target?: CorrectionTarget,
+    value?: FormValue,
   ) => StaffSnapshot
   proposalHelp?: string
 }) {
@@ -39,6 +48,8 @@ export default function RecordCorrectionForm({
     update = useUpdateStaffData(),
     router = useRouter()
   const [target, setTarget] = useState("")
+  const [typed, setTyped] = useState(false),
+    [value, setValue] = useState<FormValue>("")
   const [reason, setReason] = useState(""),
     [proposed, setProposed] = useState(""),
     [tried, setTried] = useState(false),
@@ -67,7 +78,9 @@ export default function RecordCorrectionForm({
         session.
       </Banner>
       <Card className="cm-panel">
-        <h3 className="cm-h3">Original submitted entry · {title}</h3>
+        <h3 className="cm-h3">
+          {baselineLabel} · {title}
+        </h3>
         {original}
       </Card>
       <form
@@ -85,6 +98,7 @@ export default function RecordCorrectionForm({
               crypto.randomUUID(),
               new Date().toISOString(),
               targets?.find((t) => JSON.stringify(t.target) === target)?.target,
+              typed && target ? value : undefined,
             )
             setSaved(true)
             update(next)
@@ -104,7 +118,11 @@ export default function RecordCorrectionForm({
               id="cr-target"
               className="cm-input"
               value={target}
-              onChange={(e) => setTarget(e.target.value)}
+              onChange={(e) => {
+                setTarget(e.target.value)
+                setValue("")
+                setTyped(false)
+              }}
             >
               <option value="">Describe changes in text</option>
               {targets.map((t) => (
@@ -117,6 +135,38 @@ export default function RecordCorrectionForm({
               ))}
             </select>
           </FormField>
+        )}
+        {target && proposalField && (
+          <div className="cm-stack">
+            <label>
+              <input
+                type="checkbox"
+                checked={typed}
+                onChange={(e) => {
+                  setTyped(e.target.checked)
+                  if (e.target.checked && target)
+                    setValue(proposalValue?.(JSON.parse(target)) ?? "")
+                }}
+              />{" "}
+              Apply a structured value
+            </label>
+            <p className="cm-hint">
+              Only an explicit typed proposal can be approved for structured
+              records. Text-only requests remain reviewable. A blank optional
+              value proposes clearing it.
+            </p>
+            {typed && (
+              <FormFieldRenderer
+                field={{
+                  ...proposalField(JSON.parse(target)),
+                  id: "correction-value",
+                  label: "Proposed answer value",
+                }}
+                value={value}
+                onChange={setValue}
+              />
+            )}
+          </div>
         )}
         <FormField
           label="Reason for correction"

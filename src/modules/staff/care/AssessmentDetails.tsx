@@ -9,13 +9,14 @@ import {
   canRequestCareCorrection,
   requestCareCorrection,
 } from "./adapter"
-import { recordCorrections } from "../data/correction-service"
+import { effectiveCare, latestRevision } from "../documentation/revisions"
+import RecordRevisionHistory from "../documentation/RecordRevisionHistory"
+import { proposalField } from "../documentation/proposals"
 import { Card, Banner } from "../ui"
 import { RecordStatus, RecordMetadata } from "../diary/shared"
 import RecordCorrectionForm from "../documentation/RecordCorrectionForm"
 import { allFields, isTableRows } from "../../forms/engine"
 import ReadOnlyFormValues from "../../forms/ReadOnlyFormValues"
-import { formatDateTime } from "@/lib/time"
 import { careDetailHref, careFormHref, careHistoryHref } from "./navigation"
 import { AssessmentPreviewNotice, UnavailableAssessment } from "./shared"
 export default function AssessmentDetails({
@@ -31,7 +32,8 @@ export default function AssessmentDetails({
 }) {
   const s = useStaffData(),
     params = useSearchParams(),
-    record = getCareRecord(s, clientId, templateId, id),
+    original = getCareRecord(s, clientId, templateId, id),
+    record = original && effectiveCare(s, original),
     assigned = getReadableCareTemplate(s, clientId, templateId, kind)
   if (!record || !assigned)
     return <UnavailableAssessment clientId={clientId} kind={kind} />
@@ -45,6 +47,11 @@ export default function AssessmentDetails({
     return (
       <RecordCorrectionForm
         key={id}
+        baselineLabel={
+          latestRevision(s, "care", id)
+            ? "Current effective record"
+            : "Original submitted entry"
+        }
         title={
           version.name ??
           assigned.template.legacyMetadata?.name ??
@@ -54,13 +61,35 @@ export default function AssessmentDetails({
         allowed={canRequestCareCorrection(s, record)}
         unavailable={<UnavailableAssessment clientId={clientId} kind={kind} />}
         returnHref={careDetailHref(clientId, templateId, id, false, kind)}
-        targets={
-          kind === "chart"
-            ? allFields(version).flatMap((f) => {
-                const value = record.values[f.id]
-                return f.type === "repeatingTable" && isTableRows(value)
-                  ? value.flatMap((row, i) =>
-                      f.columns.map((c) => ({
+        proposalField={(target) => proposalField(s, record, target)}
+        proposalValue={(target) => {
+          const value = record.values[target.fieldId]
+          return target.rowId && isTableRows(value)
+            ? value.find((row) => row.id === target.rowId)?.values[
+                target.columnId!
+              ]
+            : value
+        }}
+        targets={allFields(version)
+          .filter((f) => !["photo", "file", "table"].includes(f.type))
+          .flatMap((f) => {
+            const value = record.values[f.id]
+            return f.type === "repeatingTable" && isTableRows(value)
+              ? [
+                  ...(f.columns.every(
+                    (c) => !["photo", "file"].includes(c.type),
+                  )
+                    ? [
+                        {
+                          label: `${f.label} · Whole table (stable rows)`,
+                          target: { fieldId: f.id },
+                        },
+                      ]
+                    : []),
+                  ...value.flatMap((row, i) =>
+                    f.columns
+                      .filter((c) => !["photo", "file"].includes(c.type))
+                      .map((c) => ({
                         label: `${f.label} · Row ${i + 1} · ${c.label}`,
                         target: {
                           fieldId: f.id,
@@ -68,13 +97,20 @@ export default function AssessmentDetails({
                           columnId: c.id,
                         },
                       })),
-                    )
-                  : [{ label: f.label, target: { fieldId: f.id } }]
-              })
-            : undefined
-        }
+                  ),
+                ]
+              : [{ label: f.label, target: { fieldId: f.id } }]
+          })}
         proposalHelp="Identify each affected field and its intended value. The original version and answers remain unchanged."
-        onRequest={(snapshot, reason, proposed, requestId, now, target) =>
+        onRequest={(
+          snapshot,
+          reason,
+          proposed,
+          requestId,
+          now,
+          target,
+          value,
+        ) =>
           requestCareCorrection(
             snapshot,
             clientId,
@@ -85,6 +121,7 @@ export default function AssessmentDetails({
             requestId,
             now,
             target,
+            value,
           )
         }
       />
@@ -117,6 +154,11 @@ export default function AssessmentDetails({
           Template v{record.templateVersion} ·{" "}
           {s.clients.find((c) => c.id === clientId)?.name}
         </p>
+        {latestRevision(s, "care", id) && (
+          <p className="cm-hint">
+            Corrected effective record · original submission retained below.
+          </p>
+        )}
         <div className="cm-chip-row">
           <RecordStatus entry={record} recordType="care" />
         </div>
@@ -146,37 +188,7 @@ export default function AssessmentDetails({
           )}
         </div>
       </Card>
-      {recordCorrections(s, "care", id).map((c) => (
-        <Card key={c.id} className="cm-panel">
-          <h3 className="cm-h3">
-            Correction {c.status === "pending" ? "pending review" : c.status}
-          </h3>
-          <dl className="cm-dl">
-            <div>
-              <dt>Reason</dt>
-              <dd>{c.reason}</dd>
-            </div>
-            <div>
-              <dt>Proposed correction</dt>
-              <dd className="cm-diary-text">{c.proposed}</dd>
-            </div>
-            <div>
-              <dt>Requested</dt>
-              <dd>{formatDateTime(c.requestedAt)}</dd>
-            </div>
-          </dl>
-          {c.targets?.map((t) => (
-            <p className="cm-hint" key={JSON.stringify(t)}>
-              Reference: field {t.fieldId}
-              {t.rowId ? ` · row ${t.rowId} · column ${t.columnId}` : ""}
-            </p>
-          ))}
-          <p className="cm-hint">
-            Management review is not implemented. Original assessment values are
-            unchanged.
-          </p>
-        </Card>
-      ))}
+      <RecordRevisionHistory s={s} kind="care" record={original!} />
     </div>
   )
 }

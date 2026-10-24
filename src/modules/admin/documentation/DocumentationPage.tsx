@@ -2,6 +2,9 @@
 import { useState } from "react"
 import { useAdmin, PageHead, SubTabs, Stat, Panel } from "../ui/core"
 import { Btn } from "../../staff/ui"
+import SubmittedRecords from "../records/SubmittedRecords"
+import CorrectionQueue from "../records/CorrectionQueue"
+import { recordReviewSummary } from "../records/adapter"
 import Categories from "./Categories"
 import TemplateLibrary, { CreateTemplate } from "./TemplateLibrary"
 import Assignments from "./Assignments"
@@ -27,8 +30,12 @@ export default function DocumentationPage() {
           { id: "care", label: "Care Plan templates" },
           { id: "chart", label: "Charting templates" },
           { id: "assignments", label: "Template assignments" },
-          { id: "records", label: "Submitted records · Phase 1E.4" },
-          { id: "corrections", label: "Correction requests · Phase 1E.4" },
+          { id: "records", label: "Submitted records" },
+          {
+            id: "corrections",
+            label: "Correction requests",
+            count: recordReviewSummary(s, nav.role).pending,
+          },
         ]}
       />
       {tab === "overview" && (
@@ -88,8 +95,8 @@ export default function DocumentationPage() {
                   <b>Assign</b> a published version explicitly to clients.
                 </li>
                 <li>
-                  Staff use the same version-aware renderer. Record review
-                  follows in Phase 1E.4.
+                  Staff use the same version-aware renderer. Management reviews
+                  submitted records and correction requests.
                 </li>
               </ol>
               <p>
@@ -145,15 +152,8 @@ export default function DocumentationPage() {
         <TemplateLibrary key={tab} kind={tab} />
       )}
       {tab === "assignments" && <Assignments />}
-      {["records", "corrections"].includes(tab) && (
-        <Panel title="Phase 1E.4 — not implemented">
-          <p>
-            Submitted-record review and correction approvals are outside this
-            phase. Staff historical records remain available through their
-            existing scoped views.
-          </p>
-        </Panel>
-      )}
+      {tab === "records" && <SubmittedRecords />}
+      {tab === "corrections" && <CorrectionQueue />}
       {creating && (
         <CreateTemplate kind={creating} onClose={() => setCreating(null)} />
       )}

@@ -1,3 +1,7 @@
+import {
+  latestRevision,
+  type CorrectionProposal,
+} from "../documentation/revisions"
 import type {
   StaffSnapshot,
   CorrectionRequest,
@@ -35,6 +39,7 @@ export function appendCorrectionRequest(
   id: string,
   now: string,
   targets?: readonly CorrectionTarget[],
+  proposal?: CorrectionProposal,
 ): StaffSnapshot {
   if (!reason.trim() || !proposed.trim())
     throw new Error("Reason and proposed correction are required.")
@@ -48,6 +53,12 @@ export function appendCorrectionRequest(
     throw new Error("Correction already pending")
   const request: CorrectionRequest = {
     id,
+    baseRevisionId: latestRevision(s, recordType, recordId)?.id,
+    proposal: proposal
+      ? structuredClone(proposal)
+      : recordType === "diary"
+        ? { kind: "diary", body: proposed.trim() }
+        : undefined,
     targets,
     recordType,
     recordId,

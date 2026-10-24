@@ -1,7 +1,7 @@
 "use client"
 import Link from "next/link"
-import { recordCorrections } from "../data/correction-service"
-import { formatDateTime } from "@/lib/time"
+import { effectiveDiary, latestRevision } from "../documentation/revisions"
+import RecordRevisionHistory from "../documentation/RecordRevisionHistory"
 import { useStaffData } from "../data/context"
 import type { DiarySubject } from "../data/types"
 import { getDiaryEntry, canRequestCorrection } from "../data/diary-adapter"
@@ -24,19 +24,25 @@ export default function DiaryEntryDetails({
   correction: boolean
 }) {
   const s = useStaffData(),
-    entry = getDiaryEntry(s, subject, id)
+    original = getDiaryEntry(s, subject, id),
+    entry = original && effectiveDiary(s, original)
   if (!entry) return <UnavailableDiary subject={subject} />
   if (correction)
     return (
       <CorrectionRequestForm subject={subject} entry={entry} key={entry.id} />
     )
-  const requests = recordCorrections(s, "diary", entry.id)
+  const revision = latestRevision(s, "diary", entry.id)
   return (
     <div className="cm-stack">
       <Link href={diaryHistoryHref(subject)}>Back to diary history</Link>
       <DiaryPreviewNotice />
       <Card className="cm-panel">
         <h2 className="cm-h3">{entry.title}</h2>
+        {revision && (
+          <p className="cm-hint">
+            Corrected effective record · original submission retained below.
+          </p>
+        )}
         <div className="cm-chip-row">
           <RecordStatus entry={entry} />
         </div>
@@ -72,31 +78,7 @@ export default function DiaryEntryDetails({
           )}
         </div>
       </Card>
-      {requests.map((c) => (
-        <Card className="cm-panel" key={c.id}>
-          <h3 className="cm-h3">
-            Correction {c.status === "pending" ? "pending review" : c.status}
-          </h3>
-          <dl className="cm-dl">
-            <div>
-              <dt>Reason</dt>
-              <dd>{c.reason}</dd>
-            </div>
-            <div>
-              <dt>Proposed correction</dt>
-              <dd className="cm-diary-text">{c.proposed}</dd>
-            </div>
-            <div>
-              <dt>Requested</dt>
-              <dd>{formatDateTime(c.requestedAt)}</dd>
-            </div>
-          </dl>
-          <p className="cm-hint">
-            Management review is not implemented. The original entry is
-            unchanged.
-          </p>
-        </Card>
-      ))}
+      <RecordRevisionHistory s={s} kind="diary" record={original!} />
     </div>
   )
 }

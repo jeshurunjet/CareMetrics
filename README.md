@@ -1,6 +1,6 @@
 # CareMetrics
 
-Phase 1E.3 desktop Admin documentation and configurable forms, alongside workforce and core Employee, House and Client management on the Next.js foundation for a New Zealand disability-support care/workforce application. This is a UI-only development preview, with no real authentication, persistence, GPS verification or file services. Use fictional data only.
+Phase 1E.4A desktop Admin submitted records and correction review, alongside workforce and core Employee, House and Client management on the Next.js foundation for a New Zealand disability-support care/workforce application. This is a UI-only development preview, with no real authentication, persistence, GPS verification or file services. Use fictional data only.
 
 ## Run locally
 
@@ -49,3 +49,5 @@ For representative Firefox smoke checks, install the isolated Playwright test br
 The desktop Admin core preview now includes Dashboard, Employees, Houses, Clients, Contacts/NOK and confirmed assignment/transfer workflows. From development Login choose **Preview administration**. Fresh direct Admin entry requires explicit development opt-in; role demonstrations are in the labelled account disclosure. Admin edits and Staff views share one in-memory session; reload resets records and roles. Never introduce real personnel/client/health data. Roster Calendar, Shift List/create/edit/cancel, Attendance Monitor/Timesheets/correction review and Leave review/calendar now operate on those same session records. Original attendance remains immutable; approved corrections change only effective timesheets. Leave approval never changes shifts or balances. Care Documentation now configures diary categories and drafts, validates/publishes immutable Care Plan/Charting versions and explicitly assigns them to clients through the existing Staff renderer. Submitted-record review, files, notification publication, concerns, reports and settings remain deferred. Read [documentation-builder contracts](docs/admin-documentation-builder.md). Read [Admin core contracts](docs/admin-core-data-management.md) and [workforce contracts](docs/admin-workforce-management.md).
 
 Run `pnpm test:e2e:admin` for Admin workflow/comparison checks at 375/390/768 (desktop notice) and 1280/1440/1600px. The ordinary full browser command retains all earlier Staff tests and includes Admin coverage at its established five widths.
+
+Admin submitted documentation and immutable correction-review UI: [contracts](docs/admin-record-review.md). Fictional session-only data; no production services are connected.
