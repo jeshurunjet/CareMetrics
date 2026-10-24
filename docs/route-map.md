@@ -238,3 +238,53 @@ Staff requests now optionally include explicit typed fields/cells/whole tables. 
 | Summary reports / development metadata | `/admin/reports?tab=reports\|audit` |
 
 Default tabs are notices/reports. New server pages retain requirePreview and reject malformed/repeated/unknown selectors and invalid ID syntax with 404. Existing seeded and well-formed session IDs resolve after management opt-in; missing IDs return generic unavailable content without unrelated metadata. Details close to the directory; parent gallery links/browser Back return through canonical URLs. Draft Save/Publish replaces new with its session edit/detail URL. Published/withdrawn notices remain read-only. Confirmation, upload selection, report-event details and filters are mounted view state. Reload resets changes and requires fresh opt-in; no persistence or production authorisation is implied. Staff URLs remain unchanged and recheck current audience/author/parent scope. No API or duplicate store was introduced.
+
+## Phase 1E.5 final route classification
+
+This inventory covers all **43 registered page files** (grouped where they share a module) and supersedes historical migration/placeholder notes above. `UI complete — development simulation` means functional fictional session UI only; `UI complete — read-only` means presentation of fictional records, not a server service. No route is backend-connected. Production login is inert and preview pages refuse production access even with the preview flag enabled.
+
+| Registered route(s) | Classification | Included subviews / limits |
+| --- | --- | --- |
+| `/` | UI complete — read-only | Redirect to Login |
+| `/login` | UI complete — development simulation | Fictional Staff/Admin entry only; actual authentication unavailable |
+| `/shift-check` | UI complete — development simulation | My Shifts, selection, GPS feedback demonstrations; actual clock-in/out blocked |
+| `/dashboard` | UI complete — read-only | Assigned context, shifts, links and summaries |
+| `/houses` | UI complete — read-only | Assigned house list |
+| `/houses/[id]` | UI complete — development simulation | Overview, Diary/history/details/correction preview, Files/Gallery, Notifications/own Concerns; query tabs/sub/item retain context |
+| `/houses/[id]/diary/new` | UI complete — development simulation | New/draft/edit/submit; no persistence |
+| `/clients/[id]` | UI complete — development simulation | Overview/NOK anchor, Diary/history/details, Care Plan, Charting/repeating tables, Files; query tabs/sub/item retain context |
+| `/clients/[id]/diary/new` | UI complete — development simulation | New/draft/edit/submit; no persistence |
+| `/clients/[id]/records/new` | UI complete — development simulation | Assigned template/version form, draft/submit; no persistence |
+| `/search` | UI complete — read-only | Scoped house/client search, query-backed results |
+| `/roster` | UI complete — development simulation | Own roster/team/Timesheets, shift details and attendance correction request preview |
+| `/leave` | UI complete — development simulation | Own requests/balances/new/cancel/history preview |
+| `/notifications` | UI complete — development simulation | Notices/read state, own Concerns/new/details/outcome |
+| `/profile` | UI complete — development simulation | Own details/contact edits/temporary photo/assigned houses; managed fields read-only |
+| `/settings` | Intentional placeholder | Coming Soon and Dashboard return |
+| `/admin` | UI complete — read-only | Redirect to Admin Dashboard |
+| `/admin/dashboard` | UI complete — read-only | Shared fictional summaries/queues |
+| `/admin/employees`, `/admin/employees/[id]`, `/admin/employees/new`, `/admin/employees/[id]/edit` | UI complete — development simulation | Directory/overview/assignments/account, create/edit/assign/status; real account provisioning blocked |
+| `/admin/houses`, `/admin/houses/[id]`, `/admin/houses/new`, `/admin/houses/[id]/edit` | UI complete — development simulation | Directory/overview/relationships/location/create/edit; coordinates are not GPS verification |
+| `/admin/clients`, `/admin/clients/[id]`, `/admin/clients/new`, `/admin/clients/[id]/edit` | UI complete — development simulation | Directory/profile/NOK/transfer/documentation summaries/create/edit |
+| `/admin/roster` | UI complete — development simulation | Roster/shift drawer, attendance/Timesheets/corrections; query-backed selection/review |
+| `/admin/leave` | UI complete — development simulation | Pending/all/calendar/request drawer/review |
+| `/admin/documentation` | UI complete — development simulation | Overview/categories/Care Plan/Charting libraries/assignments/records/corrections |
+| `/admin/documentation/templates/[id]` | UI complete — development simulation | Builder/preview/versions/publish/assign; unsupported field types unavailable |
+| `/admin/documentation/records/[id]` | UI complete — read-only | Diary/care original/effective record, exact version/revision history; `kind` validated |
+| `/admin/documentation/corrections/[id]` | UI complete — development simulation | Original/proposal comparison and approve/reject; originals retained |
+| `/admin/files` | UI complete — development simulation | Exact parent directory/filters/query drawer/logical removal; real upload/deletion blocked |
+| `/admin/notifications`, `/admin/notifications/new`, `/admin/notifications/[id]/edit` | UI complete — development simulation | Notices/concern queue, draft editor, published read-only/withdrawal/history; delivery blocked |
+| `/admin/concerns/[id]` | UI complete — development simulation | Review/internal note/author response/events; private notes omitted from Staff projection |
+| `/admin/reports` | UI complete — read-only | Reports/Development Audit Preview; exports and unsupported controls blocked |
+| `/admin/settings` | Intentional placeholder | FutureModule; no settings service |
+
+Action-level and unregistered classifications:
+
+| Destination/action | Classification | Meaning |
+| --- | --- | --- |
+| `/forgot-password`, `/reset-password`, `/verify` | Future development | Planned authentication routes, not registered; recovery UI does not issue real credentials |
+| Real sign-in/session, clock-in/out, secure uploads/private storage, account provisioning/security, delivery, production audit/export | Blocked/unsupported action | Current UI cannot perform these services |
+| Unsupported configurable field/attachment actions and unimplemented Settings controls | Blocked/unsupported action | Explicit unavailable controls, no fabricated successful save |
+| Unrecognised IDs/invalid context/deep routes | Blocked/unsupported action | Scoped unavailable/404 states, not an alternative module |
+
+All Staff navigation destinations and Admin groups are represented. The source desktop gate applies to Admin on narrow screens; Staff retains responsive layouts. Deferred backend scope does not remove completed preview routes: see [submission boundary](submission-mvp-scope.md) and [handover](ui-freeze-and-backend-handover.md).
