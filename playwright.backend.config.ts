@@ -9,7 +9,7 @@ export default defineConfig({
     screenshot: "off",
     video: "off",
   },
-  projects: [375, 1280].map((width) => ({
+  projects: [375, 390, 1280].map((width) => ({
     name: `backend-${width}`,
     use: { browserName: "chromium", viewport: { width, height: 900 } },
   })),

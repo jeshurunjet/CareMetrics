@@ -136,4 +136,10 @@ Separately authorise a small Auth.js + Prisma/Neon vertical slice using fictiona
 
 The freeze above records Phase 1E.5's historical state. [Backend foundation](backend-foundation.md) now implements Prisma/PostgreSQL, database-backed Auth.js credentials/JWT sessions, active server identity/capabilities and scoped house/client/NOK read services. It documents the current dependencies, actual Neon development setup, migration/seed, permissions, real versus preview modes and checks. Production never trusts preview roles; in explicit database mode the mock provider is disabled and deferred pages remain unavailable. Real entry views are bounded foundation pages; the complete business frontend is not yet connected.
 
-The submission scope is unchanged. No GPS/attendance write, Diary/Care submission backend or deferred management service is implied. Phase 2B requires separate authorisation.
+The submission scope is unchanged. No GPS/attendance write, Diary/Care submission backend or deferred management service is implied. The subsequent authorised Phase 2B read integration is recorded below.
+
+## Phase 2B implementation update
+
+[Staff data integration](staff-data-integration.md) connects the essential Staff read slice and bounded management directories/details to the existing trusted services. The same database records drive Dashboard, Houses, House/Client Profile, NOK, Search and own Profile. Existing Staff shell/cards/contacts/listing and Admin panel/table primitives are reused; no CSS/reference redesign or new frontend domain store. Missing photographs use established unavailable placeholders. Deferred business writes and management mutations remain unavailable in real mode; preview retains its isolated nonproduction interactions.
+
+Phase 2A is preserved at `a7c5747`; working branch is `phase-2b`. Neon development expiry was extended to 24 November 2026, 11:18 NZDT. See [implementation status](implementation-status.md) for final verification. A separately authorised management mutation phase is recommended; GPS, attendance and documentation submissions remain future development.

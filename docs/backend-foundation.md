@@ -157,4 +157,12 @@ This is a tested foundation, not approval to process real information. Use ficti
 
 Firefox's pre-launch profile-folder blocker remains; Safari, physical devices, exhaustive accessibility, penetration testing and production operational acceptance remain unverified. MCP OAuth connectivity requires the agent's first-use sign-in/reload; CLI setup and Neon/PostgreSQL integration have been verified independently.
 
-No real GPS/geofencing, attendance writes, Diary/Care submission service, full Admin CRUD, private files, Leave, corrections, builder publication, delivery, concern review, advanced reporting or frontend deployment. No Phase 2B starts automatically. Next: separately authorise the bounded Employee/House/Client frontend read integration over these server DTOs while retaining the full approved design.
+No real GPS/geofencing, attendance writes, Diary/Care submission service, full Admin CRUD, private files, Leave, corrections, builder publication, delivery, concern review, advanced reporting or frontend deployment. Remaining business operations require separate authorisation. Phase 2B read integration is recorded below.
+
+## Phase 2B — essential real read UI
+
+The preceding verification describes the preserved Phase 2A checkpoint. [Staff data integration](staff-data-integration.md) now connects Dashboard, Houses, House/Client Profiles, NOK, Search and own Profile to scoped PostgreSQL reads. Essential management directories/details use the same records. Server DTOs exclude unrelated/private metadata; errors never fall back to fixtures. Original CSS/preview remains, and all deferred writes remain unavailable. No schema/migration/dependency changes were needed.
+
+Neon `phase-2a` was checked before tests and its expiry extended to **24 November 2026 at 11:18 NZDT**. Git work is on `phase-2b`, based on committed Phase 2A `a7c5747`. Authenticated browser verification now includes **375, 390 and 1280px** and the full Staff read journey. The new search API is included in production isolation. Current final evidence and remaining limits are in [implementation status](implementation-status.md). Management mutation integration is recommended next, subject to a separate instruction.
+
+Phase 2B final checks pass: 393 units, 18 PostgreSQL services, 21 local/21 Neon authenticated browsers, 619 preview passes/126 intentional skips, lint/types/format/build and 141 preview-route/six disabled-API production probes. Original reference/CSS remain unchanged. No production deployment or real-data operational acceptance is implied.

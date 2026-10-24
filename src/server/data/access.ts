@@ -18,7 +18,7 @@ const clientSelect = {
   dateOfBirth: true,
   summary: true,
 } as const
-async function scope() {
+export async function staffScope() {
   const employee = await requireEmployee()
   return {
     employee,
@@ -32,7 +32,7 @@ async function scope() {
   }
 }
 export async function getAssignedHouses() {
-  const { where } = await scope()
+  const { where } = await staffScope()
   return database().house.findMany({
     where,
     select: houseSelect,
@@ -41,7 +41,7 @@ export async function getAssignedHouses() {
   })
 }
 export async function requireHouse(id: string) {
-  const { where } = await scope()
+  const { where } = await staffScope()
   const house = await database().house.findFirst({
     where: { ...where, id: entityId(id) },
     select: houseSelect,
@@ -50,7 +50,7 @@ export async function requireHouse(id: string) {
   return house
 }
 export async function getHouseClients(id: string) {
-  const { employee, where } = await scope()
+  const { employee, where } = await staffScope()
   return database().client.findMany({
     where: {
       organisationId: employee.organisationId,
@@ -64,7 +64,7 @@ export async function getHouseClients(id: string) {
   })
 }
 export async function requireClient(id: string) {
-  const { employee, where } = await scope()
+  const { employee, where } = await staffScope()
   const client = await database().client.findFirst({
     where: {
       id: entityId(id),

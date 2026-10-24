@@ -1,3 +1,4 @@
+import AdminReadShell from "@/modules/admin/read/AdminReadShell"
 import { isBackendEnabled } from "@/server/config/backend"
 import {
   entryIdentity,
@@ -14,21 +15,9 @@ export default async function AdminLayout({
   children: React.ReactNode
 }) {
   if (isBackendEnabled()) {
-    if (!(await entryIdentity(true))) return <BackendUnavailable />
-    return (
-      <>
-        <div className="ad-desktop-guard">
-          <h2>Desktop required</h2>
-          <p>
-            CareMetrics Administration is available on desktop browsers. Please
-            open this interface on a larger screen.
-          </p>
-        </div>
-        <div className="ad-app">
-          <main className="ad-main">{children}</main>
-        </div>
-      </>
-    )
+    const employee = await entryIdentity(true)
+    if (!employee) return <BackendUnavailable />
+    return <AdminReadShell name={employee.name}>{children}</AdminReadShell>
   }
   if (!isPreviewEnabled()) notFound()
   return (

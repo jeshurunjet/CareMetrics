@@ -1,10 +1,20 @@
 "use client"
+import type { ContactRead } from "../read/types"
 import { useStaffData } from "../data/context"
 import { staffQueries } from "../data/queries"
 import { Card, Avatar, Icon, Status } from "./index"
 export default function ClientContacts({ clientId }: { clientId: string }) {
   const s = useStaffData()
   const contacts = staffQueries.getClientContacts(s, clientId)
+  return <ClientContactsView clientId={clientId} contacts={contacts} />
+}
+export function ClientContactsView({
+  clientId,
+  contacts,
+}: {
+  clientId: string
+  contacts: readonly ContactRead[]
+}) {
   return (
     <Card className="cm-panel">
       <h2 className="cm-h3" id={`contacts-${clientId}`} tabIndex={-1}>

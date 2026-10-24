@@ -2,11 +2,13 @@
 import Icon from "@/components/Icon"
 import { MOBILE } from "./staff-navigation"
 export default function StaffMobileNavigation({
+  availablePages,
   section,
   drawer,
   top,
   onOpenMenu,
 }: {
+  availablePages?: readonly string[]
   section: string
   drawer: boolean
   top: (page: string) => void
@@ -17,6 +19,12 @@ export default function StaffMobileNavigation({
       {MOBILE.map((n) => (
         <button
           key={n.page}
+          disabled={!!availablePages && !availablePages.includes(n.page)}
+          title={
+            availablePages && !availablePages.includes(n.page)
+              ? "Future Development"
+              : undefined
+          }
           className={section === n.page ? "active" : ""}
           onClick={() => top(n.page)}
           aria-current={section === n.page ? "page" : undefined}

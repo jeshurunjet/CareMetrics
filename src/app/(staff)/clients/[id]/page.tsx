@@ -1,3 +1,7 @@
+import { isBackendEnabled } from "@/server/config/backend"
+import { staffPage } from "@/server/data/page"
+import { getClientProfile } from "@/server/data/staff"
+import { ClientRead } from "@/modules/staff/read/StaffReadViews"
 import { requirePreview } from "@/lib/require-preview"
 import StaffCareScopeGuard from "@/modules/preview/StaffCareScopeGuard"
 import { isClientTab } from "@/modules/staff/data/sections"
@@ -10,11 +14,18 @@ export default async function Page({
   params: Promise<{ id: string }>
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
-  requirePreview()
   const { id } = await params
   const query = await searchParams
   const tab = query.tab ?? "overview"
   if (!isClientTab(tab)) notFound()
+  if (isBackendEnabled())
+    return staffPage(
+      async () => {
+        return getClientProfile(id)
+      },
+      (client) => <ClientRead client={client} tab={tab} />,
+    )
+  requirePreview()
   if ((tab === "care" || tab === "charting") && query.sub !== undefined) {
     if (typeof query.sub !== "string") notFound()
   }

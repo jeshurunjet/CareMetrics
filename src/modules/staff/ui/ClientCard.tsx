@@ -5,7 +5,7 @@ export default function ClientCard({
   c,
   houseName,
 }: {
-  c: Client
+  c: Pick<Client, "id" | "name"> & Partial<Pick<Client, "tone" | "photo" | "alerts">>
   houseName?: string
 }) {
   const nav = useNav()
@@ -19,8 +19,11 @@ export default function ClientCard({
         <strong>{c.name}</strong>
         <span>{houseName}</span>
       </div>
-      {c.alerts.length > 0 && (
-        <span className="cm-alert-dot" title={`${c.alerts.length} alert(s)`}>
+      {(c.alerts?.length ?? 0) > 0 && (
+        <span
+          className="cm-alert-dot"
+          title={`${c.alerts?.length ?? 0} alert(s)`}
+        >
           <Icon name="alert" size={14} />
         </span>
       )}

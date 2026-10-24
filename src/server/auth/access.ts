@@ -11,6 +11,7 @@ export const employeeSelect = {
   name: true,
   role: true,
   email: true,
+  status: true,
 } as const
 export async function requireEmployee() {
   if (!isBackendEnabled()) throw new AccessError(503)

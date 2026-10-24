@@ -1,20 +1,23 @@
 "use client"
-import { useState } from "react"
+import { useState, type CSSProperties } from "react"
 import Image from "next/image"
 import Icon from "@/components/Icon"
 export default function SourcePhoto({
   src,
   alt,
   className,
+  style,
 }: {
-  src: string
+  src?: string
   alt: string
   className?: string
+  style?: CSSProperties
 }) {
   const [failed, setFailed] = useState(false)
-  return failed ? (
+  return failed || !src ? (
     <div
       className={`cm-photo-unavailable ${className ?? ""}`}
+      style={style}
       role="img"
       aria-label={alt}
     >
@@ -30,6 +33,7 @@ export default function SourcePhoto({
       unoptimized
       loading="eager"
       className={className}
+      style={style}
       onError={() => setFailed(true)}
     />
   )

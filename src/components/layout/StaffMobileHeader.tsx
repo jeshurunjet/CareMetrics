@@ -1,9 +1,11 @@
 "use client"
 import Icon from "@/components/Icon"
 export default function StaffMobileHeader({
+  notificationsAvailable = true,
   unread,
   top,
 }: {
+  notificationsAvailable?: boolean
   unread: number
   top: (page: string) => void
 }) {
@@ -26,7 +28,13 @@ export default function StaffMobileHeader({
         <button
           className="cm-icon-btn"
           onClick={() => top("notifications")}
-          aria-label={`Notifications, ${unread} unread`}
+          disabled={!notificationsAvailable}
+          title={!notificationsAvailable ? "Future Development" : undefined}
+          aria-label={
+            notificationsAvailable
+              ? `Notifications, ${unread} unread`
+              : "Notifications unavailable"
+          }
         >
           <Icon name="bell" size={19} />
           {unread > 0 && <b className="cm-dot-badge">{unread}</b>}

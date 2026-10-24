@@ -221,6 +221,7 @@ try {
   }
   for (const path of [
     "/api/me",
+    "/api/search?q=fictional",
     "/api/houses",
     "/api/clients/20000000-0000-4000-8000-000000000031",
     "/api/admin/foundation",

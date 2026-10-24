@@ -4,6 +4,7 @@ import Avatar from "@/modules/staff/ui/Avatar"
 import type { Employee } from "@/modules/staff/data/types"
 import { NAV } from "./staff-navigation"
 export default function StaffSidebar({
+  availablePages,
   user,
   unread,
   collapsed,
@@ -12,6 +13,7 @@ export default function StaffSidebar({
   onLogout,
   top,
 }: {
+  availablePages?: readonly string[]
   user: Employee
   unread: number
   collapsed: boolean
@@ -40,9 +42,16 @@ export default function StaffSidebar({
         {NAV.map((n) => (
           <button
             key={n.page}
+            disabled={!!availablePages && !availablePages.includes(n.page)}
             className={section === n.page ? "active" : ""}
             onClick={() => top(n.page)}
-            title={collapsed ? n.label : undefined}
+            title={
+              availablePages && !availablePages.includes(n.page)
+                ? "Future Development"
+                : collapsed
+                  ? n.label
+                  : undefined
+            }
             aria-current={section === n.page ? "page" : undefined}
           >
             <Icon name={n.icon} size={18} />

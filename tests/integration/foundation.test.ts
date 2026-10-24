@@ -1,3 +1,15 @@
+import {
+  getCurrentStaff,
+  getStaffOverview,
+  getHouseProfile,
+  getClientProfile,
+  searchStaff,
+} from "../../src/server/data/staff"
+import {
+  getManagementRecords,
+  getManagementEmployee,
+} from "../../src/server/data/admin-read"
+import { GET as searchResponse } from "../../src/app/api/search/route"
 import { describe, it, expect, beforeAll, afterAll, vi } from "vitest"
 import { readFile } from "node:fs/promises"
 import { randomUUID } from "node:crypto"
@@ -194,6 +206,10 @@ describe("isolated migrated PostgreSQL foundation", () => {
       await expect(requireClient(client.id)).rejects.toMatchObject({
         status: 404,
       })
+      expect(
+        (await getManagementRecords()).clients.map((c) => c.id),
+      ).not.toContain(client.id)
+      expect((await searchStaff("Other")).clients).toEqual([])
       await expect(
         db.employeeHouseAssignment.create({
           data: {
@@ -383,5 +399,193 @@ describe("isolated migrated PostgreSQL foundation", () => {
     expect(
       apiError(new Error("sensitive internal connection detail")).status,
     ).toBe(503)
+  })
+})
+
+describe("Phase 2B real screen read models", () => {
+  it("derives identity and all summaries from the session and current assignment", async () => {
+    await as(id.staffA)
+    const employee = await getCurrentStaff()
+    expect(employee.id).toBe(id.staffA)
+    expect(employee.status).toBe("Active")
+    expect(employee.assignedHouses.map((h) => h.id)).toEqual([id.houseA])
+    const overview = await getStaffOverview()
+    expect(overview.houses.map((h) => h.id)).toEqual([id.houseA])
+    expect(overview.clients.map((c) => c.id)).toContain(id.clientA)
+    expect(overview.clients.map((c) => c.id)).not.toContain(id.clientB)
+    expect(JSON.stringify(overview)).not.toMatch(
+      /passwordHash|sessionVersion|dateOfBirth|Fictional NOK|organisationId/,
+    )
+    expect((await getHouseProfile(id.houseA)).clients).toEqual(overview.clients)
+    const client = await getClientProfile(id.clientA)
+    expect(client.houseId).toBe(id.houseA)
+    expect(client.contacts[0].name).toBe("Fictional NOK")
+    await expect(getClientProfile(id.clientB)).rejects.toMatchObject({
+      status: 404,
+    })
+    await expect(getHouseProfile(id.houseB)).rejects.toMatchObject({
+      status: 404,
+    })
+    await expect(getClientProfile("invalid")).rejects.toMatchObject({
+      status: 400,
+    })
+    await as(id.staffB)
+    expect((await getStaffOverview()).houses.map((h) => h.id)).toEqual([
+      id.houseB,
+    ])
+    await as(id.senior)
+    expect((await getStaffOverview()).houses).toHaveLength(2)
+  })
+  it("search scopes OR clauses to active assignments, including empty queries and privacy-safe payloads", async () => {
+    await as(id.staffA)
+    const all = await searchStaff("")
+    expect(all.houses.map((h) => h.id)).toEqual([id.houseA])
+    expect(all.clients.map((c) => c.id)).not.toContain(id.clientB)
+    const other = await db.client.findUniqueOrThrow({
+      where: { id: id.clientB },
+    })
+    expect((await searchStaff(other.name)).clients).toEqual([])
+    const own = await db.client.findUniqueOrThrow({ where: { id: id.clientA } })
+    expect(
+      (await searchStaff(own.name.toUpperCase())).clients.map((c) => c.id),
+    ).toContain(id.clientA)
+    expect(JSON.stringify(all)).not.toMatch(
+      /dateOfBirth|contacts|passwordHash|summary|Fictional NOK|organisationId/,
+    )
+    expect((await searchStaff("no-match-unique")).houses).toEqual([])
+    await expect(searchStaff(["x"])).rejects.toMatchObject({ status: 400 })
+    await expect(searchStaff("x".repeat(121))).rejects.toMatchObject({
+      status: 400,
+    })
+  })
+  it("empty screens and next-query revocation use database state without fallback", async () => {
+    await as(id.staffA)
+    const key = {
+      organisationId_employeeId_houseId: {
+        organisationId: id.organisation,
+        employeeId: id.staffA,
+        houseId: id.houseA,
+      },
+    }
+    await db.employeeHouseAssignment.update({
+      where: key,
+      data: { active: false },
+    })
+    try {
+      expect((await getCurrentStaff()).assignedHouses).toEqual([])
+      expect((await getStaffOverview()).houses).toEqual([])
+      expect((await getStaffOverview()).clients).toEqual([])
+      expect((await searchStaff("")).clients).toEqual([])
+      await expect(getClientProfile(id.clientA)).rejects.toMatchObject({
+        status: 404,
+      })
+    } finally {
+      await db.employeeHouseAssignment.update({
+        where: key,
+        data: { active: true },
+      })
+    }
+    await db.user.update({
+      where: { id: id.staffA },
+      data: { status: "INACTIVE" },
+    })
+    try {
+      await expect(getStaffOverview()).rejects.toMatchObject({ status: 401 })
+    } finally {
+      await db.user.update({
+        where: { id: id.staffA },
+        data: { status: "ACTIVE" },
+      })
+    }
+  })
+  it("management reads the same tenant records while staff cannot list coworkers", async () => {
+    await as(id.staffA)
+    await expect(getManagementRecords()).rejects.toMatchObject({ status: 403 })
+    await expect(getManagementEmployee(id.staffB)).rejects.toMatchObject({
+      status: 403,
+    })
+    await as(id.manager)
+    const records = await getManagementRecords()
+    expect(records.employees).toHaveLength(5)
+    expect(records.houses).toHaveLength(2)
+    expect(records.clients.map((c) => c.id)).toContain(id.clientA)
+    expect(JSON.stringify(records)).not.toMatch(
+      /passwordHash|sessionVersion|organisationId/,
+    )
+  })
+  it("represents a house without clients and a client without NOK without fixtures", async () => {
+    const house = await db.house.create({
+      data: {
+        organisationId: id.organisation,
+        code: "EMPTY-2B",
+        name: "Empty fictional house",
+        address: "Fictional",
+      },
+    })
+    await db.employeeHouseAssignment.create({
+      data: {
+        organisationId: id.organisation,
+        employeeId: id.staffA,
+        houseId: house.id,
+      },
+    })
+    let clientId: string | undefined
+    try {
+      await as(id.staffA)
+      expect((await getHouseProfile(house.id)).clients).toEqual([])
+      const client = await db.client.create({
+        data: {
+          organisationId: id.organisation,
+          houseId: house.id,
+          reference: "EMPTY-2B",
+          name: "Fictional client without NOK",
+        },
+      })
+      clientId = client.id
+      expect((await getClientProfile(client.id)).contacts).toEqual([])
+      await db.client.update({
+        where: { id: client.id },
+        data: { houseId: id.houseB },
+      })
+      await expect(getClientProfile(client.id)).rejects.toMatchObject({
+        status: 404,
+      })
+      expect((await searchStaff(client.name)).clients).toEqual([])
+      await db.house.update({
+        where: { id: house.id },
+        data: { active: false },
+      })
+      await expect(getHouseProfile(house.id)).rejects.toMatchObject({
+        status: 404,
+      })
+    } finally {
+      if (clientId) await db.client.delete({ where: { id: clientId } })
+      await db.employeeHouseAssignment.delete({
+        where: {
+          organisationId_employeeId_houseId: {
+            organisationId: id.organisation,
+            employeeId: id.staffA,
+            houseId: house.id,
+          },
+        },
+      })
+      await db.house.delete({ where: { id: house.id } })
+    }
+  })
+  it("database faults become safe no-store errors, never preview fixtures", async () => {
+    await as(id.staffA)
+    const fail = vi
+      .spyOn(db.house, "findMany")
+      .mockRejectedValueOnce(new Error("private database fault"))
+    try {
+      const response = await searchResponse(
+        new Request("http://localhost/api/search?q=x"),
+      )
+      expect(response.status).toBe(503)
+      expect(await response.json()).toEqual({ error: "Service unavailable" })
+      expect(response.headers.get("cache-control")).toContain("no-store")
+    } finally {
+      fail.mockRestore()
+    }
   })
 })

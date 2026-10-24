@@ -1,4 +1,5 @@
 "use client"
+import type { Employee } from "@/modules/staff/data/types"
 import StaffPageContainer from "./StaffPageContainer"
 import StaffSidebar from "./StaffSidebar"
 import StaffMobileHeader from "./StaffMobileHeader"
@@ -27,6 +28,40 @@ export default function StaffShell({
   const data = useStaffData()
   const preview = usePreviewSession()
   const router = useRouter()
+  return (
+    <StaffShellView
+      user={me(data)}
+      houseCount={myHouses(data).length}
+      unread={unreadCount(data)}
+      onLogout={() => {
+        clearMockSession()
+        preview.reset()
+        router.push("/login")
+      }}
+    >
+      {children}
+    </StaffShellView>
+  )
+}
+export function StaffShellView({
+  children,
+  user,
+  houseCount,
+  unread,
+  onLogout,
+  backend = false,
+}: {
+  children: React.ReactNode
+  user: Employee
+  houseCount: number
+  unread: number
+  onLogout: () => void
+  backend?: boolean
+}) {
+  const availablePages = backend
+    ? ["home", "clock", "houses", "search", "profile", "settings"]
+    : undefined
+  const router = useRouter()
   const path = usePathname()
   const query = useSearchParams().toString()
   const [collapsed, setCollapsed] = useState(false)
@@ -40,13 +75,6 @@ export default function StaffShell({
         ? "home"
         : path.split("/")[1]
   const section = page === "clients" ? "houses" : (SECTION[page] ?? page)
-  const user = me(data)
-  const unread = unreadCount(data)
-  const onLogout = () => {
-    clearMockSession()
-    preview.reset()
-    router.push("/login")
-  }
   const top = (page: string) => {
     setDrawer(false)
     router.push(
@@ -96,6 +124,7 @@ export default function StaffShell({
     <>
       <div className={`cm-app ${collapsed ? "cm-app--collapsed" : ""}`}>
         <StaffSidebar
+          availablePages={availablePages}
           user={user}
           unread={unread}
           collapsed={collapsed}
@@ -106,11 +135,18 @@ export default function StaffShell({
         />
 
         <div className="cm-main">
-          <StaffMobileHeader unread={unread} top={top} />
+          <StaffMobileHeader
+            unread={unread}
+            top={top}
+            notificationsAvailable={!backend}
+          />
           <main ref={main} className="cm-content" id="main">
-            <StaffPageContainer>{children}</StaffPageContainer>
+            <StaffPageContainer backend={backend}>
+              {children}
+            </StaffPageContainer>
           </main>
           <StaffMobileNavigation
+            availablePages={availablePages}
             section={section}
             drawer={drawer}
             top={top}
@@ -139,7 +175,7 @@ export default function StaffShell({
                 <div>
                   <strong>{user.name}</strong>
                   <span>
-                    {user.role} · {myHouses(data).length} houses
+                    {user.role} · {houseCount} houses
                   </span>
                 </div>
               </div>
@@ -152,6 +188,14 @@ export default function StaffShell({
               ].map((n) => (
                 <button
                   key={n.page}
+                  disabled={
+                    !!availablePages && !availablePages.includes(n.page)
+                  }
+                  title={
+                    availablePages && !availablePages.includes(n.page)
+                      ? "Future Development"
+                      : undefined
+                  }
                   className="cm-drawer-item"
                   aria-current={section === n.page ? "page" : undefined}
                   onClick={() => top(n.page)}

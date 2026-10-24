@@ -1,4 +1,5 @@
 "use client"
+import type { HouseSummary } from "../read/types"
 import { useStaffData } from "../data/context"
 import { staffQueries } from "../data/queries"
 import { highlightedShift, isCurrent } from "../data/selectors"
@@ -6,9 +7,28 @@ import { PageHeader, Card, Status, Icon, Empty, useNav } from "./index"
 import SourcePhoto from "./SourcePhoto"
 export default function HouseList() {
   const s = useStaffData()
-  const nav = useNav()
   const hl = highlightedShift(s)
   const houses = staffQueries.getHouses(s)
+  return (
+    <HouseListView
+      houses={houses.map((h) => ({
+        ...h,
+        clientCount: staffQueries.getClientsByHouse(s, h.id).length,
+      }))}
+      currentHouseId={hl && isCurrent(s, hl) ? hl.houseId : undefined}
+    />
+  )
+}
+export function HouseListView({
+  houses,
+  currentHouseId,
+  backend = false,
+}: {
+  houses: readonly HouseSummary[]
+  currentHouseId?: string
+  backend?: boolean
+}) {
+  const nav = useNav()
   return (
     <>
       <PageHeader
@@ -19,7 +39,11 @@ export default function HouseList() {
         <Empty
           icon="house"
           title="No houses assigned"
-          text="No houses are available to this fictional employee. Contact management for assistance."
+          text={
+            backend
+              ? "No houses are assigned to your account. Contact management for assistance."
+              : "No houses are available to this fictional employee. Contact management for assistance."
+          }
         />
       ) : (
         <div className="cm-house-grid">
@@ -31,7 +55,7 @@ export default function HouseList() {
             >
               <div className="cm-house-photo">
                 <SourcePhoto src={h.photo} alt={`${h.name} exterior`} />
-                {hl && isCurrent(s, hl) && hl.houseId === h.id && (
+                {currentHouseId === h.id && (
                   <Status tone="brand">Your shift today</Status>
                 )}
               </div>
@@ -48,7 +72,7 @@ export default function HouseList() {
                 <div className="cm-house-foot">
                   <span>
                     <Icon name="users" size={14} />
-                    {staffQueries.getClientsByHouse(s, h.id).length} clients
+                    {h.clientCount} clients
                   </span>
                   <b>
                     Open house

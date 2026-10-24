@@ -1,3 +1,6 @@
+import { isBackendEnabled } from "@/server/config/backend"
+import { staffPage } from "@/server/data/page"
+import { requireHouse } from "@/server/data/access"
 import { requirePreview } from "@/lib/require-preview"
 import StaffScopeGuard from "@/modules/preview/StaffScopeGuard"
 export default async function Layout({
@@ -7,8 +10,13 @@ export default async function Layout({
   params: Promise<{ id: string }>
   children: React.ReactNode
 }) {
-  requirePreview()
   const { id } = await params
+  if (isBackendEnabled())
+    return staffPage(
+      () => requireHouse(id),
+      () => children,
+    )
+  requirePreview()
   return (
     <StaffScopeGuard kind="house" id={id}>
       {children}

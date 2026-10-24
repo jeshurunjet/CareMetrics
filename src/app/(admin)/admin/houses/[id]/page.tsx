@@ -1,3 +1,7 @@
+import { isBackendEnabled } from "@/server/config/backend"
+import { staffPage } from "@/server/data/page"
+import { getManagementHouse } from "@/server/data/admin-read"
+import { AdminHouseRead } from "@/modules/admin/read/AdminReadViews"
 import AdminAccess from "@/modules/admin/ui/AdminAccess"
 import {
   validateAdminId,
@@ -12,6 +16,11 @@ export default async function Page({
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
   const { id } = await params
+  if (isBackendEnabled())
+    return staffPage(
+      () => getManagementHouse(id),
+      (data) => <AdminHouseRead data={data} />,
+    )
   validateAdminId("houses", id)
   const q = await searchParams
   validateAdminTab("houses", q.tab)

@@ -111,9 +111,22 @@ test("genuine login preserves My Shifts → Dashboard without clock-in; scoped r
   await page.getByRole("link", { name: "Continue to dashboard" }).click()
   await expect(page).toHaveURL(/\/dashboard$/)
   await page.reload()
-  await expect(page.getByText("Signed in as Robin Sample")).toBeVisible()
+  await expect(page.locator(".cm-me-card")).toContainText("Robin Sample")
+  const houseCard = page.locator(".cm-house-mini").first()
+  await expect(houseCard).toContainText("Harbour Example House")
+  await expect(houseCard).toBeVisible()
+  await expect
+    .poll(() =>
+      houseCard.evaluate((card) => {
+        const outer = card.getBoundingClientRect()
+        const label = card.querySelector("strong")!.getBoundingClientRect()
+        return label.height > 0 && label.bottom <= outer.bottom
+      }),
+    )
+    .toBe(true)
   const deferredStaff = await (await page.request.get("/houses")).text()
-  expect(deferredStaff.includes("NEXT_HTTP_ERROR_FALLBACK;404")).toBe(true)
+  expect(deferredStaff).toContain("Harbour Example House")
+  expect(deferredStaff).not.toContain("Meadow Sample House")
   for (const marker of [
     "Jamie Taufa",
     "Taylor Reed",
@@ -130,7 +143,17 @@ test("genuine login preserves My Shifts → Dashboard without clock-in; scoped r
   const session = cookies.find((c) => c.name === "authjs.session-token")!
   expect(session.httpOnly).toBe(true)
   expect(session.sameSite).toBe("Lax")
-  await page.getByRole("button", { name: "Sign out", exact: true }).click()
+  if ((page.viewportSize()?.width ?? 1280) < 768) {
+    await page.getByRole("button", { name: "Menu", exact: true }).click()
+    await page
+      .getByRole("dialog", { name: "Menu" })
+      .getByRole("button", { name: "Sign out", exact: true })
+      .click()
+  } else
+    await page
+      .locator(".cm-sidebar")
+      .getByRole("button", { name: "Sign out", exact: true })
+      .click()
   await expect(page).toHaveURL(/\/login$/)
   expect((await page.request.get("/api/me")).status()).toBe(401)
   expect(
@@ -208,7 +231,7 @@ test("management reads stay tenant-scoped and Admin keeps the desktop gate", asy
   expect((await page.request.get("/api/admin/foundation")).status()).toBe(200)
   expect((await (await page.request.get("/api/houses")).json()).length).toBe(2)
   await page.goto("/admin/dashboard")
-  if (testInfo.project.name === "backend-375")
+  if ((testInfo.project.use.viewport?.width ?? 1280) < 1024)
     await expect(
       page.getByRole("heading", { name: "Desktop required" }),
     ).toBeVisible()
@@ -217,4 +240,96 @@ test("management reads stay tenant-scoped and Admin keeps the desktop gate", asy
       page.getByRole("heading", { name: "Administration", exact: true }),
     ).toBeVisible()
   expect((await page.request.get("/admin/documentation")).status()).toBe(404)
+})
+
+test("real Staff journey shares assigned database records across houses, profiles, NOK and search", async ({
+  page,
+}) => {
+  await login(page)
+  await page.getByRole("link", { name: "Continue to dashboard" }).click()
+  await page.goto("/houses")
+  await expect(
+    page.getByRole("heading", { name: "My houses", exact: true }),
+  ).toBeVisible()
+  await page.locator(".cm-house-card").first().click()
+  await expect(page).toHaveURL(new RegExp(`/houses/${id.houseA}$`))
+  await page.locator(".cm-client-card").first().click()
+  await expect(page).toHaveURL(/\/clients\//)
+  await page.getByRole("link", { name: "View contacts & next of kin" }).click()
+  await expect(
+    page.getByText("Fictional NOK", { exact: true }).first(),
+  ).toBeVisible()
+  await page.reload()
+  await expect(
+    page.getByText("Fictional NOK", { exact: true }).first(),
+  ).toBeVisible()
+  const own = await db.client.findUniqueOrThrow({ where: { id: id.clientA } })
+  await page.goto("/search")
+  await page
+    .getByRole("searchbox", { name: "Search clients and houses" })
+    .fill(own.name)
+  await expect(page).toHaveURL(new RegExp("/search\\?q="))
+  await expect(page.locator(".cm-content")).toContainText(own.name)
+  const results = await (
+    await page.request.get(`/api/search?q=${encodeURIComponent(own.name)}`)
+  ).json()
+  expect(results.clients.map((c: { id: string }) => c.id)).toContain(id.clientA)
+  expect(results.clients.map((c: { id: string }) => c.id)).not.toContain(
+    id.clientB,
+  )
+  await page.goto("/profile")
+  await expect(
+    page.getByRole("region", { name: "Current employee" }),
+  ).toContainText("Robin Sample")
+  if (page.viewportSize()?.width === 390)
+    await page.screenshot({ path: "/tmp/caremetrics-2b-staff-390.png" })
+  await page.goto(`/clients/${id.clientB}`)
+  await expect(
+    page.getByRole("heading", { name: "Record could not be found" }),
+  ).toBeVisible()
+  await page.goto(`/houses/${id.houseA}?tab=diary`)
+  await expect(
+    page.getByRole("heading", { name: "Future Development", exact: true }),
+  ).toBeVisible()
+  expect(await db.attendanceRecord.count()).toBe(0)
+  if ((page.viewportSize()?.width ?? 1280) < 768) {
+    await page.getByRole("button", { name: "Menu", exact: true }).click()
+    await page
+      .getByRole("dialog", { name: "Menu" })
+      .getByRole("button", { name: "Sign out", exact: true })
+      .click()
+  } else
+    await page
+      .locator(".cm-sidebar")
+      .getByRole("button", { name: "Sign out", exact: true })
+      .click()
+  await expect(page).toHaveURL(/\/login$/)
+  expect((await page.request.get("/api/search")).status()).toBe(401)
+})
+test("second employee and management UI read the same records with different access", async ({
+  page,
+}) => {
+  await login(page, id.staffB)
+  await page.goto("/houses")
+  await expect(page.locator(".cm-content")).toContainText("Meadow Sample House")
+  await expect(page.locator(".cm-content")).not.toContainText(
+    "Harbour Example House",
+  )
+  const search = await (await page.request.get("/api/search")).json()
+  expect(search.houses.map((h: { id: string }) => h.id)).toEqual([id.houseB])
+  await page.context().clearCookies()
+  await login(page, id.manager)
+  await page.goto("/admin/employees")
+  if ((page.viewportSize()?.width ?? 1280) >= 1024) {
+    await page.getByRole("link", { name: "Robin Sample", exact: true }).click()
+    await expect(page.locator(".ad-main")).toContainText(
+      "Harbour Example House",
+    )
+    await page.goto(`/admin/clients/${id.clientA}`)
+    await expect(page.locator(".ad-main")).toContainText("Fictional NOK")
+    await page.screenshot({ path: "/tmp/caremetrics-2b-admin-1280.png" })
+    await expect(
+      page.getByRole("button", { name: "Edit", exact: true }),
+    ).toHaveCount(0)
+  }
 })
