@@ -1,3 +1,4 @@
+import { clockOutPolicy } from "../attendance/out-policy"
 import { attendancePolicy } from "../attendance/policy"
 import "server-only"
 import { auth } from "./index"
@@ -42,10 +43,14 @@ export async function requireCapability(capability: string) {
   const employee = await requireEmployee()
   const allowed =
     capability === "staff.assignedData" ||
+    (capability === "attendance.clockOut" &&
+      clockOutPolicy(employee.organisationId)?.mode ===
+        "NO_LOCATION_REQUIRED") ||
     (capability === "attendance.gpsClockIn" &&
       !!attendancePolicy(employee.organisationId)) ||
     ([
       "admin.foundation",
+      "admin.attendanceViewing",
       "admin.employeeManagement",
       "admin.houseManagement",
       "admin.clientManagement",

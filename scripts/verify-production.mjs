@@ -225,6 +225,10 @@ try {
     "/api/admin/shifts",
     "/api/admin/shifts/20000000-0000-4000-8000-000000000051",
     "/api/attendance/clock-in?shiftId=20000000-0000-4000-8000-000000000051",
+    "/api/attendance",
+    "/api/attendance/20000000-0000-4000-8000-000000000051",
+    "/api/admin/attendance",
+    "/api/admin/attendance/20000000-0000-4000-8000-000000000051",
     "/api/me",
     "/api/search?q=fictional",
     "/api/houses",
@@ -247,6 +251,7 @@ try {
     )
   }
   const mutationPaths = [
+    ["/api/attendance/clock-out", "POST"],
     ["/api/attendance/clock-in", "POST"],
     ["/api/admin/shifts", "POST"],
     ["/api/admin/shifts/20000000-0000-4000-8000-000000000051", "PATCH"],
@@ -291,7 +296,7 @@ try {
     assert.deepEqual(await response.json(), { error: "Service unavailable" })
   }
   console.log(
-    `Production HTTP checks passed: login inert, ${paths.length} preview routes refused with flag enabled; eleven read/auth and fourteen mutation API probes failed closed.`,
+    `Production HTTP checks passed: login inert, ${paths.length} preview routes refused with flag enabled; fifteen read/auth and fifteen mutation API probes failed closed.`,
   )
 } finally {
   server.kill("SIGTERM")

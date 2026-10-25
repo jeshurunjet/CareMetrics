@@ -1,4 +1,5 @@
 "use client"
+import { OwnAttendanceSummary } from "../attendance/AttendanceHistoryView"
 import ClockInControl from "../attendance/ClockInControl"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
@@ -59,7 +60,9 @@ export default function StaffScheduleView({
         status={scheduleStatus(row, data.now)}
         attendanceLabel={
           row.clockIn?.attendance
-            ? `Clocked In · ${formatTime(row.clockIn.attendance.clockIn)}`
+            ? `${
+                row.clockIn.attendance.clockOut ? "Clocked Out" : "Clocked In"
+              } · ${formatTime(row.clockIn.attendance.clockOut ?? row.clockIn.attendance.clockIn)}`
             : "Attendance unavailable · scheduled time only"
         }
         highlighted={row.id === highlighted?.id}
@@ -90,6 +93,11 @@ export default function StaffScheduleView({
           ) : undefined
         }
       />
+      {view === "shifts" &&
+        data.ownAttendanceSummary &&
+        data.ownAttendanceSummary.shiftId !== highlighted?.id && (
+          <OwnAttendanceSummary record={data.ownAttendanceSummary} />
+        )}
       {view === "shifts" ? (
         <>
           {highlighted ? (
@@ -217,8 +225,8 @@ export default function StaffScheduleView({
           />
           <Banner tone="info">
             Your schedule · Pacific/Auckland. Scheduled hours do not prove
-            attendance. Clock-in requires configured policy; clock-out and
-            timesheets remain unavailable.
+            attendance. Clock-in and clock-out follow configured policy. Payroll
+            and approvals remain unavailable.
           </Banner>
           {tab !== "roster" ? (
             <Empty
@@ -369,7 +377,11 @@ export function ScheduleSummary({ data }: { data: StaffSchedule }) {
             status={scheduleStatus(row, data.now)}
             attendanceLabel={
               row.clockIn?.attendance
-                ? `Clocked In · ${formatTime(row.clockIn.attendance.clockIn)}`
+                ? `${
+                    row.clockIn.attendance.clockOut
+                      ? "Clocked Out"
+                      : "Clocked In"
+                  } · ${formatTime(row.clockIn.attendance.clockOut ?? row.clockIn.attendance.clockIn)}`
                 : "Scheduled only · attendance unavailable"
             }
             highlighted={

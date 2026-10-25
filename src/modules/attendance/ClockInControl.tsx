@@ -3,6 +3,9 @@ import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Btn, Banner, Modal, Status } from "@/modules/staff/ui"
 import { formatDateTime } from "@/lib/time"
+import ClockOutControl from "./ClockOutControl"
+import { attendanceInstant, formatElapsed } from "./duration"
+import Link from "next/link"
 import { capturePosition, LocationCaptureError } from "./browser"
 import type { ClockInConfirmation, ClockInState } from "./types"
 interface Props {
@@ -34,7 +37,9 @@ export default function ClockInControl({ shiftId, houseName, state }: Props) {
       active.current = false
     }
   }, [])
-  const attendance = state?.attendance ?? recorded
+  const attendance = recorded?.clockOut
+    ? recorded
+    : (state?.attendance ?? recorded)
   async function submit() {
     if (inFlight.current || !state?.available) return
     inFlight.current = true
@@ -98,7 +103,9 @@ export default function ClockInControl({ shiftId, houseName, state }: Props) {
   if (attendance)
     return (
       <div className="cm-stack" aria-live="polite">
-        <Status tone="success">Clocked In</Status>
+        <Status tone="success">
+          {attendance.clockOut ? "Clocked Out" : "Clocked In"}
+        </Status>
         <p>
           Recorded {formatDateTime(attendance.clockIn)} · {houseName}
         </p>
@@ -108,7 +115,26 @@ export default function ClockInControl({ shiftId, houseName, state }: Props) {
             proof of physical presence.
           </Banner>
         )}
-        <p className="cm-hint">Clock-out is not available yet.</p>
+        {attendance.clockOut ? (
+          <>
+            <p>
+              Clock-out {attendanceInstant(attendance.clockOut)} ·{" "}
+              {formatElapsed(attendance.elapsedMilliseconds)} recorded elapsed
+            </p>
+            <Link
+              className="cm-btn cm-btn--secondary"
+              href={`/roster?tab=timesheets&attendanceId=${attendance.id}`}
+            >
+              View attendance history
+            </Link>
+          </>
+        ) : (
+          <ClockOutControl
+            attendanceId={attendance.id}
+            availability={attendance.clockOutAvailability}
+            onCompleted={setRecorded}
+          />
+        )}
       </div>
     )
   return (

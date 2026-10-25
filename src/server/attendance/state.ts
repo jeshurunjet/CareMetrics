@@ -1,3 +1,5 @@
+import { elapsedMilliseconds } from "../../modules/attendance/duration"
+import { clockOutAvailability } from "./out-policy"
 import "server-only"
 import type {
   ClockInConfirmation,
@@ -7,6 +9,9 @@ import { validCoordinates } from "../../modules/attendance/geo"
 import { attendancePolicy, type AttendancePolicy } from "./policy"
 import { eligible } from "./validation"
 export interface AttendanceEvidence {
+  organisationId: string
+  clockOut: Date | null
+  clockOutPolicyVersion: string | null
   id: string
   shiftId: string
   houseId: string | null
@@ -43,6 +48,17 @@ export function confirmation(
     shiftId: row.shiftId,
     houseId: row.houseId,
     clockIn: row.clockIn.toISOString(),
+    clockOut: row.clockOut?.toISOString() ?? null,
+    elapsedMilliseconds: elapsedMilliseconds(
+      row.clockIn.toISOString(),
+      row.clockOut?.toISOString() ?? null,
+    ),
+    clockOutPolicyVersion: row.clockOutPolicyVersion,
+    clockOutAvailability: clockOutAvailability(
+      row.organisationId,
+      row.clockIn,
+      row.clockOut,
+    ),
     measuredAt: row.measuredAt?.toISOString() ?? null,
     accuracyMetres: row.accuracyMetres,
     policyVersion: row.policyVersion,
@@ -74,8 +90,8 @@ export function clockInState(
   if (recorded)
     return {
       ...base,
-      code: "CLOCKED_IN",
-      message: "Clocked In",
+      code: recorded.clockOut ? "CLOCKED_OUT" : "CLOCKED_IN",
+      message: recorded.clockOut ? "Clocked Out" : "Clocked In",
       testOnly: recorded.verification === "SERVER_VALIDATED_LOCATION_TEST",
     }
   if (shift.attendance)
@@ -116,7 +132,7 @@ export function clockInState(
       testOnly: true,
       code: "ACTIVE_ATTENDANCE",
       message:
-        "An open attendance record already exists. Contact Management. Clock-out is not available yet.",
+        "An open attendance record already exists. Complete that attendance under the configured policy or Contact Management.",
     }
   return {
     ...base,

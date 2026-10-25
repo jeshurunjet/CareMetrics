@@ -9,6 +9,9 @@ import { attendancePolicy } from "./policy"
 import { clockInInput, eligible, reject, verifyPosition } from "./validation"
 import { confirmation, clockInState, houseApproved } from "./state"
 export const attendanceSelect = {
+  organisationId: true,
+  clockOut: true,
+  clockOutPolicyVersion: true,
   id: true,
   shiftId: true,
   houseId: true,

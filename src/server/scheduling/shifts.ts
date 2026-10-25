@@ -1,3 +1,4 @@
+import { getOwnAttendanceOverview } from "../attendance/history"
 import { clockInState } from "../attendance/state"
 import { attendanceSelect } from "../attendance/clock-in"
 import "server-only"
@@ -361,6 +362,7 @@ export async function getStaffSchedule(
     shifts: shifts.map(staffDTO),
     upcoming: upcoming.map(staffDTO),
     activeAttendanceShift: activeShift ? staffDTO(activeShift) : null,
+    ownAttendanceSummary: await getOwnAttendanceOverview(),
     detail: detail ? staffDTO(detail) : null,
     houses,
   }

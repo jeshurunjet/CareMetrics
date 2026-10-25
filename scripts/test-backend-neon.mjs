@@ -1,7 +1,7 @@
+import { testAttendancePolicyEnvironment } from "./test-attendance-policies.mjs"
 // Mutates fictional accounts only: never run against a production branch.
 import { config } from "dotenv"
 import { spawn } from "node:child_process"
-import { readFile } from "node:fs/promises"
 config({ path: [".env.local", ".env"], quiet: true })
 if (
   process.env.NODE_ENV === "production" ||
@@ -15,16 +15,8 @@ if (
   )
   process.exit(1)
 }
-// Never applied to the normal app environment; this policy covers only fictional test records.
-process.env.CAREMETRICS_GPS_TEST_POLICY_ACK = "fictional-development-only"
-process.env.CAREMETRICS_GPS_POLICIES = JSON.stringify([
-  JSON.parse(
-    await readFile(
-      new URL("../tests/fixtures/gps-policy.json", import.meta.url),
-      "utf8",
-    ),
-  ),
-])
+// Explicit fictional policies apply only inside these guarded test processes.
+Object.assign(process.env, await testAttendancePolicyEnvironment())
 const child = spawn(
   "pnpm",
   [

@@ -1,5 +1,9 @@
 # Shared scheduling and attendance — Phase 1D.1
 
+## Phase 2F database-mode update
+
+[Clock-out and attendance history](clock-out-attendance-backend.md) supersedes earlier clock-out limitations below. Explicitly acknowledged development NO_LOCATION_REQUIRED policies permit server-timed closure of an existing owned record, preserving clock-in evidence. Own Staff history and management-only read access now use PostgreSQL; recorded elapsed time is not payroll approval. Production attendance stays disabled. Historical assignment/house withdrawal permits only minimal own attendance access and safe closure, without House/Client access.
+
 ## Phase 2E database-mode update
 
 [GPS clock-in integration](gps-clock-in-backend.md) now connects one-time, user-requested location to server-validated clock-in persistence and own confirmation. Policies and exact house-coordinate approvals are server-controlled and organisation scoped; only explicit development test policies are supported. Missing/unapproved configuration and all production environments remain disabled. GPS evidence and minimal audit commit atomically, with exact-retry, per-shift/request and single-open-record protections. No raw staff coordinates are persisted; preview simulations remain isolated. Clock-out, timesheets, payroll and correction review remain unavailable. Physical HTTPS/Android acceptance is outstanding.

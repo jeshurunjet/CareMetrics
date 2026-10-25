@@ -1,3 +1,5 @@
+import AttendanceHistoryView from "@/modules/attendance/AttendanceHistoryView"
+import { getStaffAttendanceHistory } from "@/server/attendance/history"
 import { isBackendEnabled } from "@/server/config/backend"
 import { staffPage } from "@/server/data/page"
 import { getStaffSchedule } from "@/server/scheduling/shifts"
@@ -11,6 +13,20 @@ export default async function Page({ searchParams }: PageProps<"/roster">) {
   const q = await searchParams
   if (isBackendEnabled()) {
     const tab = q.tab ?? "roster"
+    if (tab === "timesheets") {
+      const query = Object.fromEntries(
+        Object.entries(q).filter(([key]) => key !== "tab"),
+      )
+      return staffPage(
+        () => getStaffAttendanceHistory(query),
+        (data) => (
+          <AttendanceHistoryView
+            key={JSON.stringify(data.filters)}
+            data={data}
+          />
+        ),
+      )
+    }
     if (
       typeof tab !== "string" ||
       !["roster", "team", "timesheets"].includes(tab) ||

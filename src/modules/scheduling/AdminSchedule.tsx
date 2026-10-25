@@ -86,7 +86,7 @@ export default function AdminScheduleView({ data, tab, action }: Props) {
       {notice && <Banner tone="success">{notice}</Banner>}
       <SubTabs
         value={tab}
-        onChange={(t) => change({ tab: t, action: "", shiftId: "" })}
+        onChange={(t) => router.push(`/admin/roster?tab=${t}`)}
         tabs={[
           { id: "calendar", label: "Roster calendar" },
           { id: "shifts", label: "Shift list" },
@@ -96,7 +96,7 @@ export default function AdminScheduleView({ data, tab, action }: Props) {
         ]}
       />
       <Banner tone="info">
-        Scheduling and basic attendance status are connected. Clock-out,
+        Scheduling and basic attendance are connected. Manual overrides,
         corrections, Leave and payroll approval remain unavailable.
       </Banner>
       {tab === "calendar" ? (
@@ -261,7 +261,8 @@ export default function AdminScheduleView({ data, tab, action }: Props) {
         </>
       ) : (
         <Banner tone="warning" title="Future Development">
-          Attendance, timesheet and correction services are unavailable.
+          Attendance corrections, approvals and payroll services remain
+          unavailable.
         </Banner>
       )}
       {(data.detail || action === "new") && (
@@ -447,8 +448,8 @@ function ShiftDrawer({ data, action, onClose, onSaved, change }: DrawerProps) {
               ]}
             />
             <Banner tone="info">
-              Scheduled time and protected attendance history. Clock-out and
-              timesheet approval remain unavailable.
+              Recorded attendance is retained. Manual overrides and timesheet
+              approval remain unavailable.
             </Banner>
           </>
         )

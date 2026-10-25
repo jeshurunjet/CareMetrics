@@ -1,3 +1,5 @@
+import AttendanceHistoryView from "@/modules/attendance/AttendanceHistoryView"
+import { getAdminAttendanceHistory } from "@/server/attendance/history"
 import { notFound } from "next/navigation"
 import { isBackendEnabled } from "@/server/config/backend"
 import { staffPage } from "@/server/data/page"
@@ -13,6 +15,23 @@ export default async function Page({
 }) {
   const q = await searchParams
   if (isBackendEnabled()) {
+    if (q.tab === "attendance" || q.tab === "timesheets") {
+      const tab = q.tab,
+        query = Object.fromEntries(
+          Object.entries(q).filter(([key]) => key !== "tab"),
+        )
+      return staffPage(
+        () => getAdminAttendanceHistory(query),
+        (data) => (
+          <AttendanceHistoryView
+            key={JSON.stringify(data.filters)}
+            admin
+            tab={tab}
+            data={data}
+          />
+        ),
+      )
+    }
     if (
       Object.keys(q).some(
         (key) =>

@@ -1,0 +1,7 @@
+{
+  "organisationId": "22000000-0000-4000-8000-000000000001",
+  "version": "test-phase-2f-clock-out-v1",
+  "approval": "test-only",
+  "enabled": true,
+  "mode": "NO_LOCATION_REQUIRED"
+}

@@ -2,6 +2,10 @@
 
 This connects one-time browser location to an authenticated, server-validated PostgreSQL clock-in. It is a development-tested implementation, **not approved production attendance or physical Android GPS acceptance**. Production activation is deliberately locked off. Clock-out, payroll, timesheets and corrections are not implemented.
 
+## Phase 2F continuation
+
+The opening limitations describe the Phase 2E checkpoint. [Phase 2F](clock-out-attendance-backend.md) adds separately configured development-only clock-out, own history and management read access. Existing GPS validation and production lockout remain intact; no clock-out location is captured under the explicit no-location test policy.
+
 ## Checkpoint and database
 
 Phase 2D was already committed/pushed at **470dcaa485803165e8f351e7d2a893082c79e351** on `phase-2d-complete`; the new brief's uncommitted assumption was stale. That existing complete checkpoint was retained and `phase-2e` created from it, without an empty replacement commit. Phase 2C remains `b005307792f2fac46e7d513ae8435edf4d79a601`. The user subsequently authorised pushing the completed Phase 2E checkpoint on `phase-2e-complete` before starting Phase 2F. No application deployment is authorised.

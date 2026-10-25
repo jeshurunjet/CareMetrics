@@ -113,9 +113,7 @@ beforeAll(async () => {
   })
 })
 afterAll(async () => {
-  // Remove only attendance created by this isolated fixture; existing seeded records are untouched.
-  if (org)
-    await db.attendanceRecord.deleteMany({ where: { organisationId: org } })
+  // Completed fixture evidence is retained; the disposable cluster owns teardown.
   identity.value = null
   await db.$disconnect()
 })

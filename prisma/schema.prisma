@@ -177,24 +177,29 @@ model Shift {
 }
 
 model AttendanceRecord {
-  id             String    @id @default(uuid()) @db.Uuid
-  organisationId String    @db.Uuid
-  shiftId        String    @unique @db.Uuid
-  employeeId     String    @db.Uuid
-  houseId        String?   @db.Uuid
-  house          House?    @relation(fields: [organisationId, houseId], references: [organisationId, id], onDelete: Restrict)
-  measuredAt     DateTime? @db.Timestamptz(3)
-  accuracyMetres Float?
-  verification   String?
-  policyVersion  String?
-  policySnapshot Json?
-  requestId      String?   @unique @db.Uuid
-  requestDigest  String?
-  clockIn        DateTime? @db.Timestamptz(3)
-  clockOut       DateTime? @db.Timestamptz(3)
-  createdAt      DateTime  @default(now()) @db.Timestamptz(3)
-  updatedAt      DateTime  @updatedAt @db.Timestamptz(3)
-  shift          Shift     @relation(fields: [organisationId, shiftId, employeeId], references: [organisationId, id, employeeId], onDelete: Restrict)
+  id                     String    @id @default(uuid()) @db.Uuid
+  organisationId         String    @db.Uuid
+  shiftId                String    @unique @db.Uuid
+  employeeId             String    @db.Uuid
+  houseId                String?   @db.Uuid
+  house                  House?    @relation(fields: [organisationId, houseId], references: [organisationId, id], onDelete: Restrict)
+  measuredAt             DateTime? @db.Timestamptz(3)
+  accuracyMetres         Float?
+  verification           String?
+  policyVersion          String?
+  policySnapshot         Json?
+  requestId              String?   @unique @db.Uuid
+  requestDigest          String?
+  clockIn                DateTime? @db.Timestamptz(3)
+  clockOutRequestId      String?   @unique @db.Uuid
+  clockOutRequestDigest  String?
+  clockOutPolicyVersion  String?
+  clockOutPolicySnapshot Json?
+  clockOutVerification   String?
+  clockOut               DateTime? @db.Timestamptz(3)
+  createdAt              DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt              DateTime  @updatedAt @db.Timestamptz(3)
+  shift                  Shift     @relation(fields: [organisationId, shiftId, employeeId], references: [organisationId, id, employeeId], onDelete: Restrict)
 
   @@unique([organisationId, shiftId, employeeId])
   @@index([organisationId, employeeId, createdAt])
