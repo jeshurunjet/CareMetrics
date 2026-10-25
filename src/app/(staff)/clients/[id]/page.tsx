@@ -1,3 +1,5 @@
+import { diaryHistory } from "@/server/diary/service"
+import DiaryHistoryView from "@/modules/diary/DiaryViews"
 import { isBackendEnabled } from "@/server/config/backend"
 import { staffPage } from "@/server/data/page"
 import { getClientProfile } from "@/server/data/staff"
@@ -18,13 +20,29 @@ export default async function Page({
   const query = await searchParams
   const tab = query.tab ?? "overview"
   if (!isClientTab(tab)) notFound()
-  if (isBackendEnabled())
+  if (isBackendEnabled()) {
+    if (tab === "diary") {
+      const { tab: ignored, ...filters } = query
+      void ignored
+      return staffPage(
+        async () => ({
+          client: await getClientProfile(id),
+          diary: await diaryHistory(id, filters),
+        }),
+        ({ client, diary }) => (
+          <ClientRead
+            client={client}
+            tab={tab}
+            diary={<DiaryHistoryView clientId={id} data={diary} />}
+          />
+        ),
+      )
+    }
     return staffPage(
-      async () => {
-        return getClientProfile(id)
-      },
+      () => getClientProfile(id),
       (client) => <ClientRead client={client} tab={tab} />,
     )
+  }
   requirePreview()
   if ((tab === "care" || tab === "charting") && query.sub !== undefined) {
     if (typeof query.sub !== "string") notFound()

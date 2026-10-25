@@ -250,23 +250,27 @@ model ClientTemplateAssignment {
 }
 
 model ClientDiaryEntry {
-  id             String       @id @default(uuid()) @db.Uuid
-  organisationId String       @db.Uuid
-  clientId       String       @db.Uuid
-  houseId        String       @db.Uuid
-  authorId       String       @db.Uuid
-  title          String
-  category       String
-  content        String
-  coveredAt      DateTime     @db.Timestamptz(3)
-  status         RecordStatus @default(DRAFT)
-  offShiftReason String?
-  submittedAt    DateTime?    @db.Timestamptz(3)
-  createdAt      DateTime     @default(now()) @db.Timestamptz(3)
-  updatedAt      DateTime     @updatedAt @db.Timestamptz(3)
-  client         Client       @relation(fields: [organisationId, clientId], references: [organisationId, id], onDelete: Restrict)
-  house          House        @relation(fields: [organisationId, houseId], references: [organisationId, id], onDelete: Restrict)
-  author         User         @relation(fields: [organisationId, authorId], references: [organisationId, id], onDelete: Restrict)
+  id                   String       @id @default(uuid()) @db.Uuid
+  organisationId       String       @db.Uuid
+  clientId             String       @db.Uuid
+  houseId              String       @db.Uuid
+  authorId             String       @db.Uuid
+  title                String
+  category             String
+  categoryKey          String?
+  requestId            String?      @unique @db.Uuid
+  requestDigest        String?
+  documentationContext Json?
+  content              String
+  coveredAt            DateTime     @db.Timestamptz(3)
+  status               RecordStatus @default(DRAFT)
+  offShiftReason       String?
+  submittedAt          DateTime?    @db.Timestamptz(3)
+  createdAt            DateTime     @default(now()) @db.Timestamptz(3)
+  updatedAt            DateTime     @updatedAt @db.Timestamptz(3)
+  client               Client       @relation(fields: [organisationId, clientId], references: [organisationId, id], onDelete: Restrict)
+  house                House        @relation(fields: [organisationId, houseId], references: [organisationId, id], onDelete: Restrict)
+  author               User         @relation(fields: [organisationId, authorId], references: [organisationId, id], onDelete: Restrict)
 
   @@index([organisationId, clientId, submittedAt, id])
   @@index([organisationId, authorId, status])

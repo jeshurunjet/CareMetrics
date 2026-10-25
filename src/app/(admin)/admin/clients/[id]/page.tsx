@@ -1,3 +1,5 @@
+import { diaryHistory } from "@/server/diary/service"
+import DiaryHistoryView from "@/modules/diary/DiaryViews"
 import { clientEditor } from "@/server/admin/read"
 import { ClientDetails } from "@/modules/admin/manage/ManagementDetails"
 import { isBackendEnabled } from "@/server/config/backend"
@@ -19,6 +21,23 @@ export default async function Page({
   if (isBackendEnabled()) {
     const query = await searchParams
     validateAdminTab("clients", query.tab)
+    if (query.tab === "diary") {
+      const { tab: ignored, ...filters } = query
+      void ignored
+      return staffPage(
+        async () => ({
+          data: await clientEditor(id),
+          diary: await diaryHistory(id, filters, true),
+        }),
+        ({ data, diary }) => (
+          <ClientDetails
+            data={data}
+            tab="diary"
+            diary={<DiaryHistoryView clientId={id} data={diary} admin />}
+          />
+        ),
+      )
+    }
     return staffPage(
       () => clientEditor(id),
       (data) => (

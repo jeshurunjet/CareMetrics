@@ -69,8 +69,8 @@ export function FutureRead({
     <Card className="cm-panel">
       <h2 className="cm-h3">{title}</h2>
       <p className="cm-muted">
-        This service is not connected yet. No attendance or documentation will
-        be recorded.
+        This service is not connected yet. Actions in this section do not save
+        records.
       </p>
     </Card>
   )
@@ -279,9 +279,11 @@ export function HouseRead({
 export function ClientRead({
   client,
   tab,
+  diary,
 }: {
   client: ClientProfileRead
   tab: string
+  diary?: React.ReactNode
 }) {
   const nav = useNav()
   const primary = client.contacts.find((k) => k.primary)
@@ -416,7 +418,11 @@ export function ClientRead({
                       <Icon name={t.icon} size={20} />
                     </span>
                     <strong>{t.label}</strong>
-                    <small>Future Development</small>
+                    <small>
+                      {t.id === "diary"
+                        ? "Submitted history"
+                        : "Future Development"}
+                    </small>
                   </Card>
                 ))}
               </div>
@@ -426,6 +432,8 @@ export function ClientRead({
               contacts={client.contacts}
             />
           </div>
+        ) : tab === "diary" && diary ? (
+          diary
         ) : (
           <FutureRead />
         )}

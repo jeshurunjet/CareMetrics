@@ -1,6 +1,8 @@
 # Phase 1E.5 — UI freeze and backend handover
 
-Phase 2D update: real shared scheduling is now connected; [shift backend integration](shift-backend-integration.md) and [current status](implementation-status.md) supersede historical scheduling deferrals below. GPS and attendance remain unavailable.
+Phase 2G update: [Persistent Client Diary](client-diary-backend.md) now connects submission, current-client-scoped history/detail and a minimal Admin read view. Drafts, corrections, uploads and Care Plans remain deferred in database mode. Attendance is covered by [Phase 2F](clock-out-attendance-backend.md); production attendance remains disabled. The historical sections below are superseded only within these implemented slices.
+
+Historical Phase 2D update: real shared scheduling is now connected; [shift backend integration](shift-backend-integration.md) and [current status](implementation-status.md) supersede historical scheduling deferrals below. GPS and attendance remain unavailable.
 
 ## 1. Freeze and final inventory
 

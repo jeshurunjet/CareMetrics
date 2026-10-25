@@ -1,57 +1,57 @@
-# Implementation status — Phase 2F
+# Implementation status — Phase 2G
 
-Persistent clock-out now completes the existing PostgreSQL attendance record under an explicit development-only no-location test policy. Staff own attendance history and management read-only attendance use the same records. Original GPS clock-in evidence remains immutable. Production attendance is deliberately disabled; organisational policy approval and physical HTTPS/Android acceptance remain outstanding. [Service and policy contracts](clock-out-attendance-backend.md) describe the current boundary; [Phase 2E status](history/phase-2e-status.md) preserves the prior iteration.
+Client Diary now has real server-authorised PostgreSQL submission, immutable submitted originals, bounded current-client history/detail and minimal management read access. Existing Staff mobile form/cards and desktop Admin tab/Drawer are reused. This is fictional-data development functionality; production privacy/organisational approval remains outstanding. [Client Diary contract](client-diary-backend.md) describes scope, policy interpretations and Phase 2H handover. [Phase 2F status](history/phase-2f-status.md) preserves attendance evidence and its unchanged production-disabled policy.
 
-## Git and preservation
+## Git and scope
 
-The user authorised pushing Phase 2E before Phase 2F. Complete checkpoint **862c074d8d21aa4025807d11b9dd5dd468be9162** is pushed on `phase-2e-complete`. The completed Phase 2F checkpoint is being preserved on `phase-2f-complete` at the user’s request to push before starting `phase-2g`. Phase 2D **470dcaa485803165e8f351e7d2a893082c79e351** and older branches remain intact. No reset, reference deletion or deployment. Fifty pre-existing duplicate screenshots remain untouched and excluded.
+The user authorised pushing Phase 2F before this phase. Complete checkpoint **28540084c4f87802dc49bec0c782aff67ee74a5a** is pushed on `phase-2f-complete`; earlier Phase 2E **862c074d8d21aa4025807d11b9dd5dd468be9162** and older branches remain intact. Current work is `phase-2g`, uncommitted/unpushed. No reset, discarded work, reference deletion or application deployment. Fifty pre-existing duplicate screenshots remain untouched/excluded.
 
-## Implemented boundary
+## Connected functionality
 
-- Active Auth.js session/account/org/session-version checks; owner-scoped clock-out, own history and capability-scoped same-organisation management reads.
-- Strict two-field clock-out request, server receipt timestamp, existing record update and atomic minimal audit. Original clock-in metadata/audit are preserved. Completed evidence cannot be rewritten, reopened or ordinarily deleted.
-- Organisation/actor transaction locks, request uniqueness and HMAC exact retries. Lost-response retry reads the committed timestamp; a conflicting completion fails safely. Audit failure rolls back closure. Completing attendance releases its single-open-record slot.
-- Explicit UNCONFIGURED / NO_LOCATION_REQUIRED / LOCATION_REQUIRED policy boundary. Only acknowledged fictional development NO_LOCATION_REQUIRED is executable. Required location is unavailable rather than bypassed. Production always fails closed; normal app environment enables no test policy.
-- Closure after scheduled end, overnight/year/DST boundaries and historical cancelled/changed shifts. Withdrawn assignment/inactive house permits only minimal own historical attendance and safe closure; House/Client access stays denied. Inactive/revoked employees cannot close.
-- Mobile My Shifts committed open/completed states, actual in/out, UTC-derived elapsed attendance and history links survive refresh. Dashboard remains accessible without clock-in. No new location capture during no-location closure.
-- Staff `/roster?tab=timesheets`: own bounded history, dates/house/status filters, detail and pagination. Management `/admin/roster?tab=attendance` and `tab=timesheets`: bounded tenant read view, employee/house/date/status filters and source Drawer. No overrides, approvals, correction or payroll actions.
-- Safe DTOs exclude location evidence, request digests and policy snapshots. Empty/error/unavailable results never substitute fictional records. Original development demonstrations remain separately isolated.
+- Staff Client Profile → Diary → New entry → committed history/detail → refresh/fresh login. Login → My Shifts → Dashboard without clock-in remains intact.
+- Four stable reviewed category keys retain existing labels; title/category/content/event time/reason validation runs on the server. Pacific/Auckland local event input rejects invalid/ambiguous/nonexistent/future times; server-generated submission/creation time remains separate.
+- Current Auth.js employee, active organisation/account/session-version and current client-house scope determine authority. Staff/Senior need active current assignments; management retains existing same-organisation active-client scope. Browser author/role/org/house/status/on-shift flags cannot grant writes.
+- Explicit off-shift interpretation: at server receipt, eligible own recorded GPS-test attendance must cover the current client house and lie within its noncancelled scheduled interval. Scheduled shifts alone, another employee/house, unverified/closed/overdue attendance do not qualify. Otherwise documentation remains allowed with a reason. Commit rechecks eligibility and stores minimal rule/attendance context. This is not a wage/clinical timing policy and needs organisational approval before real use.
+- Atomic immutable Diary original plus minimal append-only audit. Shared org/actor locking rechecks scope alongside transfers/assignment/status/attendance operations. Unique request identity and HMAC-normalised payload permit exact retry; conflicting reuse cannot overwrite a record. Failed audit rolls back submission. No success before commit, fixture fallback or offline queue.
+- Bounded newest-submission-first history (timestamp plus UUID), category/range/page filters, six Staff/twenty Admin rows and independently scoped details. DTOs exclude credentials, request digests, context snapshots and GPS evidence. Stored text is escaped, preserves lines and wraps long tokens.
+- Client transfers preserve original house/author/event/submission/content while current authorised client teams receive history. Previous assignment alone grants no historical access; inactive/unassigned/foreign clients remain unavailable. This current-client/full-history interpretation requires organisational review before real data.
+- Admin client Diary tab reads the same UUIDs with no edit/delete/approval/correction action. Draft saving and attachments are explicitly unavailable. House Diary, Care Plan and Charting database routes remain deferred. Original isolated previews retain their full demonstrations.
 
 ## Neon and schema
 
-Only development **phase-2a / br-billowing-rice-a78isrig**, project `fragrant-snow-30323119`, was used. Ready branch, matching pooled/direct target, verified client TLS and exact four baseline migration checksums were checked before applying **202610250005_clock_out**. Expiry: **24 November 2026, 11:18 NZDT**. Production was untouched; populated data was not reset/reseeded.
+Only development **phase-2a / br-billowing-rice-a78isrig**, project `fragrant-snow-30323119`, was used. Verified healthy branch, actual matching pooled/direct database target, certificate-verified TLS and all five baseline migration checksums before writes. Expiry: **24 November 2026 at 11:18 NZDT**. Production untouched; no populated reset/reseed.
 
-Migration 005 adds five nullable completion policy/request fields to existing AttendanceRecord, reuses clockOut, enforces metadata completeness/positive new intervals/request uniqueness, extends evidence immutability and allows minimal `attendance.clocked_out` audit. Legacy records are not falsely backfilled. All 11 original clock-in evidence hashes match the pre-migration snapshots; those original records remain open and unchanged. Five applied migration checksums match source. Final development checks found 12 completed Phase 2F test records with 12 corresponding completion audits, all explicitly test-only; generated GPS/clock-out accounts are inactive. Original seed attendance remains zero and raw-coordinate columns remain absent.
+Migration **202610250006_client_diary** adds categoryKey, requestId/digest and documentationContext to existing ClientDiaryEntry, reuses existing title/category/content/client/house/author/timestamps/status and submitted-original immutability. It adds bounded complete metadata and audit vocabulary. **202610250007_diary_context_check** explicitly rejects missing JSON keys (SQL UNKNOWN) without changing applied migration 006. Both were tested in disposable PostgreSQL; all **417 original domain/audit records across 14 tables** matched captured hashes immediately after application. No false legacy backfill or duplicate Diary entity. Final read-only checks also verified 156 original attendance/audit/documentation records unchanged, all 11 original clock-in evidence hashes unchanged, 20 fictional Diary originals with 20 matching minimal audits (15 reasoned off-shift, five recorded on-shift), inactive generated test accounts and zero Diary/attendance in the original seed organisation. All seven applied migration checksums match source.
 
-Guarded tests use a separate fictional Phase 2F organisation and explicit test policies. Generated accounts are deactivated; attendance/audit history remains. The existing Phase 2E organisation still has no clock-out policy. Destructive rollback tests run only in disposable local PostgreSQL.
+Guarded browser tests create only fictional Diary-tenant accounts/clients/attendance/notes. Generated accounts are deactivated and records/audit retained. Default app environment stays unchanged with no test attendance policy. Destructive/rollback tests use disposable local PostgreSQL only.
 
 ## Verification
 
-Node 22.23.4, Prisma 7.10.1 and existing dependency versions are retained. Focused and final stable checks passed; physical-device acceptance and organisational approvals remain outstanding.
+Node 22.23.4, Prisma 7.10.1 and dependencies/lockfile retained. Focused and final stable verification passed; organisational/physical-device/operational acceptance remains outstanding.
 
 | Check | Result |
 | --- | --- |
 | Lint / strict TypeScript / formatting / Prisma validation | Passed |
-| Unit tests | 459 passed / 19 files |
-| Disposable PostgreSQL services/security | 130 passed / 5 files |
-| Focused Staff/Admin browser journey at 390px | 3 local and 3 actual Neon passes |
-| Complete authenticated local and Neon browser suites | Local: 53 passed / 4 intentional narrow Admin skips; actual Neon: 53 passed / 4 identical intentional skips |
-| Original Chromium preview regression | 619 passed / 126 intentional narrow Admin skips, one uninterrupted 15.4-minute run at 375/390/768/1280/1440px |
-| `npm run build` | Passed; compiled in 8.7s |
-| Production isolation | Passed: 141 preview routes refused; 15 read/auth and 15 mutation API probes failed closed |
-| Secret/bundle scans | Nine configured secret values and ten restricted markers absent from 123 production chunks; changed source scan and private-file permissions passed |
-| Reference/CSS/dependency preservation | 475 authored hashes unchanged; 51 reference files and three original CSS copies exact; dependencies and old unit/preview assertions unchanged |
+| Unit tests | 481 passed / 20 files, including 22 new Diary cases |
+| Disposable PostgreSQL migration/repeat seed/security | 187 passed / 6 files, including 57 Diary cases |
+| Focused 390px Diary journeys | Four local and four actual Neon passes; final complete suites additionally cover logout/login and double taps |
+| Full authenticated local / Neon suites | Local: 65 passed / 4 intentional narrow Admin skips (3.7m); actual Neon: 65 passed / 4 identical skips (6.5m) |
+| Full original Chromium preview | 619 passed / 126 intentional narrow Admin skips; one uninterrupted 13.7-minute run at 375/390/768/1280/1440px |
+| `npm run build` | Passed; compiled in 3.4s |
+| Production isolation | Passed: 141 preview routes refused; 19 read/auth + 16 mutation APIs failed closed |
+| Bundle/source secret scans | Nine configured secrets and ten restricted markers absent from 127 production client chunks; source scan and private-file permissions passed |
+| Original source/CSS/dependency preservation | 491 authored hashes frozen; 51 reference files/three original CSS copies exact; dependencies and original unit/preview assertions unchanged |
 
-The full preview run used frozen source/tests/tooling throughout. Final 475-file manifest, original reference/CSS, dependencies, source scans and workspace checks were verified afterward. No unresolved automated-check blocker remains.
+One initial full local browser run had 64 passes, one failure and four intentional skips: the existing 390px management login showed empty-field feedback, as also seen in Phase 2F. Its unchanged isolated rerun and complete 65-case local rerun passed. Authentication and existing assertions were not relaxed.
 
-One initial local authenticated run reported an existing management login submission with empty-field feedback (52 passed, one failed, four skipped). Its unchanged isolated rerun passed. The complete unchanged local rerun passed all 53 cases with four intentional skips (3.2 minutes), alongside all 130 database tests; no assertion or authentication relaxation was introduced.
+All 491 authored source/test/tooling hashes remained unchanged throughout the final preview and complete authenticated runs. Final canonical type generation, formatting, diff/secret checks and reference/CSS checks passed afterward. No unresolved new Diary implementation blocker remains; the intermittent pre-existing login test is recorded above rather than presented as a diagnosed product fix.
 
-One old scheduling fixture teardown stopped deleting completed evidence because the stronger retention trigger correctly rejects deletion; its assertions remain intact and disposable cluster teardown handles cleanup. Existing unit and original preview assertions are unchanged. Browser GPS is mocked test evidence, never physical-device acceptance.
+The initial focused run caught an invalid legacy attendance fixture and two ambiguous browser locators. These were corrected without weakening evidence constraints or existing assertions. A separate explicit JSON missing-key constraint was added and tested after reviewing SQL CHECK semantics; the already applied migration was retained. No new broad screenshot collection is generated; two temporary Staff/Admin views were inspected.
 
 ## Remaining limits and next step
 
-No hosted HTTPS/physical Android acceptance, production policy activation, APK/PWA packaging or deployment was performed. Production policy values, location requirement, privacy/evidence retention/dispute procedures and exceptional resolution for inactive employees require organisational decisions. Browser GPS can be spoofed and does not conclusively establish presence.
+Production attendance remains disabled pending approved policy and physical hosted HTTPS/Android acceptance. Browser GPS in tests is mocked, not actual device acceptance. No APK/PWA packaging/deployment. Diary history visibility, off-shift interpretation, privacy/retention/correction policy, role governance, least-privilege runtime credentials, monitoring, backups/recovery and broader security/accessibility/operations acceptance need review before real client information.
 
-Recorded elapsed attendance is not certified payable time. Payroll, breaks/overtime calculations, approvals/corrections, manual overrides, Leave, Client/House Diary or Care Plan persistence, private files, notification delivery and template publishing remain deferred. Preview functionality remains labelled simulation.
+Draft persistence, corrections/approvals/deletion, uploads/private files, House Diary, Care Plans/Charting, live builder publication, Leave, payroll, delivery and full Submitted Records/Reports remain deferred. Preview-only saves are simulations; backend-connected Diary originals persist across refresh/logout.
 
-Recommended next assignment: separately authorised **Phase 2G — persistent Client Diary**, with trusted client/house/author scope, immutable submissions/history, an explicit draft decision and transactional audit. Phase 2G has not been started. Production attendance activation requires separate policy approval and physical HTTPS/Android acceptance.
+Recommended next assignment: separately authorised **Phase 2H — persistent Care Plan submissions and exact-version history**, using predefined immutable published templates/client assignments, trusted server validation/author/time/off-shift decisions, idempotent transaction/audit and an explicit draft decision. Phase 2H has not been started.

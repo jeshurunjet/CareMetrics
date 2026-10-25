@@ -13,6 +13,7 @@ export async function testAttendancePolicyEnvironment() {
     CAREMETRICS_GPS_POLICIES: JSON.stringify([
       await read("gps-policy"),
       await read("clock-out-gps-policy"),
+      await read("diary-gps-policy"),
     ]),
     CAREMETRICS_CLOCK_OUT_TEST_POLICY_ACK: "fictional-development-only",
     CAREMETRICS_CLOCK_OUT_POLICIES: JSON.stringify([

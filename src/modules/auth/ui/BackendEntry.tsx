@@ -41,9 +41,9 @@ export default async function BackendEntry({
       <p>Signed in as {employee.name}</p>
       <p>
         {page === "shifts"
-          ? "Attendance is not connected yet. No clock-in or clock-out is recorded."
+          ? "Attendance requires an explicitly approved policy. Continue to dashboard without clocking in."
           : page === "admin"
-            ? "Core employee, house, client and contact management is connected. Scheduling and care writes remain unavailable."
+            ? "Core management, scheduling, attendance history and Client Diary reads are connected. Other care workflows remain unavailable."
             : "Backend foundation connected."}
       </p>
       {page === "shifts" ? (
