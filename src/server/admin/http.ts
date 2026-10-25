@@ -2,12 +2,14 @@ import "server-only"
 import { backendEnvironment } from "../config/backend"
 import { apiError, privateJson, AccessError } from "../errors"
 import { ManagementError } from "./validation"
+import { uniqueKeyJson } from "../../lib/json-keys"
 export async function managementMutation(
   request: Request,
   operation: (body: unknown) => Promise<unknown>,
+  uniqueKeys = false,
 ) {
   try {
-    const body = await mutationBody(request)
+    const body = await mutationBody(request, uniqueKeys)
     return privateJson(await operation(body))
   } catch (error) {
     if (error instanceof ManagementError)
@@ -19,7 +21,10 @@ export async function managementMutation(
   }
 }
 
-export async function mutationBody(request: Request): Promise<unknown> {
+export async function mutationBody(
+  request: Request,
+  uniqueKeys = false,
+): Promise<unknown> {
   const config = backendEnvironment()
   if (
     new URL(request.url).origin !== config.origin ||
@@ -54,7 +59,8 @@ export async function mutationBody(request: Request): Promise<unknown> {
   }
   let body: unknown
   try {
-    body = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes))
+    const source = new TextDecoder("utf-8", { fatal: true }).decode(bytes)
+    body = uniqueKeys ? uniqueKeyJson(source) : JSON.parse(source)
   } catch {
     throw new AccessError(400)
   }

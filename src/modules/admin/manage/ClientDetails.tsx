@@ -11,9 +11,10 @@ import { Confirmation, Deferred } from "./ManagementFeedback"
 interface ClientProps {
   data: Awaited<ReturnType<typeof clientEditor>>
   tab: string
+  care?: React.ReactNode
   diary?: React.ReactNode
 }
-export default function ClientDetails({ data, tab, diary }: ClientProps) {
+export default function ClientDetails({ data, tab, diary, care }: ClientProps) {
   const router = useRouter(),
     row = data.client,
     client = clientPresentation(data),
@@ -107,6 +108,8 @@ export default function ClientDetails({ data, tab, diary }: ClientProps) {
             retain the client ID, contacts and historical references.
           </p>
         </Panel>
+      ) : tab === "care" && care ? (
+        care
       ) : tab === "diary" && diary ? (
         diary
       ) : tab === "activity" ? (

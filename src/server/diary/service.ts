@@ -1,3 +1,5 @@
+import { eligibleDocumentationAttendance as eligibleDiaryAttendance } from "../documentation/context"
+export { eligibleDocumentationAttendance as eligibleDiaryAttendance } from "../documentation/context"
 import "server-only"
 import { createHmac } from "node:crypto"
 import { database } from "../db"
@@ -5,7 +7,7 @@ import { auth } from "../auth"
 import { requireCapability, isManagement } from "../auth/access"
 import { requireClient } from "../data/access"
 import { AccessError, entityId } from "../errors"
-import { audit, type Tx } from "../admin/transaction"
+import { audit } from "../admin/transaction"
 import { invalid, ManagementError, object } from "../admin/validation"
 import { diaryInput } from "./validation"
 import { clientDiaryCategories } from "../../modules/diary/categories"
@@ -51,34 +53,6 @@ function dto(
     createdAt: row.createdAt.toISOString(),
     offShiftReason: row.offShiftReason,
   }
-}
-export async function eligibleDiaryAttendance(
-  tx: Tx,
-  organisationId: string,
-  employeeId: string,
-  houseId: string,
-  at: Date,
-) {
-  return tx.attendanceRecord.findFirst({
-    where: {
-      organisationId,
-      employeeId,
-      houseId,
-      verification: "SERVER_VALIDATED_LOCATION_TEST",
-      clockIn: { lte: at },
-      OR: [{ clockOut: null }, { clockOut: { gt: at } }],
-      shift: {
-        organisationId,
-        employeeId,
-        houseId,
-        status: "SCHEDULED",
-        startsAt: { lte: at },
-        endsAt: { gt: at },
-      },
-    },
-    select: { id: true },
-    orderBy: { id: "asc" },
-  })
 }
 export async function diaryEditor(clientId: string): Promise<DiaryEditor> {
   const actor = await requireCapability("care.clientDiary"),

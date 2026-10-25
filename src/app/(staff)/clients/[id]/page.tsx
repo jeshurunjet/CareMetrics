@@ -1,3 +1,5 @@
+import { carePage } from "@/server/care/service"
+import CarePlanView from "@/modules/care-plan/CarePlanView"
 import { diaryHistory } from "@/server/diary/service"
 import DiaryHistoryView from "@/modules/diary/DiaryViews"
 import { isBackendEnabled } from "@/server/config/backend"
@@ -21,6 +23,23 @@ export default async function Page({
   const tab = query.tab ?? "overview"
   if (!isClientTab(tab)) notFound()
   if (isBackendEnabled()) {
+    if (tab === "care") {
+      const { tab: ignored, ...filters } = query
+      void ignored
+      return staffPage(
+        async () => ({
+          client: await getClientProfile(id),
+          care: await carePage(id, filters),
+        }),
+        ({ client, care }) => (
+          <ClientRead
+            client={client}
+            tab={tab}
+            care={<CarePlanView clientId={id} data={care} />}
+          />
+        ),
+      )
+    }
     if (tab === "diary") {
       const { tab: ignored, ...filters } = query
       void ignored

@@ -1,6 +1,8 @@
 # Phase 1E.5 — UI freeze and backend handover
 
-Phase 2G update: [Persistent Client Diary](client-diary-backend.md) now connects submission, current-client-scoped history/detail and a minimal Admin read view. Drafts, corrections, uploads and Care Plans remain deferred in database mode. Attendance is covered by [Phase 2F](clock-out-attendance-backend.md); production attendance remains disabled. The historical sections below are superseded only within these implemented slices.
+Phase 2H update: [Persistent Care Plans](care-plan-backend.md) now use assigned PostgreSQL definitions, strict shared-engine validation, immutable submissions and exact-version Staff/Admin history. Visual publishing, Charting and corrections remain deferred. The separate academic submission artifacts are frozen and unchanged.
+
+Historical Phase 2G update: [Persistent Client Diary](client-diary-backend.md) now connects submission, current-client-scoped history/detail and a minimal Admin read view. Drafts, corrections, uploads and Care Plans remain deferred in database mode. Attendance is covered by [Phase 2F](clock-out-attendance-backend.md); production attendance remains disabled. The historical sections below are superseded only within these implemented slices.
 
 Historical Phase 2D update: real shared scheduling is now connected; [shift backend integration](shift-backend-integration.md) and [current status](implementation-status.md) supersede historical scheduling deferrals below. GPS and attendance remain unavailable.
 

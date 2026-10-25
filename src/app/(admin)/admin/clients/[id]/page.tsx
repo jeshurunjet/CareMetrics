@@ -1,3 +1,5 @@
+import { carePage } from "@/server/care/service"
+import CarePlanView from "@/modules/care-plan/CarePlanView"
 import { diaryHistory } from "@/server/diary/service"
 import DiaryHistoryView from "@/modules/diary/DiaryViews"
 import { clientEditor } from "@/server/admin/read"
@@ -21,6 +23,23 @@ export default async function Page({
   if (isBackendEnabled()) {
     const query = await searchParams
     validateAdminTab("clients", query.tab)
+    if (query.tab === "care") {
+      const { tab: ignored, ...filters } = query
+      void ignored
+      return staffPage(
+        async () => ({
+          data: await clientEditor(id),
+          care: await carePage(id, filters, true),
+        }),
+        ({ data, care }) => (
+          <ClientDetails
+            data={data}
+            tab="care"
+            care={<CarePlanView clientId={id} data={care} admin />}
+          />
+        ),
+      )
+    }
     if (query.tab === "diary") {
       const { tab: ignored, ...filters } = query
       void ignored

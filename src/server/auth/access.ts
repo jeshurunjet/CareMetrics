@@ -44,6 +44,7 @@ export async function requireCapability(capability: string) {
   const allowed =
     capability === "staff.assignedData" ||
     capability === "care.clientDiary" ||
+    capability === "care.assessments" ||
     (capability === "attendance.clockOut" &&
       clockOutPolicy(employee.organisationId)?.mode ===
         "NO_LOCATION_REQUIRED") ||
@@ -53,6 +54,7 @@ export async function requireCapability(capability: string) {
       "admin.foundation",
       "admin.attendanceViewing",
       "admin.clientDiaryViewing",
+      "admin.carePlanViewing",
       "admin.employeeManagement",
       "admin.houseManagement",
       "admin.clientManagement",

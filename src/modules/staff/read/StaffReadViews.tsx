@@ -280,10 +280,12 @@ export function ClientRead({
   client,
   tab,
   diary,
+  care,
 }: {
   client: ClientProfileRead
   tab: string
   diary?: React.ReactNode
+  care?: React.ReactNode
 }) {
   const nav = useNav()
   const primary = client.contacts.find((k) => k.primary)
@@ -421,7 +423,9 @@ export function ClientRead({
                     <small>
                       {t.id === "diary"
                         ? "Submitted history"
-                        : "Future Development"}
+                        : t.id === "care"
+                          ? "Assigned forms"
+                          : "Future Development"}
                     </small>
                   </Card>
                 ))}
@@ -434,6 +438,8 @@ export function ClientRead({
           </div>
         ) : tab === "diary" && diary ? (
           diary
+        ) : tab === "care" && care ? (
+          care
         ) : (
           <FutureRead />
         )}

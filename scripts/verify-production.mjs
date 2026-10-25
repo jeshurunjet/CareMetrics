@@ -220,6 +220,14 @@ try {
       assert.ok(!body.includes(marker), "no fictional data exposed")
   }
   for (const path of [
+    "/api/clients/20000000-0000-4000-8000-000000000031/care-records",
+    "/api/clients/20000000-0000-4000-8000-000000000031/care-records/20000000-0000-4000-8000-000000000099",
+    "/api/clients/20000000-0000-4000-8000-000000000031/care-templates",
+    "/api/clients/20000000-0000-4000-8000-000000000031/care-templates/20000000-0000-4000-8000-000000000041",
+    "/api/admin/clients/20000000-0000-4000-8000-000000000031/care-records",
+    "/api/admin/clients/20000000-0000-4000-8000-000000000031/care-records/20000000-0000-4000-8000-000000000099",
+    "/api/admin/clients/20000000-0000-4000-8000-000000000031/care-templates",
+    "/api/admin/clients/20000000-0000-4000-8000-000000000031/care-templates/20000000-0000-4000-8000-000000000041",
     "/api/clients/20000000-0000-4000-8000-000000000031/diary",
     "/api/clients/20000000-0000-4000-8000-000000000031/diary/20000000-0000-4000-8000-000000000099",
     "/api/admin/clients/20000000-0000-4000-8000-000000000031/diary",
@@ -255,6 +263,7 @@ try {
     )
   }
   const mutationPaths = [
+    ["/api/clients/20000000-0000-4000-8000-000000000031/care-records", "POST"],
     ["/api/clients/20000000-0000-4000-8000-000000000031/diary", "POST"],
     ["/api/attendance/clock-out", "POST"],
     ["/api/attendance/clock-in", "POST"],
@@ -301,7 +310,7 @@ try {
     assert.deepEqual(await response.json(), { error: "Service unavailable" })
   }
   console.log(
-    `Production HTTP checks passed: login inert, ${paths.length} preview routes refused with flag enabled; nineteen read/auth and sixteen mutation API probes failed closed.`,
+    `Production HTTP checks passed: login inert, ${paths.length} preview routes refused with flag enabled; twenty-seven read/auth and seventeen mutation API probes failed closed.`,
   )
 } finally {
   server.kill("SIGTERM")

@@ -19,6 +19,10 @@ flowchart LR
 
 A template has a stable ID, name, description, care/chart kind and readonly published versions. Each version contains sections, each with its own fields. Sections and fields may declare visibility rules. An active client assignment identifies the permitted template and version for new records. History and draft reopening use the record's version, never the current version by default. The phase has no operation that edits published versions. Persistent version immutability and referential constraints await the backend.
 
+## Phase 2H backend continuation
+
+[Care Plan contracts](care-plan-backend.md) now connect the same renderer/engine to PostgreSQL definitions and exact-version records. Strict server JSON boundaries reject unknown/hidden answers and enforce documented payload/configuration bounds before normalisation. The historical preview contracts below remain unchanged. Real drafts, uploads, Charting persistence and correction approval remain deferred.
+
 ## Controls and validation
 
 | Type | Presentation and behaviour |
