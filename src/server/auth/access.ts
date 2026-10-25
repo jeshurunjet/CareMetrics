@@ -1,3 +1,4 @@
+import { attendancePolicy } from "../attendance/policy"
 import "server-only"
 import { auth } from "./index"
 import { database } from "../db"
@@ -41,6 +42,8 @@ export async function requireCapability(capability: string) {
   const employee = await requireEmployee()
   const allowed =
     capability === "staff.assignedData" ||
+    (capability === "attendance.gpsClockIn" &&
+      !!attendancePolicy(employee.organisationId)) ||
     ([
       "admin.foundation",
       "admin.employeeManagement",

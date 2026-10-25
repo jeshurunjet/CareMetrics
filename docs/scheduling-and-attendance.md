@@ -1,5 +1,11 @@
 # Shared scheduling and attendance — Phase 1D.1
 
+## Phase 2E database-mode update
+
+[GPS clock-in integration](gps-clock-in-backend.md) now connects one-time, user-requested location to server-validated clock-in persistence and own confirmation. Policies and exact house-coordinate approvals are server-controlled and organisation scoped; only explicit development test policies are supported. Missing/unapproved configuration and all production environments remain disabled. GPS evidence and minimal audit commit atomically, with exact-retry, per-shift/request and single-open-record protections. No raw staff coordinates are persisted; preview simulations remain isolated. Clock-out, timesheets, payroll and correction review remain unavailable. Physical HTTPS/Android acceptance is outstanding.
+
+The Phase 2D and earlier sections below preserve their historical contracts; the Phase 2E document supersedes statements that no clock-in service exists. Scheduled time remains separate from attendance, and Dashboard does not require clock-in.
+
 ## Phase 2D database mode
 
 [Shift backend integration](shift-backend-integration.md) is the current scheduling contract. Admin Calendar/List/Create/Edit/Cancel/Details and own Staff My Shifts/Roster/Dashboard now share PostgreSQL Shift IDs. Authenticated current-account, organisation, capability and active-house-assignment checks run on the server; Staff cannot request a coworker's schedule. Strict Pacific/Auckland wall time is converted to UTC instants, with ambiguous and nonexistent DST times rejected. Adjacent shifts are allowed; active overlap is rejected under the shared organisation transaction lock. Optimistic revisions reject stale changes. Attendance references block edits/cancellation; cancelled records remain, with atomic audit events.

@@ -1,3 +1,4 @@
+import type { ClockInState } from "../attendance/types"
 export interface ShiftRead {
   id: string
   employeeId: string
@@ -13,7 +14,8 @@ export interface ShiftRead {
   createdAt: string
   updatedAt: string
   hasAttendance: boolean
-  clockInAvailable: false
+  clockInAvailable: boolean
+  clockIn?: ClockInState
 }
 export interface ShiftCommand {
   employeeId: string
@@ -44,6 +46,7 @@ export interface StaffSchedule {
   employeeName: string
   shifts: ShiftRead[]
   upcoming: ShiftRead[]
+  activeAttendanceShift: ShiftRead | null
   detail: ShiftRead | null
   houses: ScheduleHouse[]
 }

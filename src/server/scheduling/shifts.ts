@@ -1,3 +1,5 @@
+import { clockInState } from "../attendance/state"
+import { attendanceSelect } from "../attendance/clock-in"
 import "server-only"
 import { database } from "../db"
 import { requireEmployee, requireCapability } from "../auth/access"
@@ -30,6 +32,7 @@ import type {
 } from "@/modules/scheduling/types"
 const select = {
   id: true,
+  organisationId: true,
   employeeId: true,
   houseId: true,
   startsAt: true,
@@ -39,9 +42,17 @@ const select = {
   createdAt: true,
   updatedAt: true,
   employee: { select: { name: true } },
-  house: { select: { name: true, address: true } },
+  house: {
+    select: {
+      name: true,
+      address: true,
+      active: true,
+      latitude: true,
+      longitude: true,
+    },
+  },
   assignedBy: { select: { name: true } },
-  attendance: { select: { id: true } },
+  attendance: { select: attendanceSelect },
 } as const
 function dto(
   row: Prisma.ShiftGetPayload<{ select: typeof select }>,
@@ -321,14 +332,36 @@ export async function getStaffSchedule(
       : null,
   ])
   if (q.shiftId && !detail) throw new AccessError(404)
+  const open = await database().attendanceRecord.findFirst({
+    where: {
+      organisationId: employee.organisationId,
+      employeeId: employee.id,
+      clockIn: { not: null },
+      clockOut: null,
+    },
+    select: { shiftId: true },
+  })
+  const activeShift = open
+    ? await database().shift.findFirst({
+        where: { ...scope, id: open.shiftId },
+        select,
+      })
+    : null
+  const staffDTO = (
+    row: Prisma.ShiftGetPayload<{ select: typeof select }>,
+  ): ShiftRead => {
+    const state = clockInState(row, now, !!open && open.shiftId !== row.id)
+    return { ...dto(row), clockIn: state, clockInAvailable: state.available }
+  }
   return {
     now: now.toISOString(),
     day: q.day,
     month: q.month,
     employeeName: employee.name,
-    shifts: shifts.map(dto),
-    upcoming: upcoming.map(dto),
-    detail: detail ? dto(detail) : null,
+    shifts: shifts.map(staffDTO),
+    upcoming: upcoming.map(staffDTO),
+    activeAttendanceShift: activeShift ? staffDTO(activeShift) : null,
+    detail: detail ? staffDTO(detail) : null,
     houses,
   }
 }

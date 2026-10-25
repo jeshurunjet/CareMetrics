@@ -1,55 +1,58 @@
-# Implementation status — Phase 2D
+# Implementation status — Phase 2E
 
-PostgreSQL shift scheduling now connects Admin Calendar/List/Create/Edit/Cancel/Details to own Staff My Shifts, Roster, Dashboard summaries and authorised House links. All screens share stable Shift IDs, current server permissions and transactional audit. [Shift backend integration](shift-backend-integration.md) contains service contracts, migration, timezone and conflict rules. [Phase 2C historical status](history/phase-2c-status.md) preserves the previous core-management verification.
+Event-only browser location now connects to trusted server geofence/eligibility checks, PostgreSQL clock-in, exact retry handling and minimal transactional audit. Production activation is **deliberately disabled** because organisational GPS/eligibility/evidence policies are unapproved. [GPS clock-in contracts](gps-clock-in-backend.md) describe configuration, schema, privacy, tests, physical-device limits and Phase 2F prerequisites. [Phase 2D historical status](history/phase-2d-status.md) and the unchanged [scheduling handover](shift-backend-integration.md) preserve the previous iteration.
 
 ## Git and preservation
 
-Phase 2C was checked and checkpointed locally at **b005307792f2fac46e7d513ae8435edf4d79a601** on `phase-2c`. The completed Phase 2D checkpoint is on **phase-2d-complete**, created from `phase-2d` at the user’s request to preserve previous iterations. This branch contains the full tracked application and its Git history. Phase 2B remains **8bafa57550f3bb2bf4a1870764800e29e422957e**; Phase 2A remains **a7c5747928f68882b72da1aae34caf60568b7d67**. Previous branches remain intact. No reset, production deployment or reference deletion. The user subsequently authorised committing and pushing this new Phase 2D branch. Fifty pre-existing duplicate screenshots are untouched and excluded.
+Phase 2D was already committed and pushed at **470dcaa485803165e8f351e7d2a893082c79e351** on `phase-2d-complete`; the brief's uncommitted assumption was stale. Its existing complete checkpoint was verified and **phase-2e** created from it. The completed Phase 2E checkpoint is on **phase-2e-complete**, created from `phase-2e` at the user’s subsequent request to push this iteration before Phase 2F. Phase 2C remains **b005307792f2fac46e7d513ae8435edf4d79a601**; older branches remain intact. No reset, reference deletion or deployment. Only the completed Phase 2E Git checkpoint is authorised for pushing. Fifty pre-existing duplicate screenshots are untouched and excluded.
 
 ## Connected functionality
 
-- Admin source Calendar and Shift List, employee/house filters, Create/Publish, Edit, confirmed Cancel and Details use database services. Saving/error/validation/conflict states and committed success feedback are present.
-- Current active account, tenant, management capability, active employee/house/assignment, permitted request fields and safe origin/body checks run on the server. Staff and Senior Staff cannot write; scheduling grants no account-admin powers.
-- Active overlaps are rejected under the same organisation lock used by Phase 2C relationship changes; adjacent shifts are permitted. Stale revisions and any referenced attendance block unsafe edits/cancellation. Cancellation retains the original UUID/history.
-- Staff sees only its own authorised current-house shifts, including current/next/upcoming, calendar/date selection and detail/address/assigner. Dashboard opens the same Roster detail; the House link is independently authorised.
-- Pacific/Auckland wall times convert to UTC storage; missing/repeated DST times are rejected. Overnight, month/year boundaries and actual DST durations are handled explicitly.
-- Create/update/cancel audit events commit atomically with the mutation; failed saves do not present success. Database failures do not load fixtures.
-- Existing employee/house/client/NOK/assignment management and authentication remain connected. Login → My Shifts → Dashboard still permits continuing without clock-in. All original styles/assets/reference and isolated preview behaviours remain.
+- Existing mobile Staff My Shifts/detail controls show a purpose explanation, then request one current position only on explicit user action. High accuracy, maximumAge zero and bounded capture timeout are requested; no watchPosition or Dashboard capture exists.
+- A narrow same-origin/bounded-JSON POST checks the active Auth.js account/org/session version, own shift, current assignment, active house, noncancelled schedule, explicit policy, exact approved test house configuration, receipt-time eligibility, finite coordinates/accuracy, freshness/future skew and conservative boundary rule. Browser roles/employee/house/limits cannot override authority.
+- Tenant-scoped server policies have no implicit values. Only explicitly acknowledged fictional development test policies are supported. NODE_ENV or VERCEL_ENV production always blocks activation, including with test settings supplied. Missing/invalid/unapproved configuration directs Staff to Contact Management.
+- Clock-in persists server receipt time, supporting measurement time/accuracy, house/shift/employee association, labelled test verification, immutable policy snapshot and request identity. Raw staff latitude/longitude is not stored or returned.
+- Shared management lock ordering, per-shift/request uniqueness and a single-open-attendance partial index prevent duplicates/conflicts. Exact request retry reads the committed event without another measurement/audit; altered requests conflict. Audit failure rolls back attendance. Verified evidence cannot be overwritten/deleted.
+- Own clock-in state survives refresh and a fresh authenticated device/session. Unrelated Staff cannot retrieve it. Source cards/headers/modals/styles remain; continuing to Dashboard never requires clock-in. Authorised Admin sees basic attendance-history status and existing schedule edit/cancel protection.
+- Failure states explain permission/unavailable/insecure/timeout/accuracy/freshness/boundary/configuration/ownership/duplicate/service problems. No manual Staff bypass, mock fallback, fake Clock Out or inferred payroll hours is supplied.
 
-Migration **202610250003_shift_scheduling** adds nullable assigning-manager identity/notes, same-tenant FK, a read index and permitted audit actions to the existing model. Existing shifts are preserved; unknown historical creators display Not recorded. No duplicate scheduling store, package upgrade or invented manager backfill.
+An explicit active-attendance projection keeps an open clock-in prominent on My Shifts/Dashboard after the scheduled end, without inventing a clock-out. A controlled-time database test verifies the original event/time remains and clockOut stays null.
 
-## Neon
+## Neon and schema
 
-The existing development branch **phase-2a / br-billowing-rice-a78isrig** was verified ready, with matching pooled/direct endpoint/database identity and client TLS before writes. Expiry remains **24 November 2026 at 11:18 NZDT**. Migration 003 was applied after disposable PostgreSQL service tests. Foundation/audit migrations and existing fictional records remain; no populated reset/reseed and no production changes. Authenticated integration tests use only fictional accounts; created scheduling records are cancelled through the authorised service, retaining audit history.
+Existing development **phase-2a / br-billowing-rice-a78isrig** was verified ready, with matching pooled/direct endpoint/database identity, verified client TLS, the exact three prior migrations and intact scheduling/audit before writes. Expiry remains **24 November 2026 at 11:18 NZDT**.
+
+Migration **202610250004_gps_clock_in** was exercised in disposable PostgreSQL, then applied only to verified development. It extends AttendanceRecord with nullable GPS event metadata, same-tenant House FK, unique request/open-record constraints, complete-evidence checks and immutability/house-match triggers, and permits the minimal attendance audit action. Existing legacy records are not falsely backfilled. No reset/reseed or production modification.
+
+GPS browser tests use a separate fictional organisation/house with explicit test-only configuration. Generated test accounts are deactivated; attendance/shift/audit history is retained. The original seed organisation stays unconfigured for GPS and its existing no-fake-attendance assertion remains zero, explicitly scoped to that organisation. Destructive rollback/concurrency tests require a disposable local database. Normal app environment is unchanged.
 
 ## Verification
 
-Required final verification passed. Node 22.23.4, existing Prisma 7.10.1 and existing dependency lockfile are retained.
+Node 22.23.4, Prisma 7.10.1 and the existing dependency lockfile are retained. Required automated verification passed; physical-device acceptance and organisational approvals remain outstanding.
 
-| Check | Result |
+| Check | Current result |
 | --- | --- |
 | Lint / strict TypeScript / formatting | Passed; zero lint warnings |
 | Prisma validation | Passed |
-| Unit tests | 393 passed / 17 files |
-| Disposable PostgreSQL migrations, repeat seed, security/services | 48 passed / 3 files |
-| Focused real scheduling browser | 2 passed at 1280px, with separate Staff 390px context |
-| Focused preserved preview | 42 passed / 8 intentional desktop-only skips |
-| Complete local authenticated browser suite | 29 passed / 4 intentional desktop-only skips; 375, 390 and 1280px |
-| Actual Neon authenticated integration | 29 passed / 4 intentional desktop-only skips; final focused scheduling/calendar recheck 2 passed |
-| Full Chromium preview regression | 619 passed / 126 intentional desktop-only skips, one uninterrupted run in 14.9 minutes across 375/390/768/1280/1440px |
-| `npm run build` | Passed; compiled successfully in 7.0s |
-| Production isolation | 141 preview routes refused; 10 read/auth and 13 mutation API probes failed closed |
-| Production bundles / secret scan | Nine configured secrets and 10 restricted fixture markers absent from 114 production client chunks; authored-text scan passed and private files remain owner-only |
-| Preservation | 443 final authored hashes verified; 51 reference files and three CSS copies match source archive; dependencies/lockfile/original unit and preview tests unchanged |
+| Unit tests | 441 passed / 18 files (48 focused GPS cases) |
+| Disposable PostgreSQL migration/repeat seed/security | 91 passed / 4 files (43 GPS service/security cases) |
+| Focused GPS browser, 390px | 5 local and 5 actual Neon passes; location/permission signals mocked |
+| Complete authenticated browser suite | 44 local / 44 actual Neon passes, each with 4 intentional narrow Admin skips; 375/390/1280px |
+| Full original Chromium preview | 619 passed / 126 intentional narrow Admin skips in one uninterrupted 17.3-minute run; 375/390/768/1280/1440px |
+| `npm run build` | Passed; compiled successfully in 4.6s |
+| Production isolation | 141 preview routes refused; 11 read/auth and 14 mutation API probes failed closed |
+| Production client bundles | Nine configured secrets and 10 restricted fixture markers absent from 115 chunks |
+| Final focused Neon verification | 5 mobile GPS cases passed after the read refinement; final 390px confirmation review also passed |
+| Preservation | 457 authored hashes verified; 51 reference files and three original CSS copies unchanged; dependencies/lockfile and original unit/preview assertions unchanged |
 
-The complete preview run had no source/test/tooling changes during execution. A final contract review afterward made omitted notes optional and replaced database implementation wording in the connected UI; a boundary test and real Calendar day/week/month and employee/house filter assertions were added. Original preview code/CSS/assertions stayed unchanged. Lint/types/format/unit/schema, the complete local services/auth suite and production build/isolation/scans were rerun; the further focused Neon scheduling/calendar recheck also passed. The full preview suite was not repeated. No unresolved Phase 2D blocker remains.
+The full preview run had no source/test/tooling changes during execution. Subsequent bounded database-mode refinements kept an open clock-in visible after the schedule ended, improved confirmation readability and corrected outdated unavailable notices. Original preview branches/CSS/assertions stayed unchanged. Unit/types/lint/format/schema, all local authenticated/service checks, focused Neon GPS/visual checks, production build/isolation and bundle scans were rerun as relevant; the full preview suite was not repeated. No unresolved implementation or automated-check blocker remains.
 
-The scheduling acceptance test verifies an Admin-created UUID in Staff My Shifts, Roster and Dashboard, opens the authorised House, commits an edit, refreshes Staff and cancels without deletion. It checks persistent actor/audit events, disabled clock-in and the real calendar filters. Read-only Neon verification confirms retained cancelled scheduling test records, create/update/cancel audit and zero attendance in the seed organisation. Representative 390px Staff and 1280px Admin screenshots were inspected; no new large screenshot collection was added. An initial read-validation error mapping and browser test synchronisation were corrected during focused checks. The broader local suite exposed an isolated test AttendanceRecord conflicting with an existing global zero-attendance assertion; the new fixture now removes only its own generated attendance after validation, preserving the existing test and seeded records.
+The acceptance flow verifies purpose before permission, one capture, committed clock-in, refresh, another login/device, scoped own confirmation, unrelated-Staff denial, no Dashboard capture, no Clock Out, double taps and a response lost after commit followed by exact retry. Denied/poor/outside cases create neither attendance nor success audit. Initial fixture-loading/type issues were corrected during targeted checks. One temporary 390px confirmation screenshot was inspected after a persisted refresh; no new large screenshot collection is created.
 
-## Remaining limits and next step
+## Physical acceptance and remaining limits
 
-GPS acquisition/geofence verification, clock-in/out persistence, worked hours, timesheet approval, attendance corrections, Leave, Diary/Care submissions, secure uploads, notification delivery, live template publishing, APK and deployment remain unavailable in database mode. Team Schedule is also deferred. Preview simulations remain isolated demonstrations. Scheduled time is never attendance or payroll evidence.
+`Permissions-Policy: geolocation=(self)` is explicitly configured and verified by browser HTTP tests; capture refuses insecure contexts. Localhost and Chromium mocked coordinates are **not actual phone GPS acceptance**. No secure hosted staging or physical Android device test was performed. Physical permissions, accuracy, network/lifecycle handling and any future PWA/TWA Android permission delegation remain outstanding. No PWA/APK packaging or deployment is implemented.
 
-New employee credential activation/invitation/recovery, real-data privacy/security approval, hosting/retention/backups and production operations remain separate requirements. The development database has an expiry and is not production readiness.
+Production GPS values, house approval, policy governance, privacy/evidence retention/dispute procedures and deployment operations remain unapproved. Browser location can be spoofed and is not conclusive proof of presence. Clock-out, full timesheets/approval, payroll, corrections, Leave, Diary/Care submissions, private files, delivery and template publishing remain unavailable in database mode. Original development previews remain labelled simulations.
 
-Recommended next assignment: **Phase 2E**, after approving/versioning GPS/eligibility/accuracy/freshness/receipt-time/geofence policy. Build event-only mobile location validation on the authorised shared Shift IDs and current assignments; preserve Dashboard access without clock-in. Phase 2E has not been started. Only the new Git checkpoint branch is authorised for pushing; no application deployment was performed.
+Recommended next assignment: **Phase 2F**, separately approved, for clock-out policy/service with current trusted scope, preserved immutable clock-in evidence, concurrency/idempotency and audit. There is no automatic clock-out or workaround to the single-open-record rule. Approve policies and complete physical HTTPS/Android acceptance before production activation; Phase 2F has not been started.

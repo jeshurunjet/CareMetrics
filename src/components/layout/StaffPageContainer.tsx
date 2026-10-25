@@ -10,7 +10,7 @@ export default function StaffPageContainer({
     <div className="cm-page">
       <p className="cm-hint">
         {backend
-          ? "CONNECTED DEVELOPMENT DATA · fictional records · attendance and documentation writes unavailable"
+          ? "CONNECTED DEVELOPMENT DATA · fictional records · production attendance not enabled"
           : "DEVELOPMENT PREVIEW · fictional records · no real authentication or attendance recording"}
       </p>
       {children}

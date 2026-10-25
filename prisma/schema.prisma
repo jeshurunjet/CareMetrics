@@ -92,6 +92,8 @@ model House {
   shifts         Shift[]
   diaryEntries   ClientDiaryEntry[]
 
+  attendance AttendanceRecord[]
+
   @@unique([organisationId, id])
   @@unique([organisationId, code])
   @@index([organisationId, active])
@@ -179,6 +181,15 @@ model AttendanceRecord {
   organisationId String    @db.Uuid
   shiftId        String    @unique @db.Uuid
   employeeId     String    @db.Uuid
+  houseId        String?   @db.Uuid
+  house          House?    @relation(fields: [organisationId, houseId], references: [organisationId, id], onDelete: Restrict)
+  measuredAt     DateTime? @db.Timestamptz(3)
+  accuracyMetres Float?
+  verification   String?
+  policyVersion  String?
+  policySnapshot Json?
+  requestId      String?   @unique @db.Uuid
+  requestDigest  String?
   clockIn        DateTime? @db.Timestamptz(3)
   clockOut       DateTime? @db.Timestamptz(3)
   createdAt      DateTime  @default(now()) @db.Timestamptz(3)

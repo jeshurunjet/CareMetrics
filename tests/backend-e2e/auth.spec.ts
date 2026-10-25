@@ -297,7 +297,12 @@ test("real Staff journey shares assigned database records across houses, profile
   await expect(
     page.getByRole("heading", { name: "Future Development", exact: true }),
   ).toBeVisible()
-  expect(await db.attendanceRecord.count()).toBe(0)
+  // This original journey must never create attendance in its own seed organisation.
+  expect(
+    await db.attendanceRecord.count({
+      where: { organisationId: id.organisation },
+    }),
+  ).toBe(0)
   if ((page.viewportSize()?.width ?? 1280) < 768) {
     await page.getByRole("button", { name: "Menu", exact: true }).click()
     await page

@@ -1,4 +1,5 @@
 "use client"
+import ClockInControl from "../attendance/ClockInControl"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import {
@@ -44,7 +45,7 @@ export default function StaffScheduleView({
       else q.delete(key)
     router.push(base + (q.size ? "?" + q.toString() : ""))
   }
-  const highlighted = data.upcoming[0],
+  const highlighted = data.activeAttendanceShift ?? data.upcoming[0],
     selected = data.shifts.filter((s) =>
       shiftOnDay(s.startsAt, s.endsAt, data.day),
     ),
@@ -56,7 +57,11 @@ export default function StaffScheduleView({
         shift={shiftPresentation(row)}
         houseName={row.houseName}
         status={scheduleStatus(row, data.now)}
-        attendanceLabel="Attendance unavailable · scheduled time only"
+        attendanceLabel={
+          row.clockIn?.attendance
+            ? `Clocked In · ${formatTime(row.clockIn.attendance.clockIn)}`
+            : "Attendance unavailable · scheduled time only"
+        }
         highlighted={row.id === highlighted?.id}
         onClick={() => change({ shiftId: row.id })}
       />
@@ -71,7 +76,7 @@ export default function StaffScheduleView({
         }
         subtitle={
           view === "shifts"
-            ? "Review your scheduled shifts. Attendance recording is not connected yet."
+            ? "Review your shifts and attendance. Continue without clocking in at any time."
             : "Your own assigned shifts · Pacific/Auckland."
         }
         actions={
@@ -92,9 +97,12 @@ export default function StaffScheduleView({
               <section className="cm-shift-hero" aria-label="Highlighted shift">
                 <div className="cm-shift-hero-top">
                   <span className="cm-eyebrow">
-                    {scheduleStatus(highlighted, data.now).label === "Current"
-                      ? "Current shift"
-                      : "Next shift"}
+                    {data.activeAttendanceShift
+                      ? "Recorded clock-in"
+                      : scheduleStatus(highlighted, data.now).label ===
+                          "Current"
+                        ? "Current shift"
+                        : "Next shift"}
                   </span>
                   <Status tone={scheduleStatus(highlighted, data.now).tone}>
                     {scheduleStatus(highlighted, data.now).label}
@@ -137,18 +145,12 @@ export default function StaffScheduleView({
                     </dd>
                   </div>
                 </dl>
-                <div className="cm-gps cm-gps--warning">
-                  <Icon name="alert" size={18} />
-                  <div>
-                    <strong>GPS and attendance unavailable</strong>
-                    <p>
-                      No location is requested and no clock-in/out is recorded.
-                    </p>
-                  </div>
-                </div>
-                <Btn size="lg" block icon="clock" disabled>
-                  Clock in unavailable
-                </Btn>
+                <ClockInControl
+                  key={highlighted.id}
+                  shiftId={highlighted.id}
+                  houseName={highlighted.houseName}
+                  state={highlighted.clockIn}
+                />
                 <Btn
                   variant="secondary"
                   onClick={() => change({ shiftId: highlighted.id })}
@@ -156,14 +158,11 @@ export default function StaffScheduleView({
                   View shift details
                 </Btn>
               </section>
-              <section
-                className="cm-map-card"
-                aria-label="Location verification unavailable"
-              >
+              <section className="cm-map-card" aria-label="House location">
                 <div className="cm-map">
                   <Empty
                     icon="pin"
-                    title="Location verification unavailable"
+                    title="Live location not shown"
                     text={highlighted.address}
                   />
                 </div>
@@ -172,8 +171,8 @@ export default function StaffScheduleView({
                   <span>No device location</span>
                 </div>
                 <Banner tone="info">
-                  Scheduling is connected. GPS policy and attendance recording
-                  remain future development.
+                  Location is collected only when you choose to clock in. No
+                  live device location is shown on this page.
                 </Banner>
               </section>
             </div>
@@ -217,13 +216,14 @@ export default function StaffScheduleView({
             ]}
           />
           <Banner tone="info">
-            PostgreSQL schedule · Pacific/Auckland. Scheduled hours do not prove
-            attendance. GPS, attendance and timesheet actions are unavailable.
+            Your schedule · Pacific/Auckland. Scheduled hours do not prove
+            attendance. Clock-in requires configured policy; clock-out and
+            timesheets remain unavailable.
           </Banner>
           {tab !== "roster" ? (
             <Empty
               title="Future Development"
-              text="Team schedules and attendance/timesheet services are not enabled in this phase."
+              text="Team schedules and full timesheet services are not enabled in this phase."
             />
           ) : (
             <>
@@ -314,7 +314,9 @@ export function StaffShiftDetail({ shift, now, onClose }: DetailProps) {
           ["Scheduled duration", durationText(shift.startsAt, shift.endsAt)],
           [
             "Clock in / out",
-            "Unavailable · no attendance recorded by this application",
+            shift.clockIn?.attendance
+              ? `Clocked In · ${formatDate(shift.clockIn.attendance.clockIn)} ${formatTime(shift.clockIn.attendance.clockIn)}`
+              : "Clock-out unavailable · no recorded clock-in",
           ],
         ].map(([key, value]) => (
           <div key={key}>
@@ -335,12 +337,22 @@ export function StaffShiftDetail({ shift, now, onClose }: DetailProps) {
           </div>
         )}
       </dl>
-      <Btn disabled>Clock in unavailable</Btn>
+      <ClockInControl
+        key={shift.id}
+        shiftId={shift.id}
+        houseName={shift.houseName}
+        state={shift.clockIn}
+      />
     </Modal>
   )
 }
 export function ScheduleSummary({ data }: { data: StaffSchedule }) {
   const router = useRouter()
+  const rows =
+    data.activeAttendanceShift &&
+    !data.upcoming.some((row) => row.id === data.activeAttendanceShift!.id)
+      ? [data.activeAttendanceShift, ...data.upcoming]
+      : data.upcoming
   return (
     <Card className="cm-panel">
       <SectionTitle
@@ -348,15 +360,21 @@ export function ScheduleSummary({ data }: { data: StaffSchedule }) {
         action="My Shifts"
         onAction={() => router.push("/shift-check")}
       />
-      {data.upcoming.length ? (
-        data.upcoming.map((row) => (
+      {rows.length ? (
+        rows.map((row) => (
           <ShiftCardView
             key={row.id}
             shift={shiftPresentation(row)}
             houseName={row.houseName}
             status={scheduleStatus(row, data.now)}
-            attendanceLabel="Scheduled only · attendance unavailable"
-            highlighted={row.id === data.upcoming[0]?.id}
+            attendanceLabel={
+              row.clockIn?.attendance
+                ? `Clocked In · ${formatTime(row.clockIn.attendance.clockIn)}`
+                : "Scheduled only · attendance unavailable"
+            }
+            highlighted={
+              row.id === (data.activeAttendanceShift ?? data.upcoming[0])?.id
+            }
             onClick={() => router.push(`/roster?shiftId=${row.id}`)}
           />
         ))

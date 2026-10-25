@@ -1,5 +1,5 @@
 // Creates and destroys ONLY its own temporary localhost cluster. No existing database is touched.
-import { mkdtemp, writeFile, rm } from "node:fs/promises"
+import { mkdtemp, writeFile, rm, readFile } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 import { randomBytes } from "node:crypto"
@@ -45,6 +45,16 @@ const env = {
 env.DIRECT_URL = env.DATABASE_URL
 env.DATABASE_URL_UNPOOLED = env.DATABASE_URL
 env.NEON_BRANCH_NAME = "local-test"
+// Explicit test-only GPS policy covers a separate fictional browser-test organisation.
+env.CAREMETRICS_GPS_TEST_POLICY_ACK = "fictional-development-only"
+env.CAREMETRICS_GPS_POLICIES = JSON.stringify([
+  JSON.parse(
+    await readFile(
+      new URL("../tests/fixtures/gps-policy.json", import.meta.url),
+      "utf8",
+    ),
+  ),
+])
 async function run(command, args, overrides = {}) {
   await new Promise((resolve, reject) => {
     const child = spawn(command, args, {

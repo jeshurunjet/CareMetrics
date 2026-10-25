@@ -1,0 +1,14 @@
+{
+  "organisationId": "21000000-0000-4000-8000-000000000001",
+  "version": "test-phase-2e-v1",
+  "approval": "test-only",
+  "enabled": true,
+  "maxDistanceMetres": 500,
+  "maxAccuracyMetres": 30,
+  "maxAgeMs": 60000,
+  "maxFutureSkewMs": 0,
+  "earlyWindowMs": 600000,
+  "lateWindowMs": 3600000,
+  "boundaryRule": "entire-accuracy-circle-inside",
+  "houses": [{"id": "21000000-0000-4000-8000-000000000021", "latitude": -36.85, "longitude": 174.76}]
+}

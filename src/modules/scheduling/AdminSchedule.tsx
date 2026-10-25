@@ -96,8 +96,8 @@ export default function AdminScheduleView({ data, tab, action }: Props) {
         ]}
       />
       <Banner tone="info">
-        Scheduling is connected. GPS, recorded attendance, corrections, Leave
-        and payroll approval remain unavailable.
+        Scheduling and basic attendance status are connected. Clock-out,
+        corrections, Leave and payroll approval remain unavailable.
       </Banner>
       {tab === "calendar" ? (
         <RosterCalendarView
@@ -105,7 +105,11 @@ export default function AdminScheduleView({ data, tab, action }: Props) {
           anchorDay={data.day}
           onAnchorChange={(day) => change({ day, month: day.slice(0, 7) })}
           change={change}
-          attendanceLabel={() => "Attendance unavailable"}
+          attendanceLabel={(shift) =>
+            data.shifts.find((row) => row.id === shift.id)?.hasAttendance
+              ? "Attendance history recorded"
+              : "No attendance recorded"
+          }
         />
       ) : tab === "shifts" ? (
         <>
@@ -208,7 +212,9 @@ export default function AdminScheduleView({ data, tab, action }: Props) {
                   key: "attendance",
                   label: "Attendance",
                   render: (r) =>
-                    r.hasAttendance ? "History protected" : "Unavailable",
+                    r.hasAttendance
+                      ? "Recorded · history protected"
+                      : "No attendance recorded",
                 },
                 {
                   key: "actions",
@@ -432,11 +438,17 @@ function ShiftDrawer({ data, action, onClose, onSaved, change }: DrawerProps) {
                 ],
                 ["Scheduled duration", durationText(row.startsAt, row.endsAt)],
                 ["Notes", row.notes],
-                ["Attendance", "Unavailable · no recorded hours are inferred"],
+                [
+                  "Attendance",
+                  row.hasAttendance
+                    ? "History recorded · protected from schedule changes"
+                    : "No attendance recorded",
+                ],
               ]}
             />
             <Banner tone="info">
-              Scheduled time only. GPS and clock-in/out are unavailable.
+              Scheduled time and protected attendance history. Clock-out and
+              timesheet approval remain unavailable.
             </Banner>
           </>
         )
