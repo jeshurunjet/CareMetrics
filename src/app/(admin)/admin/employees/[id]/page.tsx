@@ -1,7 +1,7 @@
+import { employeeEditor } from "@/server/admin/read"
+import { EmployeeDetails } from "@/modules/admin/manage/ManagementDetails"
 import { isBackendEnabled } from "@/server/config/backend"
 import { staffPage } from "@/server/data/page"
-import { getManagementEmployee } from "@/server/data/admin-read"
-import { AdminEmployeeRead } from "@/modules/admin/read/AdminReadViews"
 import AdminAccess from "@/modules/admin/ui/AdminAccess"
 import {
   validateAdminId,
@@ -16,11 +16,19 @@ export default async function Page({
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
   const { id } = await params
-  if (isBackendEnabled())
+  if (isBackendEnabled()) {
+    const query = await searchParams
+    validateAdminTab("employees", query.tab)
     return staffPage(
-      () => getManagementEmployee(id),
-      (data) => <AdminEmployeeRead employee={data} />,
+      () => employeeEditor(id),
+      (data) => (
+        <EmployeeDetails
+          data={data}
+          tab={typeof query.tab === "string" ? query.tab : "overview"}
+        />
+      ),
     )
+  }
   validateAdminId("employees", id)
   const q = await searchParams
   validateAdminTab("employees", q.tab)

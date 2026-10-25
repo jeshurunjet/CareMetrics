@@ -100,13 +100,27 @@ try {
   await run("pnpm", ["db:seed"])
   await run("pnpm", ["db:seed"])
   await run("pnpm", ["test:backend"])
-  await run(
-    "pnpm",
-    ["exec", "playwright", "test", "--config=playwright.backend.config.ts"],
-    { NODE_ENV: "development" },
-  )
+  if (process.env.CAREMETRICS_TEST_SERVICES_ONLY !== "true")
+    await run(
+      "pnpm",
+      [
+        "exec",
+        "playwright",
+        "test",
+        "--config=playwright.backend.config.ts",
+        ...(process.env.CAREMETRICS_BACKEND_TEST_GREP
+          ? ["--grep", process.env.CAREMETRICS_BACKEND_TEST_GREP]
+          : []),
+        ...(process.env.CAREMETRICS_BACKEND_TEST_PROJECT
+          ? ["--project", process.env.CAREMETRICS_BACKEND_TEST_PROJECT]
+          : []),
+      ],
+      { NODE_ENV: "development" },
+    )
   console.log(
-    "Isolated PostgreSQL migration, repeat seed, backend services and real-auth browser checks passed.",
+    process.env.CAREMETRICS_TEST_SERVICES_ONLY === "true"
+      ? "Isolated PostgreSQL migration, repeat seed and backend service checks passed; browser checks intentionally not run."
+      : "Isolated PostgreSQL migration, repeat seed, backend services and real-auth browser checks passed.",
   )
 } catch {
   console.error("Backend verification failed; see sanitised check output.")

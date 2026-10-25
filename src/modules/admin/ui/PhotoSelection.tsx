@@ -8,9 +8,11 @@ export default function PhotoSelection({
   photo,
   onSelect,
   house = false,
+  disabled = false,
 }: {
   name: string
   house?: boolean
+  disabled?: boolean
   photo?: string
   onSelect: (file: File) => void
 }) {
@@ -33,11 +35,17 @@ export default function PhotoSelection({
         variant="secondary"
         size="sm"
         icon="image"
+        disabled={disabled}
+        title={disabled ? "Future Development" : undefined}
         onClick={() => setOpen(true)}
       >
-        Select demonstration photo
+        {disabled ? "Photo upload unavailable" : "Select demonstration photo"}
       </Btn>
-      <span className="ad-faint">Temporary preview only · no upload</span>
+      <span className="ad-faint">
+        {disabled
+          ? "Future Development · photos are not persisted"
+          : "Temporary preview only · no upload"}
+      </span>
       {open && (
         <ProfilePhotoPicker
           name={name.trim() || "New record"}

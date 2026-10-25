@@ -6,7 +6,9 @@ import { Field } from "../ui/Form"
 export default function ContactsEditor({
   contacts,
   onChange,
+  backend = false,
 }: {
+  backend?: boolean
   contacts: ClientContact[]
   onChange: (value: ClientContact[]) => void
 }) {
@@ -48,6 +50,12 @@ export default function ContactsEditor({
                 value={c[key] ?? ""}
                 onChange={(value) => patch(c.id, { [key]: value })}
                 required={["name", "relation"].includes(key)}
+                disabled={backend && ["address", "notes"].includes(key)}
+                help={
+                  backend && ["address", "notes"].includes(key)
+                    ? "Future Development · not stored"
+                    : undefined
+                }
                 type={
                   key === "phone" ? "tel" : key === "email" ? "email" : "text"
                 }

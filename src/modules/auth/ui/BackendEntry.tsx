@@ -42,7 +42,9 @@ export default async function BackendEntry({
       <p>
         {page === "shifts"
           ? "Attendance is not connected yet. No clock-in or clock-out is recorded."
-          : "Backend foundation connected. Full page data integration is planned for the next phase."}
+          : page === "admin"
+            ? "Core employee, house, client and contact management is connected. Scheduling and care writes remain unavailable."
+            : "Backend foundation connected."}
       </p>
       {page === "shifts" ? (
         <Link className="cm-btn cm-btn--primary cm-btn--md" href="/dashboard">

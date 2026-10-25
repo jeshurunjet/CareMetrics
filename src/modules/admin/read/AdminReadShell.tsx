@@ -119,7 +119,8 @@ export default function AdminReadShell({
           <main className="ad-content">
             <div className="ad-page">
               <p className="cm-hint">
-                CONNECTED DEVELOPMENT DATA · fictional records · read only
+                CONNECTED DEVELOPMENT DATA · fictional records · core management
+                connected
               </p>
               {children}
             </div>

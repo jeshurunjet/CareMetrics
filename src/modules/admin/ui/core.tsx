@@ -126,13 +126,18 @@ export function PageHead({
   crumbs?: AdminCrumb[]
   children?: ReactNode
 }) {
-  const nav = useAdmin()
+  const router = useRouter()
+  const nav = {
+    canBack: true,
+    back: () => router.back(),
+    go: (route: AdminRoute) => router.push(adminHref(route)),
+  }
   return (
     <header className="ad-head">
       {crumbs && (
         <nav className="ad-crumbs" aria-label="Breadcrumb">
           {nav.canBack && (
-            <button className="ad-backlink" onClick={nav.back}>
+            <button type="button" className="ad-backlink" onClick={nav.back}>
               <Icon name="back" size={14} />
               Back
             </button>
@@ -140,7 +145,9 @@ export function PageHead({
           {crumbs.map((c, i) => (
             <span key={i}>
               {c.to ? (
-                <button onClick={() => nav.go(c.to!)}>{c.label}</button>
+                <button type="button" onClick={() => nav.go(c.to!)}>
+                  {c.label}
+                </button>
               ) : (
                 <b>{c.label}</b>
               )}

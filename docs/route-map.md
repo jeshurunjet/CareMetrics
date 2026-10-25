@@ -308,3 +308,9 @@ The Phase 1E.5 classifications above continue to describe the full **development
 | `/api/auth/[...nextauth]` | Auth.js GET/POST with configuration/origin guards, CSRF and active session endpoint |
 
 No new UI page families were added; there are still 43 page files. Disabled mode remains inert in production, and the original 141-route production-preview isolation regression is retained. APIs independently recheck server identity, organisation, role and house/client access with explicit private/no-store responses. Invalid/out-of-scope identifiers cannot grant permission. See [backend foundation](backend-foundation.md) for exact boundaries and streamed unavailable-page behaviour. Scope and approved designs are unchanged; full data integration is a later phase.
+
+## Phase 2C database-mode management
+
+Canonical Admin employee/house/client directories, `/new`, `/[id]`, `/[id]/edit` and existing assignment/contact/location/house tabs now use trusted PostgreSQL services in database mode. No new UI hierarchy is introduced. Deferred tabs remain unavailable. Managers/Administrators see same-tenant records, with Administrator-account/role/self/last-admin restrictions on writes. The desktop gate remains presentation only.
+
+Explicit mutation APIs: POST `/api/admin/employees`, PATCH `/api/admin/employees/[id]`, POST `…/[id]/status`, PUT `…/[id]/assignments`; POST `/api/admin/houses`, PATCH `/api/admin/houses/[id]`; POST `/api/admin/clients`, PATCH `/api/admin/clients/[id]`, PUT `…/[id]/contacts`, POST `…/[id]/transfer`. Each independently validates origin/body/session/capability/tenant/target/proposal and commits its audit atomically. No arbitrary-model endpoint exists. Staff read routes remain unchanged and reflect those same records. The full Phase 1 preview remains isolated; production refusal/disabled-backend checks are retained. See [mutation contracts](admin-backend-mutations.md).

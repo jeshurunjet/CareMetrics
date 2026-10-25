@@ -1,4 +1,5 @@
 "use client"
+import type { ClientFormData, SaveFeedback } from "../manage/form-types"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import type { ClientContact } from "@/modules/staff/data/types"
@@ -22,10 +23,43 @@ export default function ClientForm({
   id?: string
   houseId?: string
 }) {
-  const nav = useAdmin(),
-    router = useRouter(),
-    c = nav.data.clients.find((c) => c.id === id),
-    [first = "", ...last] = (c?.name ?? "").split(" ")
+  const nav = useAdmin()
+  return (
+    <ClientFormView
+      id={id}
+      houseId={houseId}
+      client={nav.data.clients.find((c) => c.id === id)}
+      houses={nav.data.houses.map((h) => ({
+        ...h,
+        clientCount: nav.data.clients.filter((c) => c.houseId === h.id).length,
+      }))}
+      onSave={async (f, contacts, file) => {
+        const errors = {
+          ...validateClient(nav.data, nav.role, f, id),
+          ...validateContacts(contacts),
+        }
+        if (Object.keys(errors).length)
+          throw Object.assign(new Error("Check the highlighted information."), {
+            fields: errors,
+          })
+        const result = saveClient(nav.data, nav.role, f, contacts, id)
+        nav.update(result.data)
+        if (file) nav.photo("client", result.id, file)
+        return { id: result.id }
+      }}
+    />
+  )
+}
+export function ClientFormView({
+  client: c,
+  id,
+  houseId,
+  houses,
+  backend = false,
+  onSave,
+}: ClientFormData) {
+  const router = useRouter()
+  const [first = "", ...last] = (c?.name ?? "").split(" ")
   const initial: ClientInput = {
     first,
     last: last.join(" "),
@@ -42,6 +76,7 @@ export default function ClientForm({
     [contacts, setContacts] = useState<ClientContact[]>(c?.contacts ?? []),
     [errors, setErrors] = useState<Errors>({}),
     [saved, setSaved] = useState(false),
+    [saving, setSaving] = useState(false),
     [file, setFile] = useState<File>(),
     photo = useTemporaryProfilePhoto()
   const discard = useAdminFormGuard(
@@ -53,25 +88,24 @@ export default function ClientForm({
   const set = (key: keyof ClientInput, value: string) =>
     setF({ ...f, [key]: value })
   if (id && !c) return <Empty title="Client unavailable" />
-  const save = () => {
-    const errs = {
-      ...validateClient(nav.data, nav.role, f, id),
-      ...validateContacts(contacts),
-    }
-    setErrors(errs)
-    if (Object.keys(errs).length) return
+  const save = async () => {
+    if (saving || saved) return
+    setErrors({})
+    setSaving(true)
     try {
-      const result = saveClient(nav.data, nav.role, f, contacts, id)
-      nav.update(result.data)
-      if (file) nav.photo("client", result.id, file)
+      const result = await onSave(f, contacts, file)
       setSaved(true)
       router.replace(`/admin/clients/${result.id}?saved=1`)
+      router.refresh()
     } catch (e) {
-      setErrors({ form: (e as Error).message })
+      const error = e as SaveFeedback
+      setErrors(error.fields ?? { form: error.message })
+    } finally {
+      setSaving(false)
     }
   }
   return (
-    <AdminForm onSubmit={save}>
+    <AdminForm onSubmit={() => void save()}>
       <PageHead
         title={c ? `Edit ${c.name}` : "Create client"}
         crumbs={[
@@ -89,17 +123,19 @@ export default function ClientForm({
             >
               Cancel
             </Btn>
-            <Btn type="submit" icon="check" disabled={saved}>
-              Save client
+            <Btn type="submit" icon="check" disabled={saved || saving}>
+              {saving ? "Saving…" : "Save client"}
             </Btn>
           </>
         }
       />
       <FormErrors errors={errors} />
-      <div className="ad-form-layout">
+      {saving && <p role="status">Saving changes…</p>}
+      <div className="ad-form-layout" inert={saving}>
         <div className="ad-form-main">
           <Panel title="Personal information">
             <PhotoSelection
+              disabled={backend}
               name={`${f.first} ${f.last}`}
               photo={photo.url ?? c?.photo}
               onSelect={(file) => {
@@ -126,10 +162,13 @@ export default function ClientForm({
                   }
                   required={["first", "last", "ref"].includes(key)}
                   error={errors[key]}
+                  disabled={backend && key === "nhi"}
                   help={
-                    key === "nhi"
-                      ? "Optional restricted prototype format · fictional data only"
-                      : undefined
+                    backend && key === "nhi"
+                      ? "Future Development · restricted identifiers are not stored"
+                      : key === "nhi"
+                        ? "Optional restricted prototype format · fictional data only"
+                        : undefined
                   }
                 />
               ))}
@@ -143,12 +182,18 @@ export default function ClientForm({
             <Field
               type="textarea"
               label="Important alerts (one per line)"
+              disabled={backend}
+              help={backend ? "Future Development · not stored" : undefined}
               value={f.alerts}
               onChange={(v) => set("alerts", v)}
             />
           </Panel>
           <Panel title="Contacts / next of kin">
-            <ContactsEditor contacts={contacts} onChange={setContacts} />
+            <ContactsEditor
+              backend={backend}
+              contacts={contacts}
+              onChange={setContacts}
+            />
           </Panel>
         </div>
         <div className="ad-form-side">
@@ -160,7 +205,7 @@ export default function ClientForm({
               onChange={(v) => set("houseId", v)}
               options={[
                 { value: "", label: "Select house…" },
-                ...nav.data.houses
+                ...houses
                   .filter((h) => h.status !== "Inactive" || h.id === c?.houseId)
                   .map((h) => ({ value: h.id, label: h.name })),
               ]}
@@ -183,8 +228,9 @@ export default function ClientForm({
               }))}
             />
             <p className="ad-faint">
-              Inactive profiles are unavailable to Staff. History is retained.
-              Development changes reset on reload.
+              {backend
+                ? "Inactive profiles are unavailable to Staff. Changes persist; historical records are retained."
+                : "Inactive profiles are unavailable to Staff. History is retained. Development changes reset on reload."}
             </p>
           </Panel>
         </div>

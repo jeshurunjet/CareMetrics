@@ -41,7 +41,13 @@ export async function requireCapability(capability: string) {
   const employee = await requireEmployee()
   const allowed =
     capability === "staff.assignedData" ||
-    (capability === "admin.foundation" && isManagement(employee.role)) ||
+    ([
+      "admin.foundation",
+      "admin.employeeManagement",
+      "admin.houseManagement",
+      "admin.clientManagement",
+    ].includes(capability) &&
+      isManagement(employee.role)) ||
     (capability === "admin.accountAdministration" &&
       employee.role === "ADMINISTRATOR")
   if (!allowed) throw new AccessError(403)

@@ -1,7 +1,7 @@
+import { clientEditor } from "@/server/admin/read"
+import { ClientDetails } from "@/modules/admin/manage/ManagementDetails"
 import { isBackendEnabled } from "@/server/config/backend"
 import { staffPage } from "@/server/data/page"
-import { getManagementClient } from "@/server/data/admin-read"
-import { AdminClientRead } from "@/modules/admin/read/AdminReadViews"
 import AdminAccess from "@/modules/admin/ui/AdminAccess"
 import {
   validateAdminId,
@@ -16,11 +16,19 @@ export default async function Page({
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
   const { id } = await params
-  if (isBackendEnabled())
+  if (isBackendEnabled()) {
+    const query = await searchParams
+    validateAdminTab("clients", query.tab)
     return staffPage(
-      () => getManagementClient(id),
-      (data) => <AdminClientRead client={data} />,
+      () => clientEditor(id),
+      (data) => (
+        <ClientDetails
+          data={data}
+          tab={typeof query.tab === "string" ? query.tab : "overview"}
+        />
+      ),
     )
+  }
   validateAdminId("clients", id)
   const q = await searchParams
   validateAdminTab("clients", q.tab)

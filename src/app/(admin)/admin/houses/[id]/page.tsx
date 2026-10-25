@@ -1,7 +1,7 @@
+import { houseEditor, managementDirectory } from "@/server/admin/read"
+import { HouseDetails } from "@/modules/admin/manage/ManagementDetails"
 import { isBackendEnabled } from "@/server/config/backend"
 import { staffPage } from "@/server/data/page"
-import { getManagementHouse } from "@/server/data/admin-read"
-import { AdminHouseRead } from "@/modules/admin/read/AdminReadViews"
 import AdminAccess from "@/modules/admin/ui/AdminAccess"
 import {
   validateAdminId,
@@ -16,11 +16,22 @@ export default async function Page({
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
   const { id } = await params
-  if (isBackendEnabled())
+  if (isBackendEnabled()) {
+    const query = await searchParams
+    validateAdminTab("houses", query.tab)
     return staffPage(
-      () => getManagementHouse(id),
-      (data) => <AdminHouseRead data={data} />,
+      async () => ({
+        data: await houseEditor(id),
+        directory: await managementDirectory(),
+      }),
+      (value) => (
+        <HouseDetails
+          {...value}
+          tab={typeof query.tab === "string" ? query.tab : "overview"}
+        />
+      ),
     )
+  }
   validateAdminId("houses", id)
   const q = await searchParams
   validateAdminTab("houses", q.tab)

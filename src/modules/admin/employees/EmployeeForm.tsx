@@ -18,12 +18,47 @@ import {
   validateEmployee,
 } from "../data/adapter"
 import type { EmployeeInput, Errors } from "../data/types"
-import HousePicker from "./HousePicker"
+import { HousePickerView } from "./HousePicker"
+import type { EmployeeFormData, SaveFeedback } from "../manage/form-types"
 export default function EmployeeForm({ id }: { id?: string }) {
-  const nav = useAdmin(),
-    router = useRouter(),
-    x = nav.data.staff.find((e) => e.id === id),
-    [first = "", ...last] = (x?.name ?? "").split(" ")
+  const nav = useAdmin()
+  const employee = nav.data.staff.find((e) => e.id === id)
+  return (
+    <EmployeeFormView
+      id={id}
+      employee={employee}
+      houseIds={id ? employeeHouses(nav.data, id) : []}
+      houses={nav.data.houses.map((h) => ({
+        ...h,
+        clientCount: nav.data.clients.filter((c) => c.houseId === h.id).length,
+      }))}
+      actorRole={nav.role}
+      onSave={async (f, file) => {
+        const errors = validateEmployee(nav.data, nav.role, f, id)
+        if (Object.keys(errors).length)
+          throw Object.assign(new Error("Check the highlighted information."), {
+            fields: errors,
+          })
+        const result = saveEmployee(nav.data, nav.role, f, id)
+        nav.update(result.data)
+        if (file) nav.photo("employee", result.id, file)
+        return { id: result.id }
+      }}
+    />
+  )
+}
+export function EmployeeFormView({
+  employee: x,
+  id,
+  houseIds,
+  houses,
+  actorRole,
+  roleOptions = roles,
+  backend = false,
+  onSave,
+}: EmployeeFormData) {
+  const router = useRouter()
+  const [first = "", ...last] = (x?.name ?? "").split(" ")
   const initial: EmployeeInput = {
     first,
     last: last.join(" "),
@@ -36,11 +71,12 @@ export default function EmployeeForm({ id }: { id?: string }) {
     role: x?.role ?? "Support Worker",
     status: x?.status ?? "Invited",
     started: x?.started ?? "",
-    houses: id ? employeeHouses(nav.data, id) : [],
+    houses: houseIds,
   }
   const [f, setF] = useState(initial),
     [errors, setErrors] = useState<Errors>({}),
     [saved, setSaved] = useState(false),
+    [saving, setSaving] = useState(false),
     [file, setFile] = useState<File>(),
     photo = useTemporaryProfilePhoto()
   const dirty =
@@ -48,26 +84,28 @@ export default function EmployeeForm({ id }: { id?: string }) {
     discard = useAdminFormGuard(dirty)
   const set = (k: keyof EmployeeInput, v: string) => setF({ ...f, [k]: v })
   if (id && !x) return <Empty title="Employee unavailable" />
-  if (x?.role === "Administrator" && nav.role !== "Administrator")
+  if (x?.role === "Administrator" && actorRole !== "Administrator")
     return (
       <Locked text="Administrator accounts can only be edited by an Administrator." />
     )
-  const save = () => {
-    const errs = validateEmployee(nav.data, nav.role, f, id)
-    setErrors(errs)
-    if (Object.keys(errs).length) return
+  const save = async () => {
+    if (saving || saved) return
+    setErrors({})
+    setSaving(true)
     try {
-      const result = saveEmployee(nav.data, nav.role, f, id)
-      nav.update(result.data)
-      if (file) nav.photo("employee", result.id, file)
+      const result = await onSave(f, file)
       setSaved(true)
       router.replace(`/admin/employees/${result.id}?saved=1`)
+      router.refresh()
     } catch (e) {
-      setErrors({ form: (e as Error).message })
+      const error = e as SaveFeedback
+      setErrors(error.fields ?? { form: error.message })
+    } finally {
+      setSaving(false)
     }
   }
   return (
-    <AdminForm onSubmit={save}>
+    <AdminForm onSubmit={() => void save()}>
       <PageHead
         title={x ? `Edit ${x.name}` : "Create employee"}
         crumbs={[
@@ -87,17 +125,19 @@ export default function EmployeeForm({ id }: { id?: string }) {
             >
               Cancel
             </Btn>
-            <Btn type="submit" icon="check" disabled={saved}>
-              {x ? "Save changes" : "Create employee"}
+            <Btn type="submit" icon="check" disabled={saved || saving}>
+              {saving ? "Saving…" : x ? "Save changes" : "Create employee"}
             </Btn>
           </>
         }
       />
       <FormErrors errors={errors} />
-      <div className="ad-form-layout">
+      {saving && <p role="status">Saving changes…</p>}
+      <div className="ad-form-layout" inert={saving}>
         <div className="ad-form-main">
           <Panel title="Personal information">
             <PhotoSelection
+              disabled={backend}
               name={`${f.first} ${f.last}`}
               photo={photo.url ?? x?.photo}
               onSelect={(file) => {
@@ -128,12 +168,23 @@ export default function EmployeeForm({ id }: { id?: string }) {
                     k,
                   )}
                   error={errors[k]}
+                  disabled={
+                    backend &&
+                    ["preferred", "phone", "address", "emergency"].includes(k)
+                  }
+                  help={
+                    backend &&
+                    ["preferred", "phone", "address", "emergency"].includes(k)
+                      ? "Future Development · not stored"
+                      : undefined
+                  }
                 />
               ))}
             </div>
           </Panel>
           <Panel title="House assignments">
-            <HousePicker
+            <HousePickerView
+              houses={houses}
               value={f.houses}
               onChange={(houses) => setF({ ...f, houses })}
             />
@@ -146,16 +197,25 @@ export default function EmployeeForm({ id }: { id?: string }) {
               label="Role"
               value={f.role}
               onChange={(v) => set("role", v)}
-              options={roles.map((r) => ({
+              options={roleOptions.map((r) => ({
                 value: r,
                 label: r,
-                disabled: r === "Administrator" && nav.role !== "Administrator",
+                disabled:
+                  backend && actorRole !== "Administrator"
+                    ? ["Administrator", "Manager"].includes(r) && r !== f.role
+                    : r === "Administrator" && actorRole !== "Administrator",
               }))}
               error={errors.role}
-              help="Only Administrators can grant the Administrator role."
+              disabled={backend && !!id && actorRole !== "Administrator"}
+              help={
+                backend
+                  ? "Only Administrators can change existing roles."
+                  : "Only Administrators can grant the Administrator role."
+              }
             />
             <SelectField
               label="Account status"
+              disabled={backend && !id}
               value={f.status}
               onChange={(v) => set("status", v)}
               options={["Active", "Invited", "Inactive"].map((r) => ({
@@ -165,15 +225,24 @@ export default function EmployeeForm({ id }: { id?: string }) {
             />
             <Field
               label="Start date"
+              disabled={backend}
+              help={backend ? "Future Development · not stored" : undefined}
               value={f.started}
               onChange={(v) => set("started", v)}
               type="date"
               error={errors.started}
             />
-            <Banner tone="info" title="Development record only">
-              Invitation email, account credentials, password reset and real
-              access changes are unavailable. No email is sent. Invited is a
-              fictional record state.
+            <Banner
+              tone="info"
+              title={
+                backend
+                  ? "Separate credential activation required"
+                  : "Development record only"
+              }
+            >
+              {backend
+                ? "Creating an employee does not create working login credentials. New records remain Invited. Secure credential provisioning, invitation and recovery are separate; no password or email is issued here."
+                : "Invitation email, account credentials, password reset and real access changes are unavailable. No email is sent. Invited is a fictional record state."}
             </Banner>
           </Panel>
         </div>

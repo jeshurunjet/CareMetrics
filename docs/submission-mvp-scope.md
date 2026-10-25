@@ -1,6 +1,6 @@
 # Frozen submission MVP scope — Phase 1E.5
 
-This is the approved boundary for the **next backend phase**, not a claim that these services exist. The current application is a fictional development-only UI. No module is backend-connected. See [UI freeze and backend handover](ui-freeze-and-backend-handover.md) for contracts, replacement boundaries, policies and verification.
+This preserves the approved submission boundary. Phases 2A–2C now connect real Auth.js sessions, authorised Staff core reads, essential Admin employee/house/client/NOK/assignment management and a minimal persistent mutation-audit ledger using fictional development data. Scheduling, GPS, attendance and documentation submissions remain unconnected. See [UI freeze and backend handover](ui-freeze-and-backend-handover.md) for contracts, replacement boundaries, policies and verification.
 
 ## Submission services to implement
 
@@ -26,7 +26,7 @@ Submission must show deferred actions as unavailable/Future Development, not as 
 
 ## Capability boundary
 
-The handover defines a proposed central capability table using dotted module names. No runtime capability implementation or production feature locking was added in Phase 1E.5. The next backend phase must enforce availability and identity/organisation/role/house/parent access on the server, with the UI deriving availability from that authority. Unknown capabilities fail closed; hidden navigation and decorative locks cannot grant or enforce access. Development-preview tests keep their existing opt-in environment.
+The handover defines a proposed central capability table using dotted module names. No runtime capability implementation or production feature locking was added in Phase 1E.5. Subsequent phases now enforce trusted core read/management capabilities on the server; unknown and deferred operations remain denied. The next backend phase must enforce availability and identity/organisation/role/house/parent access on the server, with the UI deriving availability from that authority. Unknown capabilities fail closed; hidden navigation and decorative locks cannot grant or enforce access. Development-preview tests keep their existing opt-in environment.
 
 ## GPS decisions before activation
 
@@ -34,6 +34,6 @@ Approve/version the permitted distance, accuracy, location freshness, clock-in e
 
 ## Services still absent
 
-Auth.js sessions/accounts/recovery; Prisma/Neon persistence, constraints and transactions; real GPS requests/evidence/attendance; private Vercel Blob storage/scanning/retention; durable audit; actual delivery; deployment/operations. Preview passwords/roles, mock saves, file handling and timestamps remain demonstrations. Reload/logout resets session mutations. Public demonstration assets are not private storage.
+Secure initial credential/invite/recovery flows; scheduling/GPS requests/evidence/attendance and Diary/Care submission services; private Vercel Blob storage/scanning/retention; full audit reporting/retention/compliance tooling; actual delivery; deployment/operations. Core sessions, Prisma/Neon persistence/constraints/transactions, management writes and minimal mutation audit now exist; see [current status](implementation-status.md). Preview passwords/roles, deferred mock saves, file handling and timestamps remain demonstrations. Reload/logout resets session mutations. Public demonstration assets are not private storage.
 
 Use fictional seed data throughout development. Before real information, organisational privacy/security reviewers must approve access, policy, retention, hosting/residency, backups/recovery, incident handling, external resources and operational readiness. Phase 1E.5 does not begin Phase 2 or deployment.

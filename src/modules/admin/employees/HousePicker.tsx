@@ -10,9 +10,29 @@ export default function HousePicker({
   value: string[]
   onChange: (value: string[]) => void
 }) {
-  const { data: s } = useAdmin(),
-    [q, setQ] = useState("")
-  const opts = s.houses.filter((h) =>
+  const { data: s } = useAdmin()
+  return (
+    <HousePickerView
+      value={value}
+      onChange={onChange}
+      houses={s.houses.map((h) => ({
+        ...h,
+        clientCount: s.clients.filter((c) => c.houseId === h.id).length,
+      }))}
+    />
+  )
+}
+export function HousePickerView({
+  value,
+  onChange,
+  houses,
+}: {
+  value: string[]
+  onChange: (value: string[]) => void
+  houses: import("../manage/form-types").HouseOption[]
+}) {
+  const [q, setQ] = useState("")
+  const opts = houses.filter((h) =>
     h.name.toLowerCase().includes(q.toLowerCase()),
   )
   return (
@@ -21,11 +41,11 @@ export default function HousePicker({
         {value.length ? (
           value.map((id) => (
             <span className="ad-chip ad-chip--rm" key={id}>
-              {s.houses.find((h) => h.id === id)?.name}
+              {houses.find((h) => h.id === id)?.name}
               <button
                 type="button"
                 onClick={() => onChange(value.filter((h) => h !== id))}
-                aria-label={`Remove ${s.houses.find((h) => h.id === id)?.name}`}
+                aria-label={`Remove ${houses.find((h) => h.id === id)?.name}`}
               >
                 <Icon name="x" size={12} />
               </button>
@@ -61,9 +81,7 @@ export default function HousePicker({
                 {h.status === "Inactive" ? " · Inactive" : ""}
               </small>
             </span>
-            <span className="ad-faint">
-              {s.clients.filter((c) => c.houseId === h.id).length} clients
-            </span>
+            <span className="ad-faint">{h.clientCount} clients</span>
           </label>
         ))}
         {!opts.length && <p>No houses match.</p>}

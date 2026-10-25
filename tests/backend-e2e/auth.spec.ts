@@ -23,7 +23,7 @@ async function login(
   who = id.staffA as string,
 ) {
   const account = seedEmployees.find((e) => e.id === who)!
-  await page.goto("/login")
+  await page.goto("/login", { waitUntil: "domcontentloaded" })
   await page.getByLabel("Email address", { exact: true }).fill(account.email)
   await page
     .getByLabel("Password", { exact: true })
@@ -65,7 +65,7 @@ test("invalid and unknown credentials give generic feedback with no session", as
     seedEmployees[2].email,
     "unknown@caremetrics.example.test",
   ]) {
-    await page.goto("/login")
+    await page.goto("/login", { waitUntil: "domcontentloaded" })
     await page.getByLabel("Email address", { exact: true }).fill(email)
     await page.getByLabel("Password", { exact: true }).fill("incorrect")
     await page.getByRole("button", { name: "Sign in", exact: true }).click()
@@ -191,10 +191,16 @@ test("active-session role/assignment changes and deactivation apply on next serv
   }
   await db.user.update({ where: { id: id.staffA }, data: { role: "MANAGER" } })
   try {
+    expect((await page.request.get("/api/admin/foundation")).status()).toBe(401)
+    await page.context().clearCookies()
+    await login(page)
     expect((await page.request.get("/api/admin/foundation")).status()).toBe(200)
   } finally {
     await db.user.update({ where: { id: id.staffA }, data: { role: "STAFF" } })
   }
+  expect((await page.request.get("/api/admin/foundation")).status()).toBe(401)
+  await page.context().clearCookies()
+  await login(page)
   expect((await page.request.get("/api/admin/foundation")).status()).toBe(403)
   await db.user.update({
     where: { id: id.staffA },
@@ -205,7 +211,7 @@ test("active-session role/assignment changes and deactivation apply on next serv
     expect(
       await (await page.request.get("/api/auth/session")).json(),
     ).toBeNull()
-    await page.goto("/login")
+    await page.goto("/login", { waitUntil: "domcontentloaded" })
     await page
       .getByLabel("Email address", { exact: true })
       .fill(seedEmployees[2].email)
@@ -325,7 +331,7 @@ test("second employee and management UI read the same records with different acc
     await expect(page.locator(".ad-main")).toContainText(
       "Harbour Example House",
     )
-    await page.goto(`/admin/clients/${id.clientA}`)
+    await page.goto(`/admin/clients/${id.clientA}?tab=contacts`)
     await expect(page.locator(".ad-main")).toContainText("Fictional NOK")
     await page.screenshot({ path: "/tmp/caremetrics-2b-admin-1280.png" })
     await expect(

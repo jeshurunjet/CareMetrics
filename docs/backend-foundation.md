@@ -1,4 +1,6 @@
-# Phase 2A — backend foundation
+# Backend foundation — Phases 2A–2C
+
+The initial sections preserve the Phase 2A foundation decisions. Current Phase 2C adds essential transactional Admin management and minimal persistent audit; later phase updates below supersede earlier statements that these core reads/writes are deferred. See [current status](implementation-status.md) and [management contracts](admin-backend-mutations.md).
 
 ## Checkpoint, scope and current state
 
@@ -166,3 +168,11 @@ The preceding verification describes the preserved Phase 2A checkpoint. [Staff d
 Neon `phase-2a` was checked before tests and its expiry extended to **24 November 2026 at 11:18 NZDT**. Git work is on `phase-2b`, based on committed Phase 2A `a7c5747`. Authenticated browser verification now includes **375, 390 and 1280px** and the full Staff read journey. The new search API is included in production isolation. Current final evidence and remaining limits are in [implementation status](implementation-status.md). Management mutation integration is recommended next, subject to a separate instruction.
 
 Phase 2B final checks pass: 393 units, 18 PostgreSQL services, 21 local/21 Neon authenticated browsers, 619 preview passes/126 intentional skips, lint/types/format/build and 141 preview-route/six disabled-API production probes. Original reference/CSS remain unchanged. No production deployment or real-data operational acceptance is implied.
+
+## Phase 2C — management transactions and audit
+
+Phase 2B is preserved at `8bafa57550f3bb2bf4a1870764800e29e422957e`; work is on `phase-2c`. [Essential Admin mutations](admin-backend-mutations.md) now connect core employee/house/client/NOK/assignment operations with origin/body validation, trusted capabilities, scoped targets, organisation/actor locks, expected-revision conflicts and atomic audit. Original Staff read contracts remain. New employees are Invited without credentials; there is no public password/provisioning endpoint.
+
+Migration `202610250002_admin_audit` adds append-only AuditEvent with tenant/actor foreign keys, primary-contact uniqueness and **role-change** session revocation. Status/password/role changes now reject old cookies even if a later change restores the original state. It was verified in disposable PostgreSQL and applied only to the confirmed fictional Neon development branch. Production was not migrated or reseeded. No dependency change. Core capabilities `admin.employeeManagement`, `admin.houseManagement` and `admin.clientManagement` are enabled for management with stricter per-operation Administrator/account protections; unknown/deferred capabilities remain denied. Current evidence/limits are in [implementation status](implementation-status.md).
+
+Phase 2C verification completed: 393 units, 36 PostgreSQL security/service cases, 25 local/25 Neon authenticated browser passes (two narrow UI skips each), 16 existing Admin core preview cases, and full Chromium coverage of 619 passes/126 intentional skips across the interrupted and exact resumed cases. Lint/types/format/schema/build and 141-route/16-API production isolation pass. Nine configured secrets/ten restricted fixtures are absent from 109 client chunks. No source changes were needed during the regression resume.

@@ -1,4 +1,5 @@
 "use client"
+import type { HouseFormData, SaveFeedback } from "../manage/form-types"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Btn, Empty } from "@/modules/staff/ui"
@@ -15,9 +16,36 @@ import PhotoSelection from "../ui/PhotoSelection"
 import { useTemporaryProfilePhoto } from "@/modules/staff/files/ProfilePhotoPicker"
 import PreviewMap from "@/modules/staff/ui/PreviewMap"
 export default function HouseForm({ id }: { id?: string }) {
-  const nav = useAdmin(),
-    router = useRouter(),
-    h = nav.data.houses.find((h) => h.id === id)
+  const nav = useAdmin()
+  return (
+    <HouseFormView
+      id={id}
+      house={nav.data.houses.find((h) => h.id === id)}
+      managers={nav.data.staff
+        .filter((e) => e.role === "Manager" || e.role === "Administrator")
+        .map((e) => e.name)}
+      onSave={async (f, file) => {
+        const errors = validateHouse(nav.data, nav.role, f, id)
+        if (Object.keys(errors).length)
+          throw Object.assign(new Error("Check the highlighted information."), {
+            fields: errors,
+          })
+        const result = saveHouse(nav.data, nav.role, f, id)
+        nav.update(result.data)
+        if (file) nav.photo("house", result.id, file)
+        return { id: result.id }
+      }}
+    />
+  )
+}
+export function HouseFormView({
+  house: h,
+  id,
+  managers,
+  backend = false,
+  onSave,
+}: HouseFormData) {
+  const router = useRouter()
   const initial: HouseInput = {
     name: h?.name ?? "",
     code: h?.code ?? "",
@@ -35,6 +63,7 @@ export default function HouseForm({ id }: { id?: string }) {
   const [f, setF] = useState(initial),
     [errors, setErrors] = useState<Errors>({}),
     [saved, setSaved] = useState(false),
+    [saving, setSaving] = useState(false),
     [file, setFile] = useState<File>(),
     photo = useTemporaryProfilePhoto(),
     discard = useAdminFormGuard(
@@ -43,22 +72,24 @@ export default function HouseForm({ id }: { id?: string }) {
   const set = (key: keyof HouseInput, value: string) =>
     setF({ ...f, [key]: value })
   if (id && !h) return <Empty title="House unavailable" />
-  const save = () => {
-    const errs = validateHouse(nav.data, nav.role, f, id)
-    setErrors(errs)
-    if (Object.keys(errs).length) return
+  const save = async () => {
+    if (saving || saved) return
+    setErrors({})
+    setSaving(true)
     try {
-      const result = saveHouse(nav.data, nav.role, f, id)
-      nav.update(result.data)
-      if (file) nav.photo("house", result.id, file)
+      const result = await onSave(f, file)
       setSaved(true)
       router.replace(`/admin/houses/${result.id}?saved=1`)
+      router.refresh()
     } catch (e) {
-      setErrors({ form: (e as Error).message })
+      const error = e as SaveFeedback
+      setErrors(error.fields ?? { form: error.message })
+    } finally {
+      setSaving(false)
     }
   }
   return (
-    <AdminForm onSubmit={save}>
+    <AdminForm onSubmit={() => void save()}>
       <PageHead
         title={h ? `Edit ${h.name}` : "Create house"}
         crumbs={[
@@ -76,14 +107,15 @@ export default function HouseForm({ id }: { id?: string }) {
             >
               Cancel
             </Btn>
-            <Btn type="submit" icon="check" disabled={saved}>
-              Save house
+            <Btn type="submit" icon="check" disabled={saved || saving}>
+              {saving ? "Saving…" : "Save house"}
             </Btn>
           </>
         }
       />
       <FormErrors errors={errors} />
-      <div className="ad-form-layout">
+      {saving && <p role="status">Saving changes…</p>}
+      <div className="ad-form-layout" inert={saving}>
         <div className="ad-form-main">
           <Panel title="General information">
             <div className="ad-grid-3">
@@ -112,22 +144,17 @@ export default function HouseForm({ id }: { id?: string }) {
                   <SelectField
                     key="manager"
                     label={label}
+                    disabled={backend}
+                    help={
+                      backend
+                        ? "Future Development · manager relationship not stored"
+                        : undefined
+                    }
                     value={f.manager}
                     onChange={(v) => set("manager", v)}
                     options={[
                       { value: "", label: "Not specified" },
-                      ...Array.from(
-                        new Set([
-                          f.manager,
-                          ...nav.data.staff
-                            .filter(
-                              (e) =>
-                                e.role === "Manager" ||
-                                e.role === "Administrator",
-                            )
-                            .map((e) => e.name),
-                        ]),
-                      )
+                      ...Array.from(new Set([f.manager, ...managers]))
                         .filter(Boolean)
                         .map((name) => ({ value: name, label: name })),
                     ]}
@@ -149,6 +176,12 @@ export default function HouseForm({ id }: { id?: string }) {
                           : "text"
                     }
                     error={errors[key]}
+                    disabled={backend && key === "suburb"}
+                    help={
+                      backend && key === "suburb"
+                        ? "Use the full street address; separate suburb is not stored."
+                        : undefined
+                    }
                   />
                 ),
               )}
@@ -156,6 +189,8 @@ export default function HouseForm({ id }: { id?: string }) {
             <Field
               type="textarea"
               label="Description"
+              disabled={backend}
+              help={backend ? "Future Development · not stored" : undefined}
               value={f.description}
               onChange={(v) => set("description", v)}
               error={errors.description}
@@ -217,10 +252,15 @@ export default function HouseForm({ id }: { id?: string }) {
                 </div>
                 <Field
                   label="Provisional radius (metres)"
+                  disabled={backend}
                   value={f.geofence}
                   onChange={(v) => set("geofence", v)}
                   error={errors.geofence}
-                  help="Optional · organisation policy not yet agreed"
+                  help={
+                    backend
+                      ? "Unavailable · no geofence policy or radius is configured"
+                      : "Optional · organisation policy not yet agreed"
+                  }
                 />
               </div>
             </div>
@@ -229,9 +269,14 @@ export default function HouseForm({ id }: { id?: string }) {
         <div className="ad-form-side">
           <Panel title="House photo">
             <PhotoSelection
+              disabled={backend}
               house
               name={f.name}
-              photo={photo.url ?? h?.photo ?? "/demo-assets/room-demo.png"}
+              photo={
+                photo.url ??
+                h?.photo ??
+                (backend ? undefined : "/demo-assets/room-demo.png")
+              }
               onSelect={(file) => {
                 setFile(file)
                 photo.apply(file)
@@ -240,9 +285,9 @@ export default function HouseForm({ id }: { id?: string }) {
           </Panel>
           <Panel title="Staff app effect">
             <p className="ad-faint">
-              Assigned staff see updated house information in this development
-              session. Reload restores fixtures. No GPS or real attendance
-              verification is performed.
+              {backend
+                ? "Changes are stored in PostgreSQL and appear for authorised Staff on refresh/navigation. Coordinates are provisional and unverified; no GPS, radius or attendance check is activated."
+                : "Assigned staff see updated house information in this development session. Reload restores fixtures. No GPS or real attendance verification is performed."}
             </p>
           </Panel>
         </div>

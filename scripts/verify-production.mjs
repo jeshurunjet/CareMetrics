@@ -241,8 +241,48 @@ try {
       "no internal credentials or records",
     )
   }
+  const mutationPaths = [
+    ["/api/admin/employees", "POST"],
+    ["/api/admin/employees/20000000-0000-4000-8000-000000000013", "PATCH"],
+    [
+      "/api/admin/employees/20000000-0000-4000-8000-000000000013/status",
+      "POST",
+    ],
+    [
+      "/api/admin/employees/20000000-0000-4000-8000-000000000013/assignments",
+      "PUT",
+    ],
+    ["/api/admin/houses", "POST"],
+    ["/api/admin/houses/20000000-0000-4000-8000-000000000021", "PATCH"],
+    ["/api/admin/clients", "POST"],
+    ["/api/admin/clients/20000000-0000-4000-8000-000000000031", "PATCH"],
+    ["/api/admin/clients/20000000-0000-4000-8000-000000000031/contacts", "PUT"],
+    [
+      "/api/admin/clients/20000000-0000-4000-8000-000000000031/transfer",
+      "POST",
+    ],
+  ]
+  for (const [path, method] of mutationPaths) {
+    const response = await fetch(`http://localhost:8556${path}`, {
+      method,
+      headers: {
+        Origin: "http://localhost:8556",
+        "Content-Type": "application/json",
+        Cookie: "authjs.session-token=forged",
+        "x-role": "ADMINISTRATOR",
+      },
+      body: JSON.stringify({ role: "ADMINISTRATOR", actorId: "forged" }),
+    })
+    assert.equal(
+      response.status,
+      503,
+      "disabled management mutation fails closed",
+    )
+    assert.ok(response.headers.get("cache-control")?.includes("no-store"))
+    assert.deepEqual(await response.json(), { error: "Service unavailable" })
+  }
   console.log(
-    `Production HTTP checks passed: login inert, ${paths.length} preview routes refused with flag enabled.`,
+    `Production HTTP checks passed: login inert, ${paths.length} preview routes refused with flag enabled; six read/auth and ten mutation API probes failed closed.`,
   )
 } finally {
   server.kill("SIGTERM")

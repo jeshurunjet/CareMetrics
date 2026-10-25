@@ -82,3 +82,9 @@ Representative real-mode images are temporary local review artifacts, not a seco
 No real shift editing, GPS, attendance, Diary/Care writes, private file storage, notifications, Leave, corrections, full Admin CRUD or production deployment. The presence of schema tables is not a connected business feature. Admin global search/filter/edit workflows are not claimed complete. Auth.js remains beta and deployment/security/privacy/operational acceptance from Phase 2A remains outstanding.
 
 Recommend a separately authorised Phase 2C for bounded management mutations over these same employees/houses/clients/contacts/assignments: reviewed input validation, tenant/role checks in each write, audit and session revocation on account/assignment changes, conflict handling and transactional negative tests. Preserve this working read slice before enabling shifts or documentation submissions. Do not start Phase 2C automatically.
+
+## Phase 2C propagation update
+
+The authorised [Admin mutation phase](admin-backend-mutations.md) now maintains the same records used by these read services. Employee-house changes and current-house client transfers apply on the next protected read; NOK and house contact updates appear after refresh/navigation. Deactivation and role changes revoke affected sessions; a role reversal/reactivation does not restore an old cookie. The read DTOs remain free of password hashes and audit/private management content.
+
+Management forms no longer silently depend on preview mutations in database mode. Unimplemented profile/operational/file fields remain disabled. The original opt-in preview and Staff/mobile styling remain preserved. [Implementation status](implementation-status.md) holds current validation and the separate credential-provisioning/scheduling/GPS/documentation limitations; earlier recommendations to authorise Phase 2C are historical.

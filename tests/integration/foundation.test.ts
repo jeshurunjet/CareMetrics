@@ -60,10 +60,24 @@ afterAll(async () => {
 })
 describe("isolated migrated PostgreSQL foundation", () => {
   it("repeat seed keeps stable users, assignments, contacts and published version", async () => {
-    expect(await db.user.count()).toBe(5)
-    expect(await db.employeeHouseAssignment.count()).toBe(4)
-    expect(await db.clientContact.count()).toBe(3)
-    expect(await db.careTemplateVersion.count()).toBe(1)
+    expect(
+      await db.user.count({ where: { organisationId: id.organisation } }),
+    ).toBe(5)
+    expect(
+      await db.employeeHouseAssignment.count({
+        where: { organisationId: id.organisation },
+      }),
+    ).toBe(4)
+    expect(
+      await db.clientContact.count({
+        where: { organisationId: id.organisation },
+      }),
+    ).toBe(3)
+    expect(
+      await db.careTemplateVersion.count({
+        where: { organisationId: id.organisation },
+      }),
+    ).toBe(1)
   })
   it("requires a trusted active session and excludes sensitive employee data", async () => {
     identity.value = null
@@ -168,6 +182,8 @@ describe("isolated migrated PostgreSQL foundation", () => {
       where: { id: id.staffB },
       data: { role: "MANAGER" },
     })
+    await expect(requireManagement()).rejects.toMatchObject({ status: 401 })
+    await as(id.staffB)
     expect((await requireManagement()).role).toBe("MANAGER")
     await db.user.update({
       where: { id: id.staffB },
