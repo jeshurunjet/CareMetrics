@@ -1,4 +1,5 @@
 "use client"
+import type { Employee, House } from "@/modules/staff/data/types"
 import ConfirmDialog from "./ConfirmDialog"
 import { useState } from "react"
 import { useAdmin, KV, Pill } from "../ui/core"
@@ -142,83 +143,17 @@ export default function ShiftPanel({ onClose }: { onClose: () => void }) {
         </Banner>
       )}
       {edit ? (
-        <AdminForm onSubmit={save}>
-          <SelectField
-            label="Employee"
-            value={f.staffId}
-            onChange={(v) => patch("staffId", v)}
-            options={[
-              { value: "", label: "Select employee…" },
-              ...s.staff
-                .filter((e) => e.status !== "Inactive")
-                .map((e) => ({ value: e.id, label: `${e.name} — ${e.role}` })),
-            ]}
-          />
-          <SelectField
-            label="House"
-            value={f.houseId}
-            onChange={(v) => patch("houseId", v)}
-            help="An existing employee-to-house assignment is required."
-            options={[
-              { value: "", label: "Select house…" },
-              ...s.houses
-                .filter((h) => h.status !== "Inactive")
-                .map((h) => ({ value: h.id, label: h.name })),
-            ]}
-          />
-          <Field
-            label="Shift date"
-            type="date"
-            value={f.date}
-            onChange={(v) => patch("date", v)}
-            required
-          />
-          <div className="ad-grid-2">
-            <Field
-              label="Start"
-              type="time"
-              value={f.start}
-              onChange={(v) => patch("start", v)}
-              required
-            />
-            <Field
-              label="End"
-              type="time"
-              value={f.end}
-              onChange={(v) => patch("end", v)}
-              help={
-                f.end < f.start
-                  ? "Ends the next day (overnight)"
-                  : "Pacific/Auckland"
-              }
-              required
-            />
-          </div>
-          <Field
-            label="Break (minutes)"
-            type="number"
-            value={f.breakMins}
-            onChange={(v) => patch("breakMins", v)}
-            help="Information only; no payroll deduction."
-          />
-          <Field
-            label="Notes"
-            type="textarea"
-            value={f.notes}
-            onChange={(v) => patch("notes", v)}
-          />
-          <SelectField
-            label="Shift status"
-            value={f.status}
-            onChange={(v) => patch("status", v)}
-            options={[{ value: "scheduled", label: "Scheduled" }]}
-          />
-          <Banner tone="info">
-            Same-session fictional assignment only. Equal start/end is rejected;
-            an earlier end is on the following date. DST gaps and ambiguous
-            times require a different time.
-          </Banner>
-        </AdminForm>
+        <ShiftEditorFields
+          f={f}
+          patch={patch}
+          onSubmit={save}
+          employees={s.staff
+            .filter((e) => e.status !== "Inactive")
+            .map((e) => ({ id: e.id, name: e.name, role: e.role }))}
+          houses={s.houses
+            .filter((h) => h.status !== "Inactive")
+            .map((h) => ({ id: h.id, name: h.name }))}
+        />
       ) : (
         sh && (
           <>
@@ -302,5 +237,119 @@ export default function ShiftPanel({ onClose }: { onClose: () => void }) {
         />
       )}
     </Drawer>
+  )
+}
+
+interface ShiftEditorProps {
+  f: ShiftInput
+  patch: (key: keyof ShiftInput, value: string) => void
+  onSubmit: () => void
+  employees: Array<Pick<Employee, "id" | "name" | "role">>
+  houses: Array<Pick<House, "id" | "name">>
+  backend?: boolean
+  endDate?: string
+  onEndDateChange?: (day: string) => void
+}
+export function ShiftEditorFields({
+  f,
+  patch,
+  onSubmit,
+  employees,
+  houses,
+  backend = false,
+  endDate,
+  onEndDateChange,
+}: ShiftEditorProps) {
+  return (
+    <AdminForm onSubmit={onSubmit}>
+      <SelectField
+        label="Employee"
+        value={f.staffId}
+        onChange={(v) => patch("staffId", v)}
+        options={[
+          { value: "", label: "Select employee…" },
+          ...employees.map((e) => ({
+            value: e.id,
+            label: `${e.name} — ${e.role}`,
+          })),
+        ]}
+      />
+      <SelectField
+        label="House"
+        value={f.houseId}
+        onChange={(v) => patch("houseId", v)}
+        help="An existing employee-to-house assignment is required."
+        options={[
+          { value: "", label: "Select house…" },
+          ...houses.map((h) => ({ value: h.id, label: h.name })),
+        ]}
+      />
+      <Field
+        label="Shift date"
+        type="date"
+        value={f.date}
+        onChange={(v) => patch("date", v)}
+        required
+      />
+      {backend && (
+        <Field
+          label="End date (optional)"
+          type="date"
+          value={endDate ?? ""}
+          onChange={(v) => onEndDateChange?.(v)}
+          help="Blank uses the shift date, or the next date when End is earlier than Start."
+        />
+      )}
+      <div className="ad-grid-2">
+        <Field
+          label="Start"
+          type="time"
+          value={f.start}
+          onChange={(v) => patch("start", v)}
+          required
+        />
+        <Field
+          label="End"
+          type="time"
+          value={f.end}
+          onChange={(v) => patch("end", v)}
+          help={
+            f.end < f.start
+              ? "Ends the next day (overnight)"
+              : "Pacific/Auckland"
+          }
+          required
+        />
+      </div>
+      <Field
+        label="Break (minutes)"
+        disabled={backend}
+        type="number"
+        value={f.breakMins}
+        onChange={(v) => patch("breakMins", v)}
+        help={
+          backend
+            ? "Unavailable in this phase; no payroll or break deduction is applied."
+            : "Information only; no payroll deduction."
+        }
+      />
+      <Field
+        label="Notes"
+        type="textarea"
+        value={f.notes}
+        onChange={(v) => patch("notes", v)}
+      />
+      <SelectField
+        label="Shift status"
+        value={f.status}
+        onChange={(v) => patch("status", v)}
+        options={[{ value: "scheduled", label: "Scheduled" }]}
+      />
+      <Banner tone="info">
+        {backend
+          ? "Changes persist only after server validation and commit. Pacific/Auckland DST gaps and repeated wall times are rejected; overlaps are blocked. Attendance and GPS remain unavailable."
+          : "Same-session fictional assignment only. Equal start/end is rejected; an earlier end is on the following date. DST gaps and ambiguous times require a different time."}
+      </Banner>
+    </AdminForm>
   )
 }

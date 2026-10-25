@@ -1,11 +1,33 @@
+import { isBackendEnabled } from "@/server/config/backend"
+import { staffPage } from "@/server/data/page"
+import { getStaffSchedule } from "@/server/scheduling/shifts"
+import StaffScheduleView from "@/modules/scheduling/StaffSchedule"
 import { notFound } from "next/navigation"
 import { requirePreview } from "@/lib/require-preview"
 import StaffRouteScopeGuard from "@/modules/preview/StaffRouteScopeGuard"
 import { validDay } from "@/modules/staff/roster/dates"
 import Roster from "@/modules/staff/roster/Roster"
 export default async function Page({ searchParams }: PageProps<"/roster">) {
-  requirePreview()
   const q = await searchParams
+  if (isBackendEnabled()) {
+    const tab = q.tab ?? "roster"
+    if (
+      typeof tab !== "string" ||
+      !["roster", "team", "timesheets"].includes(tab) ||
+      Object.keys(q).some(
+        (key) => !["tab", "month", "day", "shiftId", "house"].includes(key),
+      )
+    )
+      notFound()
+    const query = Object.fromEntries(
+      Object.entries(q).filter(([key]) => key !== "tab"),
+    )
+    return staffPage(
+      () => getStaffSchedule(query),
+      (data) => <StaffScheduleView data={data} view="roster" tab={tab} />,
+    )
+  }
+  requirePreview()
   for (const key of [
     "tab",
     "house",

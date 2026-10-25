@@ -12,7 +12,7 @@ export interface Context {
   actor: Actor
 }
 export async function managementWrite<T>(
-  capability: "admin.employeeManagement" | "admin.houseManagement" | "admin.clientManagement",
+  capability: "admin.employeeManagement" | "admin.houseManagement" | "admin.clientManagement" | "admin.shiftManagement",
   run: (context: Context) => Promise<T>,
 ): Promise<T> {
   const initial = await requireCapability(capability)

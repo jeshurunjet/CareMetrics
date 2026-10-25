@@ -19,7 +19,42 @@ export default function ShiftCard({
   const h = s.houses.find((x) => x.id === sh.houseId)!
   const t = shiftStatus(s, sh)
   return (
-    <div data-testid="shift-row" data-highlighted={highlighted}>
+    <ShiftCardView
+      shift={sh}
+      houseName={h.name}
+      status={t}
+      attendanceLabel={attendanceStatus(s, sh.id)}
+      highlighted={highlighted}
+      onClick={onClick}
+    />
+  )
+}
+interface CardScheduleStatus {
+  tone: import("./Status").Tone
+  label: string
+}
+interface ShiftCardProps {
+  shift: Shift
+  houseName: string
+  status: CardScheduleStatus
+  attendanceLabel: string
+  highlighted: boolean
+  onClick: () => void
+}
+export function ShiftCardView({
+  shift: sh,
+  houseName,
+  status: t,
+  attendanceLabel,
+  highlighted,
+  onClick,
+}: ShiftCardProps) {
+  return (
+    <div
+      data-testid="shift-row"
+      data-shift-id={sh.id}
+      data-highlighted={highlighted}
+    >
       <Card
         className={`cm-shift-row ${highlighted ? "cm-shift-row--hl" : ""}`}
         onClick={onClick}
@@ -30,11 +65,11 @@ export default function ShiftCard({
         </div>
         <div className="cm-grow">
           <strong>{shiftTime(sh.start, sh.end)}</strong>
-          <span>{h.name}</span>
+          <span>{houseName}</span>
           <small>
             {formatDate(sh.start)} · Assigned by {sh.assignedBy}
           </small>
-          <small>{attendanceStatus(s, sh.id)}</small>
+          <small>{attendanceLabel}</small>
         </div>
         <Status tone={t.tone}>{t.label}</Status>
         <Icon name="chevron" size={16} />

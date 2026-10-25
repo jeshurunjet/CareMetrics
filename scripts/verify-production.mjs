@@ -220,6 +220,10 @@ try {
       assert.ok(!body.includes(marker), "no fictional data exposed")
   }
   for (const path of [
+    "/api/shifts",
+    "/api/shifts/20000000-0000-4000-8000-000000000051",
+    "/api/admin/shifts",
+    "/api/admin/shifts/20000000-0000-4000-8000-000000000051",
     "/api/me",
     "/api/search?q=fictional",
     "/api/houses",
@@ -242,6 +246,9 @@ try {
     )
   }
   const mutationPaths = [
+    ["/api/admin/shifts", "POST"],
+    ["/api/admin/shifts/20000000-0000-4000-8000-000000000051", "PATCH"],
+    ["/api/admin/shifts/20000000-0000-4000-8000-000000000051/cancel", "POST"],
     ["/api/admin/employees", "POST"],
     ["/api/admin/employees/20000000-0000-4000-8000-000000000013", "PATCH"],
     [
@@ -282,7 +289,7 @@ try {
     assert.deepEqual(await response.json(), { error: "Service unavailable" })
   }
   console.log(
-    `Production HTTP checks passed: login inert, ${paths.length} preview routes refused with flag enabled; six read/auth and ten mutation API probes failed closed.`,
+    `Production HTTP checks passed: login inert, ${paths.length} preview routes refused with flag enabled; ten read/auth and thirteen mutation API probes failed closed.`,
   )
 } finally {
   server.kill("SIGTERM")

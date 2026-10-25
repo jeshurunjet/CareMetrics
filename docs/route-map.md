@@ -1,5 +1,7 @@
 # Approved export → App Router route map
 
+Phase 2D database mode now connects `/shift-check`, `/roster`, Dashboard schedule summaries and `/admin/roster` (Calendar/List/Create/Edit/Cancel/Details) to shared PostgreSQL IDs. See [shift contracts](shift-backend-integration.md) for API routes and scope. The original tables below retain preview/UI migration history. GPS and attendance remain disabled in database mode.
+
 Statuses: `original` = reference retained, `ported` = code adapted, `UI-matched` = inspected against source rendering, `backend-connected` = authorised database operations, `tested` = relevant checks pass, `blocked` = dependency/decision missing. Statuses are independent; a shell route does not mean a screen is migrated.
 
 ## Staff (first migration priority)

@@ -46,6 +46,7 @@ export async function requireCapability(capability: string) {
       "admin.employeeManagement",
       "admin.houseManagement",
       "admin.clientManagement",
+      "admin.shiftManagement",
     ].includes(capability) &&
       isManagement(employee.role)) ||
     (capability === "admin.accountAdministration" &&

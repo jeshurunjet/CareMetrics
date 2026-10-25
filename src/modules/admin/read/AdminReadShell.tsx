@@ -9,6 +9,7 @@ const navigation = [
   ["employees", "Employees", "users"],
   ["houses", "Houses", "house"],
   ["clients", "Clients", "user"],
+  ["roster", "Rosters & Attendance", "calendar"],
 ]
 export default function AdminReadShell({
   name,
@@ -77,7 +78,6 @@ export default function AdminReadShell({
             <div className="ad-nav-group">
               <span className="ad-lbl ad-nav-title">Future Development</span>
               {[
-                "Rosters & Attendance",
                 "Leave Management",
                 "Care Documentation",
                 "Files & Galleries",

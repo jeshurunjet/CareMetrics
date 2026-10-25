@@ -1,5 +1,7 @@
 # Phase 1E.5 — UI freeze and backend handover
 
+Phase 2D update: real shared scheduling is now connected; [shift backend integration](shift-backend-integration.md) and [current status](implementation-status.md) supersede historical scheduling deferrals below. GPS and attendance remain unavailable.
+
 ## 1. Freeze and final inventory
 
 Branch: `phase-1e5`, based on completed Phase 1E.4B checkpoint **0de1bbbb8bdd1b372b8ce1672a14a15806282513**. The brief's uncommitted-4B note was superseded by the earlier authorised commit/push. Phase 1E.4A remains at `9fb28d99ae7406640162b09b1e91aa5382833b5e`; earlier branches are preserved. No new push is part of this phase.

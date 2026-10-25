@@ -1,4 +1,6 @@
 "use client"
+import { ScheduleSummary } from "@/modules/scheduling/StaffSchedule"
+import type { StaffSchedule } from "@/modules/scheduling/types"
 import Link from "next/link"
 import { useEffect, useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
@@ -92,7 +94,11 @@ function EmployeeCard({ employee }: { employee: EmployeeIdentity }) {
     </Card>
   )
 }
-export function DashboardRead({ data }: { data: StaffOverview }) {
+interface DashboardProps {
+  data: StaffOverview
+  schedule: StaffSchedule
+}
+export function DashboardRead({ data, schedule }: DashboardProps) {
   const nav = useNav()
   return (
     <>
@@ -140,7 +146,7 @@ export function DashboardRead({ data }: { data: StaffOverview }) {
           )}
         </div>
         <div className="cm-stack">
-          <FutureRead title="My schedule & attendance" />
+          <ScheduleSummary data={schedule} />
           <FutureRead title="My Leave" />
           <FutureRead title="Notifications" />
         </div>

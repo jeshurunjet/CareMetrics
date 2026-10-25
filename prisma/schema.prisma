@@ -36,15 +36,15 @@ enum TemplateKind {
 }
 
 model Organisation {
-  id        String         @id @default(uuid()) @db.Uuid
-  name      String
-  active    Boolean        @default(true)
-  createdAt DateTime       @default(now()) @db.Timestamptz(3)
-  updatedAt DateTime       @updatedAt @db.Timestamptz(3)
+  id          String         @id @default(uuid()) @db.Uuid
+  name        String
+  active      Boolean        @default(true)
+  createdAt   DateTime       @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime       @updatedAt @db.Timestamptz(3)
   auditEvents AuditEvent[]
-  employees User[]
-  templates CareTemplate[]
-  houses    House[]
+  employees   User[]
+  templates   CareTemplate[]
+  houses      House[]
 }
 
 // Credentials + JWT strategy: no OAuth Account/Session/VerificationToken tables are used.
@@ -63,7 +63,8 @@ model User {
   organisation   Organisation              @relation(fields: [organisationId], references: [id], onDelete: Restrict)
   auditEvents    AuditEvent[]
   assignments    EmployeeHouseAssignment[]
-  shifts         Shift[]
+  shifts         Shift[]                   @relation("ShiftEmployee")
+  assignedShifts Shift[]                   @relation("ShiftAssigner")
   diaryEntries   ClientDiaryEntry[]
   careRecords    CareRecord[]
 
@@ -155,18 +156,22 @@ model Shift {
   organisationId String            @db.Uuid
   employeeId     String            @db.Uuid
   houseId        String            @db.Uuid
+  assignedById   String?           @db.Uuid
+  notes          String?
+  assignedBy     User?             @relation("ShiftAssigner", fields: [organisationId, assignedById], references: [organisationId, id], onDelete: Restrict)
   startsAt       DateTime          @db.Timestamptz(3)
   endsAt         DateTime          @db.Timestamptz(3)
   status         ShiftStatus       @default(SCHEDULED)
   createdAt      DateTime          @default(now()) @db.Timestamptz(3)
   updatedAt      DateTime          @updatedAt @db.Timestamptz(3)
-  employee       User              @relation(fields: [organisationId, employeeId], references: [organisationId, id], onDelete: Restrict)
+  employee       User              @relation("ShiftEmployee", fields: [organisationId, employeeId], references: [organisationId, id], onDelete: Restrict)
   house          House             @relation(fields: [organisationId, houseId], references: [organisationId, id], onDelete: Restrict)
   attendance     AttendanceRecord?
 
   @@unique([organisationId, id, employeeId])
   @@index([organisationId, employeeId, startsAt])
   @@index([organisationId, houseId, startsAt])
+  @@index([organisationId, employeeId, status, endsAt])
 }
 
 model AttendanceRecord {

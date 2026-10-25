@@ -59,7 +59,7 @@ export function StaffShellView({
   backend?: boolean
 }) {
   const availablePages = backend
-    ? ["home", "clock", "houses", "search", "profile", "settings"]
+    ? ["home", "clock", "houses", "search", "profile", "settings", "roster"]
     : undefined
   const router = useRouter()
   const path = usePathname()

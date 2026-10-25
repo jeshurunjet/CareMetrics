@@ -14,7 +14,7 @@ import {
 import { toNZDateTimeInput } from "@/lib/time"
 import { managementAttendanceStatus } from "./adapter"
 import { useWorkforceURL } from "./shared"
-import type { Shift } from "../../staff/data/types"
+import type { Employee, House, Shift } from "../../staff/data/types"
 const compactDay = (day: string, year = false) =>
   new Intl.DateTimeFormat("en-NZ", {
     timeZone: "UTC",
@@ -31,13 +31,44 @@ const COLORS = [
   "#d97706",
 ]
 export default function RosterCalendar() {
-  const { data: s } = useAdmin(),
-    { change } = useWorkforceURL(),
-    [view, setView] = useState("week"),
-    [anchor, setAnchor] = useState(nzDay(s.now)),
+  const { data: s } = useAdmin()
+  const { change } = useWorkforceURL()
+  return (
+    <RosterCalendarView
+      data={s}
+      change={change}
+      attendanceLabel={(sh) => managementAttendanceStatus(s, sh)}
+    />
+  )
+}
+export interface CalendarData {
+  now: string
+  shifts: Shift[]
+  staff: Array<Pick<Employee, "id" | "name">>
+  houses: Array<Pick<House, "id" | "name" | "status">>
+}
+interface CalendarProps {
+  data: CalendarData
+  change: (values: Record<string, string>) => void
+  attendanceLabel: (shift: Shift) => string
+  anchorDay?: string
+  onAnchorChange?: (day: string) => void
+}
+export function RosterCalendarView({
+  data: s,
+  change,
+  attendanceLabel,
+  anchorDay,
+  onAnchorChange,
+}: CalendarProps) {
+  const [view, setView] = useState("week"),
+    [localAnchor, setLocalAnchor] = useState(nzDay(s.now)),
     [house, setHouse] = useState(""),
     [employee, setEmployee] = useState(""),
     [status, setStatus] = useState("scheduled")
+  const anchor = anchorDay ?? localAnchor
+  const setAnchor = (day: string) =>
+    onAnchorChange ? onAnchorChange(day) : setLocalAnchor(day)
   const weekday = (new Date(`${anchor}T12:00:00Z`).getUTCDay() + 6) % 7,
     days = Array.from({ length: 7 }, (_, i) => addDays(anchor, i - weekday)),
     houses = s.houses.filter(
@@ -70,7 +101,7 @@ export default function RosterCalendar() {
       <strong>{s.staff.find((e) => e.id === sh.staffId)?.name}</strong>
       <span>{shiftTime(sh.start, sh.end)}</span>
       <small>{sh.status === "cancelled" ? "Cancelled" : "Scheduled"}</small>
-      <small>{managementAttendanceStatus(s, sh)}</small>
+      <small>{attendanceLabel(sh)}</small>
     </button>
   )
   return (

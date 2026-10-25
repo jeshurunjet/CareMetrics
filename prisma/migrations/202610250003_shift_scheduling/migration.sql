@@ -1,0 +1,10 @@
+BEGIN;
+ALTER TABLE "Shift" ADD COLUMN "assignedById" UUID, ADD COLUMN "notes" TEXT;
+ALTER TABLE "Shift" ADD CONSTRAINT "Shift_organisationId_assignedById_fkey" FOREIGN KEY ("organisationId","assignedById") REFERENCES "User"("organisationId","id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Shift" ADD CONSTRAINT "Shift_notes_length" CHECK ("notes" IS NULL OR length("notes") <= 4000);
+ALTER TABLE "AuditEvent" DROP CONSTRAINT "AuditEvent_target_type";
+ALTER TABLE "AuditEvent" ADD CONSTRAINT "AuditEvent_target_type" CHECK ("targetType" IN ('employee','house','client','contacts','assignments','shift'));
+ALTER TABLE "AuditEvent" DROP CONSTRAINT "AuditEvent_action";
+ALTER TABLE "AuditEvent" ADD CONSTRAINT "AuditEvent_action" CHECK ("action" IN ('employee.created','employee.updated','employee.status','employee.role','assignments.updated','house.created','house.updated','house.status','client.created','client.updated','client.status','client.transferred','contacts.updated','shift.created','shift.updated','shift.cancelled'));
+CREATE INDEX "Shift_organisationId_employeeId_status_endsAt_idx" ON "Shift"("organisationId","employeeId","status","endsAt");
+COMMIT;

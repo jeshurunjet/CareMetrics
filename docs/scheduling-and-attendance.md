@@ -1,5 +1,13 @@
 # Shared scheduling and attendance — Phase 1D.1
 
+## Phase 2D database mode
+
+[Shift backend integration](shift-backend-integration.md) is the current scheduling contract. Admin Calendar/List/Create/Edit/Cancel/Details and own Staff My Shifts/Roster/Dashboard now share PostgreSQL Shift IDs. Authenticated current-account, organisation, capability and active-house-assignment checks run on the server; Staff cannot request a coworker's schedule. Strict Pacific/Auckland wall time is converted to UTC instants, with ambiguous and nonexistent DST times rejected. Adjacent shifts are allowed; active overlap is rejected under the shared organisation transaction lock. Optimistic revisions reject stale changes. Attendance references block edits/cancellation; cancelled records remain, with atomic audit events.
+
+GPS acquisition, geofence validation, clock-in/out persistence, actual timesheets, corrections, Leave and payroll remain unavailable in database mode. Scheduled time is never presented as worked hours. Team Schedule is also deferred; only own shifts are returned. Continue to Dashboard without clock-in remains available. Database errors never fall back to fixtures.
+
+The remaining sections describe the preserved, isolated development preview and its historical migration contracts. Their in-memory actions and attendance examples are not database-mode functionality.
+
 This is a development-only UI contract over fictional records, not an attendance service, permission boundary or payroll system.
 
 ## One snapshot and stable relations

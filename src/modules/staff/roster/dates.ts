@@ -32,8 +32,15 @@ export const dayLabel = (day: string) =>
     year: "numeric",
   }).format(new Date(`${day}T12:00:00Z`))
 export function shiftTime(start: string, end: string) {
+  const days = Math.round(
+    (Date.parse(nzDay(end) + "T12:00:00Z") -
+      Date.parse(nzDay(start) + "T12:00:00Z")) /
+      86400000,
+  )
   return `${formatTime(start)} – ${formatTime(end)}${
-    nzDay(start) !== nzDay(end) ? ` (+1 day · ends ${formatDate(end)})` : ""
+    days > 0
+      ? ` (+${days} day${days === 1 ? "" : "s"} · ends ${formatDate(end)})`
+      : ""
   }`
 }
 export function durationText(start?: string, end?: string) {

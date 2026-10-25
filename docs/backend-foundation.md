@@ -1,4 +1,6 @@
-# Backend foundation — Phases 2A–2C
+# Backend foundation — Phases 2A–2D
+
+Phase 2D now connects shared PostgreSQL shift scheduling; see [shift contracts](shift-backend-integration.md) and [current status](implementation-status.md). GPS and attendance remain unavailable.
 
 The initial sections preserve the Phase 2A foundation decisions. Current Phase 2C adds essential transactional Admin management and minimal persistent audit; later phase updates below supersede earlier statements that these core reads/writes are deferred. See [current status](implementation-status.md) and [management contracts](admin-backend-mutations.md).
 
