@@ -1,3 +1,4 @@
+import { withProductionEnvironment } from "../fixtures/production-environment"
 import {
   beforeAll,
   beforeEach,
@@ -201,12 +202,15 @@ describe("GPS clock-in PostgreSQL security", () => {
       if (kind === "disabled") configure({ enabled: false })
       if (kind === "invalid") configure({ maxDistanceMetres: -1 })
       if (kind === "unapproved") configure({ approval: "pending" })
-      if (kind === "production") process.env.VERCEL_ENV = "production"
-      await expect(clockIn(position())).rejects.toMatchObject({
-        code: "POLICY_UNAVAILABLE",
-        status: 503,
-      })
-      await noWrite()
+      const verify = async () => {
+        await expect(clockIn(position())).rejects.toMatchObject({
+          code: "POLICY_UNAVAILABLE",
+          status: 503,
+        })
+        await noWrite()
+      }
+      if (kind === "production") await withProductionEnvironment(verify)
+      else await verify()
     },
   )
   it.each(["null", "changed"])(

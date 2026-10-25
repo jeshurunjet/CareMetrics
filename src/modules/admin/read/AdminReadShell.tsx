@@ -79,7 +79,7 @@ export default function AdminReadShell({
               <span className="ad-lbl ad-nav-title">Future Development</span>
               {[
                 "Leave Management",
-                "Care Documentation",
+                "Templates & corrections",
                 "Files & Galleries",
                 "Notifications & Concerns",
                 "Reports & Audit",

@@ -8,6 +8,16 @@ export function backendEnvironment(
   env: Record<string, string | undefined> = process.env,
 ) {
   if (!isBackendEnabled(env)) throw new Error("Backend unavailable")
+  // Never turn the fictional automated-test branch or its policy acknowledgements into a live deployment.
+  if (
+    (env.NODE_ENV === "production" || env.VERCEL_ENV === "production") &&
+    (["phase-2a", "local-test"].includes(env.NEON_BRANCH_NAME ?? "") ||
+      env.CAREMETRICS_SEED_CONFIRM ||
+      env.CAREMETRICS_SEED_CREDENTIALS_FILE ||
+      env.CAREMETRICS_GPS_TEST_POLICY_ACK ||
+      env.CAREMETRICS_CLOCK_OUT_TEST_POLICY_ACK)
+  )
+    throw new Error("Backend unavailable")
   const secret = env.AUTH_SECRET
   const origin = env.AUTH_URL
   const databaseUrl = env.DATABASE_URL

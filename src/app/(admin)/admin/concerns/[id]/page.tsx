@@ -1,3 +1,5 @@
+import { isBackendEnabled } from "@/server/config/backend"
+import { deferredPage } from "@/server/data/deferred-page"
 import AdminAccess from "@/modules/admin/ui/AdminAccess"
 import ConcernReview from "@/modules/admin/notices/ConcernReview"
 import {
@@ -11,6 +13,8 @@ export default async function Page({
   searchParams: Promise<Record<string, string | string[] | undefined>>
   params: Promise<{ id: string }>
 }) {
+  if (isBackendEnabled()) return deferredPage(true)
+
   validateQuery(await searchParams, "detail")
   const { id } = await params
   validateId(id)

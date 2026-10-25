@@ -1,4 +1,6 @@
-import type { Metadata } from "next"
+import OnlineOnly from "@/modules/auth/ui/OnlineOnly"
+import { isBackendEnabled } from "@/server/config/backend"
+import type { Metadata, Viewport } from "next"
 import { preconnect, preinit } from "react-dom"
 import "../index.css"
 import "../styles/staff.css"
@@ -11,8 +13,25 @@ import StaffDataProvider from "@/modules/staff/data/context"
 export const dynamic = "force-dynamic"
 export const metadata: Metadata = {
   title: "CareMetrics",
-  description: "CareMetrics application foundation — UI only",
+  description:
+    "Care and workforce management for authorised CareMetrics staff.",
+  manifest: "/manifest.webmanifest",
+  icons: {
+    icon: "/icons/caremetrics-192.png",
+    apple: "/icons/caremetrics-192.png",
+  },
+  appleWebApp: {
+    capable: true,
+    title: "CareMetrics",
+    statusBarStyle: "default",
+  },
   robots: { index: false, follow: false },
+}
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#1a6b7a",
+  interactiveWidget: "resizes-content",
 }
 export default function RootLayout({
   children,
@@ -26,7 +45,7 @@ export default function RootLayout({
   )
   return (
     <html lang="en-NZ">
-      <body>
+      <body style={isBackendEnabled() ? { visibility: "hidden" } : undefined}>
         {isPreviewEnabled() ? (
           <StaffDataProvider
             data={developmentMockAdapter.getSnapshot(
@@ -36,8 +55,17 @@ export default function RootLayout({
           >
             {children}
           </StaffDataProvider>
+        ) : isBackendEnabled() ? (
+          <OnlineOnly>{children}</OnlineOnly>
         ) : (
           children
+        )}
+        {isBackendEnabled() && (
+          <noscript>
+            <p style={{ visibility: "visible" }}>
+              CareMetrics requires JavaScript and an internet connection.
+            </p>
+          </noscript>
         )}
       </body>
     </html>

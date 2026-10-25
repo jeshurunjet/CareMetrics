@@ -1,6 +1,8 @@
 # Phase 1E.5 — UI freeze and backend handover
 
-Phase 2H update: [Persistent Care Plans](care-plan-backend.md) now use assigned PostgreSQL definitions, strict shared-engine validation, immutable submissions and exact-version Staff/Admin history. Visual publishing, Charting and corrections remain deferred. The separate academic submission artifacts are frozen and unchanged.
+Phase 2I update: [Android/PWA readiness](android-pwa-readiness.md) adds public manifest/icons, trusted launch, online-only navigation safety and consistent deferred pages. Existing real services remain; no deployment/APK/signing or Phase 2J work.
+
+Historical Phase 2H update: [Persistent Care Plans](care-plan-backend.md) now use assigned PostgreSQL definitions, strict shared-engine validation, immutable submissions and exact-version Staff/Admin history. Visual publishing, Charting and corrections remain deferred. The separate academic submission artifacts are frozen and unchanged.
 
 Historical Phase 2G update: [Persistent Client Diary](client-diary-backend.md) now connects submission, current-client-scoped history/detail and a minimal Admin read view. Drafts, corrections, uploads and Care Plans remain deferred in database mode. Attendance is covered by [Phase 2F](clock-out-attendance-backend.md); production attendance remains disabled. The historical sections below are superseded only within these implemented slices.
 

@@ -2,6 +2,8 @@
 
 This preserves the approved submission boundary. Phases 2A–2H now connect real Auth.js sessions, authorised Staff core reads, essential Admin employee/house/client/NOK/assignment management and a minimal persistent mutation-audit ledger using fictional development data. Phase 2D connects shared PostgreSQL scheduling, Admin create/edit/cancel and own Staff My Shifts/Roster/Dashboard. Phase 2E adds event-only, server-validated clock-in with explicit development test policies; Phase 2F adds persistent clock-out under an explicit development-only no-location test policy, own attendance history and management read access. Phase 2G connects Client Diary submission/history and minimal management read access. Phase 2H connects assigned Care Plans, exact-version submissions/history and minimal management reads. Production attendance activation and other documentation submissions remain unavailable. See [Care Plan contracts](care-plan-backend.md). See [Diary contracts](client-diary-backend.md). See [clock-out contracts](clock-out-attendance-backend.md). See [GPS policy and privacy contract](gps-clock-in-backend.md). See [shift service contracts](shift-backend-integration.md). See [UI freeze and backend handover](ui-freeze-and-backend-handover.md) for contracts, replacement boundaries, policies and verification.
 
+Phase 2I adds online-only manifest/icon readiness, trusted launch, consistent server-authenticated deferred pages and an HTTPS/Android handover. No deployment, APK or production attendance activation. See [readiness and final capability inventory](android-pwa-readiness.md).
+
 ## Submission services to implement
 
 | Staff | Essential Admin |

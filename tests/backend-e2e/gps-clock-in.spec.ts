@@ -164,7 +164,7 @@ test("GPS test-policy clock-in persists, survives refresh/fresh login, protects 
   await login(page)
   expect(
     (await page.request.get("/shift-check")).headers()["permissions-policy"],
-  ).toBe("geolocation=(self)")
+  ).toBe("geolocation=(self), camera=(), microphone=()")
   expect(
     await page.evaluate(() => Reflect.get(window, "gpsCaptureCount")),
   ).toBe(0)

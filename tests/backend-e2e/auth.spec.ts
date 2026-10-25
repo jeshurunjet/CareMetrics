@@ -245,7 +245,12 @@ test("management reads stay tenant-scoped and Admin keeps the desktop gate", asy
     await expect(
       page.getByRole("heading", { name: "Administration", exact: true }),
     ).toBeVisible()
-  expect((await page.request.get("/admin/documentation")).status()).toBe(404)
+  const deferred = await page.request.get("/admin/documentation")
+  expect(deferred.status()).toBe(200)
+  expect(await deferred.text()).toContain(
+    "This feature is not available in the current CareMetrics version.",
+  )
+  expect(await deferred.text()).not.toContain("Publish template")
 })
 
 test("real Staff journey shares assigned database records across houses, profiles, NOK and search", async ({

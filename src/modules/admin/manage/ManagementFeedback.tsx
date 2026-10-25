@@ -12,9 +12,7 @@ export function Confirmation() {
 export function Deferred() {
   return (
     <Panel title="Future Development">
-      <p>
-        This service is unavailable. No operational or care record is written.
-      </p>
+      <p>This feature is not available in the current CareMetrics version.</p>
     </Panel>
   )
 }

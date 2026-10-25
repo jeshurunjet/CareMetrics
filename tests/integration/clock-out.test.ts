@@ -1,3 +1,4 @@
+import { withProductionEnvironment } from "../fixtures/production-environment"
 import {
   beforeAll,
   beforeEach,
@@ -234,15 +235,18 @@ describe("persistent clock-out and historical own-record access", () => {
     if (kind === "unapproved") configure({ approval: "approved" })
     if (kind === "unconfigured") configure({ mode: "UNCONFIGURED" })
     if (kind === "location") configure({ mode: "LOCATION_REQUIRED" })
-    if (kind === "production") process.env.VERCEL_ENV = "production"
-    await expect(clockOut(input())).rejects.toMatchObject({
-      status: 503,
-      code:
-        kind === "location"
-          ? "CLOCK_OUT_LOCATION_REQUIRED"
-          : "CLOCK_OUT_POLICY_UNAVAILABLE",
-    })
-    await unchanged()
+    const verify = async () => {
+      await expect(clockOut(input())).rejects.toMatchObject({
+        status: 503,
+        code:
+          kind === "location"
+            ? "CLOCK_OUT_LOCATION_REQUIRED"
+            : "CLOCK_OUT_POLICY_UNAVAILABLE",
+      })
+      await unchanged()
+    }
+    if (kind === "production") await withProductionEnvironment(verify)
+    else await verify()
   })
   it.each([
     { clockOut: "2099-01-01T00:00:00Z" },

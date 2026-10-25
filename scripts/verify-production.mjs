@@ -37,6 +37,36 @@ try {
     !login.includes("Preview administration"),
     "no production Administration preview entry",
   )
+  const publicManifest = await fetch(
+    "http://localhost:8556/manifest.webmanifest",
+  )
+  assert.equal(
+    publicManifest.status,
+    200,
+    "manifest public without authentication",
+  )
+  const manifest = await publicManifest.json()
+  assert.equal(manifest.start_url, "/")
+  assert.equal(manifest.scope, "/")
+  assert.equal(manifest.display, "standalone")
+  for (const icon of manifest.icons) {
+    const response = await fetch(`http://localhost:8556${icon.src}`)
+    assert.equal(response.status, 200, "public branded icon")
+    const bytes = Buffer.from(await response.arrayBuffer())
+    assert.equal(bytes.readUInt32BE(16), Number(icon.sizes.split("x")[0]))
+    assert.equal(bytes.readUInt32BE(20), Number(icon.sizes.split("x")[1]))
+  }
+  const loginHeaders = (await fetch("http://localhost:8556/login")).headers
+  assert.ok(
+    loginHeaders.get("cache-control")?.includes("no-store"),
+    "production login must not be stored",
+  )
+  assert.equal(loginHeaders.get("x-content-type-options"), "nosniff")
+  assert.equal(loginHeaders.get("referrer-policy"), "no-referrer")
+  assert.equal(loginHeaders.get("x-frame-options"), "DENY")
+  console.log(
+    "Production PWA public manifest/four icons and no-store/security headers passed.",
+  )
   const paths = [
     "/admin/files?fileId=client-garden",
     "/admin/files?fileId=private-client-file",

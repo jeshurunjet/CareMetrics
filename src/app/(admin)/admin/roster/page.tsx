@@ -1,3 +1,4 @@
+import { deferredPage } from "@/server/data/deferred-page"
 import AttendanceHistoryView from "@/modules/attendance/AttendanceHistoryView"
 import { getAdminAttendanceHistory } from "@/server/attendance/history"
 import { notFound } from "next/navigation"
@@ -15,6 +16,7 @@ export default async function Page({
 }) {
   const q = await searchParams
   if (isBackendEnabled()) {
+    if (q.tab === "corrections") return deferredPage(true)
     if (q.tab === "attendance" || q.tab === "timesheets") {
       const tab = q.tab,
         query = Object.fromEntries(

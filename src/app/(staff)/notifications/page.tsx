@@ -1,3 +1,5 @@
+import { isBackendEnabled } from "@/server/config/backend"
+import { deferredPage } from "@/server/data/deferred-page"
 import { notFound } from "next/navigation"
 import { requirePreview } from "@/lib/require-preview"
 import Notifications from "@/modules/staff/notifications/Notifications"
@@ -5,6 +7,8 @@ import StaffRouteScopeGuard from "@/modules/preview/StaffRouteScopeGuard"
 export default async function Page({
   searchParams,
 }: PageProps<"/notifications">) {
+  if (isBackendEnabled()) return deferredPage(false)
+
   requirePreview()
   const q = await searchParams
   if (

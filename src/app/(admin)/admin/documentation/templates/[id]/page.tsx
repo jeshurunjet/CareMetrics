@@ -1,3 +1,5 @@
+import { isBackendEnabled } from "@/server/config/backend"
+import { deferredPage } from "@/server/data/deferred-page"
 import AdminAccess from "@/modules/admin/ui/AdminAccess"
 import TemplateEditor from "@/modules/admin/documentation/TemplateEditor"
 import { validKey } from "@/modules/admin/documentation/validation"
@@ -10,6 +12,8 @@ export default async function Page({
   params: Promise<{ id: string }>
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
+  if (isBackendEnabled()) return deferredPage(true)
+
   requirePreview()
   const { id } = await params,
     q = await searchParams

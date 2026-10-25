@@ -1,3 +1,5 @@
+> Current database-mode classification: [Phase 2I final route/capability inventory](android-pwa-readiness.md#6-final-routecapability-inventory). Historical UI-only classifications below remain preserved.
+
 # Approved export → App Router route map
 
 Phase 2D database mode now connects `/shift-check`, `/roster`, Dashboard schedule summaries and `/admin/roster` (Calendar/List/Create/Edit/Cancel/Details) to shared PostgreSQL IDs. See [shift contracts](shift-backend-integration.md) for API routes and scope. The original tables below retain preview/UI migration history. GPS and attendance remain disabled in database mode.

@@ -1,3 +1,4 @@
+import { withProductionEnvironment } from "../fixtures/production-environment"
 import {
   beforeAll,
   beforeEach,
@@ -181,16 +182,16 @@ it.each(["NODE_ENV", "VERCEL_ENV"])(
   "test attendance never waives a production documentation reason via %s",
   async (key) => {
     await attendance()
-    process.env[key] = "production"
-    process.env.AUTH_URL = "https://fictional-evaluation.example.test"
-    await expect(
-      submitCare(client, payload({ offShiftReason: "" })),
-    ).rejects.toMatchObject({ status: 400 })
-    const saved = await submitCare(client, payload())
-    expect(
-      (await db.careRecord.findUniqueOrThrow({ where: { id: saved.id } }))
-        .documentationContext,
-    ).toMatchObject({ offShift: true, attendanceId: null })
+    await withProductionEnvironment(async () => {
+      await expect(
+        submitCare(client, payload({ offShiftReason: "" })),
+      ).rejects.toMatchObject({ status: 400 })
+      const saved = await submitCare(client, payload())
+      expect(
+        (await db.careRecord.findUniqueOrThrow({ where: { id: saved.id } }))
+          .documentationContext,
+      ).toMatchObject({ offShift: true, attendanceId: null })
+    }, key)
   },
 )
 it("keeps an older assigned version usable outside the bounded latest-version metadata list", async () => {

@@ -68,9 +68,9 @@ export function FutureRead({
   return (
     <Card className="cm-panel">
       <h2 className="cm-h3">{title}</h2>
+      {title !== "Future Development" && <strong>Future Development</strong>}
       <p className="cm-muted">
-        This service is not connected yet. Actions in this section do not save
-        records.
+        This feature is not available in the current CareMetrics version.
       </p>
     </Card>
   )
