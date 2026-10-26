@@ -4,6 +4,8 @@ This preserves the approved submission boundary. Phases 2A–2H now connect real
 
 Phase 2I adds online-only manifest/icon readiness, trusted launch, consistent server-authenticated deferred pages and an HTTPS/Android handover. No deployment, APK or production attendance activation. See [readiness and final capability inventory](android-pwa-readiness.md).
 
+Phase 2J implements approved fictional HTTPS staging at https://caremetrics-staging.vercel.app with separate Vercel/Neon projects and the [deployment/Android acceptance runbook](deployment-and-android-acceptance.md). Approved signed APK, encrypted USB restore and real Digital Asset Links checks now pass; core physical acceptance now passes for repaired APK1.0.1 on one REDMAGIC/Android16/Brave combination; remaining scenarios and distribution decisions are documented in the runbook. Production attendance remains disabled.
+
 ## Submission services to implement
 
 | Staff | Essential Admin |

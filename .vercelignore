@@ -1,0 +1,24 @@
+# CLI upload exclusions; secrets remain in the approved hosting environment only.
+.env*
+.neon
+.vercel/
+.git/
+.agents/
+.codex/
+node_modules/
+.next*/
+reference/
+.ui-reference/
+docs/ui-comparisons/
+test-results*/
+playwright-report/
+coverage/
+*.tsbuildinfo
+*.log
+.DS_Store
+*.apk
+*.aab
+*.jks
+*.keystore
+*.pem
+*.key

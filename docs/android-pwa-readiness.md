@@ -1,3 +1,5 @@
+> Phase 2J continuation: [Deployment and Android acceptance](deployment-and-android-acceptance.md) records completed local preflight and approved HTTPS staging at https://caremetrics-staging.vercel.app; Stage C signed APK/USB restore and public certificate association have passed; paper recovery handover and core physical acceptance are now verified for repaired APK1.0.1 on REDMAGIC10Pro/Android16/Brave; remaining scenarios are listed in the Phase2J runbook. The historical Phase 2I evidence below is preserved.
+
 # Phase 2I — Android/PWA readiness and deployment handover
 
 This is an online-only, fictional-data deployment candidate, not physical Android acceptance or approval to process real care information. No hosting, DNS change, APK, signing key, asset-links file, push, schema migration or Phase 2J execution was performed.

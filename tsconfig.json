@@ -54,7 +54,9 @@
     "playwright.backend.config.ts",
     ".next-backend/types/**/*.ts",
     ".next-backend/dev/types/**/*.ts",
-    "neon.ts"
+    "neon.ts",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",

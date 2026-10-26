@@ -1,5 +1,11 @@
 import { spawn } from "node:child_process"
 import assert from "node:assert/strict"
+import { readFile } from "node:fs/promises"
+const buildDirectory = process.env.CAREMETRICS_VERIFY_BUILD_DIR || ".next-build"
+assert.ok(
+  [".next-build", ".next"].includes(buildDirectory),
+  "known production build directory required",
+)
 const server = spawn(
   process.execPath,
   ["node_modules/next/dist/bin/next", "start", "-p", "8556"],
@@ -9,7 +15,7 @@ const server = spawn(
       NODE_ENV: "production",
       CAREMETRICS_UI_PREVIEW: "true",
       CAREMETRICS_BACKEND_MODE: "disabled",
-      NEXT_BUILD_DIR: ".next-build",
+      NEXT_BUILD_DIR: buildDirectory,
     },
     stdio: ["ignore", "pipe", "pipe"],
   },
@@ -46,6 +52,29 @@ try {
     "manifest public without authentication",
   )
   const manifest = await publicManifest.json()
+  const association = await fetch(
+    "http://localhost:8556/.well-known/assetlinks.json",
+    { redirect: "manual" },
+  )
+  assert.equal(
+    association.status,
+    200,
+    "Android association is public without redirects",
+  )
+  assert.match(association.headers.get("content-type"), /application\/json/)
+  const links = await association.json()
+  assert.deepEqual(
+    links,
+    JSON.parse(await readFile("public/.well-known/assetlinks.json", "utf8")),
+  )
+  assert.equal(links[0].target.package_name, "nz.co.caremetrics.staff")
+  assert.match(
+    links[0].target.sha256_cert_fingerprints[0],
+    /^(?:[A-F0-9]{2}:){31}[A-F0-9]{2}$/,
+  )
+  console.log(
+    "Public Android association JSON/package/fingerprint response passed.",
+  )
   assert.equal(manifest.start_url, "/")
   assert.equal(manifest.scope, "/")
   assert.equal(manifest.display, "standalone")
@@ -64,6 +93,25 @@ try {
   assert.equal(loginHeaders.get("x-content-type-options"), "nosniff")
   assert.equal(loginHeaders.get("referrer-policy"), "no-referrer")
   assert.equal(loginHeaders.get("x-frame-options"), "DENY")
+  for (const path of [
+    "/api/leave",
+    "/api/files",
+    "/api/admin/documentation/templates",
+    "/api/admin/documentation/corrections",
+    "/api/unknown-service/nested",
+  ]) {
+    for (const method of ["GET", "POST", "PATCH", "DELETE"]) {
+      const response = await fetch(`http://localhost:8556${path}`, { method })
+      assert.equal(
+        response.status,
+        404,
+        `${method} ${path} returns an HTTP error`,
+      )
+      assert.ok(response.headers.get("cache-control")?.includes("no-store"))
+      assert.deepEqual(await response.json(), { error: "Service unavailable" })
+    }
+  }
+  console.log("Unknown/deferred APIs: 20 JSON 404/no-store probes passed.")
   console.log(
     "Production PWA public manifest/four icons and no-store/security headers passed.",
   )

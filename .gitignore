@@ -43,3 +43,13 @@ test-results-admin/
 .next-backend/
 test-results-backend/
 .neon
+
+# Local hosting links, Android build artifacts and signing material never belong in source.
+.vercel/
+*.apk
+*.aab
+*.jks
+*.keystore
+*.pem
+*.key
+.vercel

@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "nz.co.caremetrics.staff",
+      "sha256_cert_fingerprints": [
+        "1E:F1:09:E7:06:0A:3F:E0:70:7D:A8:37:59:89:04:51:54:29:EC:66:7A:23:D1:AA:0B:CB:1B:24:AF:C1:47:C8"
+      ]
+    }
+  }
+]

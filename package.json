@@ -24,7 +24,10 @@
     "test:backend": "vitest run --config vitest.backend.config.ts",
     "postinstall": "prisma generate",
     "test:backend:local": "node scripts/test-backend.mjs",
-    "test:backend:neon": "node scripts/test-backend-neon.mjs"
+    "test:backend:neon": "node scripts/test-backend-neon.mjs",
+    "build:vercel": "pnpm db:generate && NEXT_BUILD_DIR=.next next build --webpack",
+    "test:staging-build": "CAREMETRICS_VERIFY_BUILD_DIR=.next node scripts/verify-production.mjs",
+    "test:hosted-staging": "node --import tsx scripts/verify-hosted-staging.mjs"
   },
   "dependencies": {
     "@neon/config": "^1.9.3",
@@ -62,7 +65,7 @@
     "vitest": "^5.0.5"
   },
   "engines": {
-    "node": ">=22.18.0 <23 || >=24.0.0"
+    "node": ">=22.18.0 <23"
   },
   "packageManager": "pnpm@10.15.1",
   "pnpm": {
