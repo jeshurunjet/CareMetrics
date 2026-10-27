@@ -1,5 +1,6 @@
 "use client"
 import { OwnAttendanceSummary } from "../attendance/AttendanceHistoryView"
+import type { GoogleMapsDemoConfiguration } from "../attendance/demo-reference"
 import useLiveLocation from "../attendance/useLiveLocation"
 import LiveLocationPanel from "../attendance/LiveLocationPanel"
 import ClockInControl from "../attendance/ClockInControl"
@@ -32,11 +33,13 @@ interface Props {
   data: StaffSchedule
   view: "shifts" | "roster"
   tab?: string
+  googleDemo?: GoogleMapsDemoConfiguration
 }
 export default function StaffScheduleView({
   data,
   view,
   tab = "roster",
+  googleDemo,
 }: Props) {
   const router = useRouter(),
     params = useSearchParams(),
@@ -56,9 +59,9 @@ export default function StaffScheduleView({
   const previewEnabled =
     view === "shifts" &&
     !data.detail &&
-    !!highlighted?.clockIn?.available &&
-    !highlighted.clockIn.attendance
-  const live = useLiveLocation(previewEnabled)
+    (!!googleDemo || !!highlighted?.clockIn?.available) &&
+    !highlighted?.clockIn?.attendance
+  const live = useLiveLocation(previewEnabled, !!googleDemo)
   const cards = (rows: ShiftRead[]) =>
     rows.map((row) => (
       <ShiftCardView
@@ -179,6 +182,7 @@ export default function StaffScheduleView({
                 live={live}
                 enabled={previewEnabled}
                 policy={highlighted.clockIn?.positionPolicy}
+                googleDemo={googleDemo}
               />
             </div>
           ) : (
@@ -188,7 +192,11 @@ export default function StaffScheduleView({
                 title="No upcoming shifts"
                 text="No active scheduled shifts are assigned to your account."
               />
-              <LiveLocationPanel live={live} enabled={false} />
+              <LiveLocationPanel
+                live={live}
+                enabled={previewEnabled}
+                googleDemo={googleDemo}
+              />
             </>
           )}
           <SectionTitle

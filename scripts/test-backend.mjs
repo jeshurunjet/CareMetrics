@@ -122,7 +122,17 @@ try {
           ? ["--project", process.env.CAREMETRICS_BACKEND_TEST_PROJECT]
           : []),
       ],
-      { NODE_ENV: "development" },
+      {
+        NODE_ENV: "development",
+        ...(process.env.CAREMETRICS_TEST_GOOGLE_DEMO === "true"
+          ? {
+              CAREMETRICS_GOOGLE_MAPS_DEMO_ACK: "no-billing-evaluation-only",
+              GOOGLE_MAPS_DEMO_BROWSER_KEY:
+                process.env.CAREMETRICS_TEST_BROWSER_GOOGLE_KEY ??
+                "AIza" + "t".repeat(35),
+            }
+          : {}),
+      },
     )
   console.log(
     process.env.CAREMETRICS_TEST_SERVICES_ONLY === "true"

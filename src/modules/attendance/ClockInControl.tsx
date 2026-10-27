@@ -1,4 +1,5 @@
 "use client"
+import type { DemoLocationNotice } from "./demo-reference"
 import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Btn, Banner, Modal, Status } from "@/modules/staff/ui"
@@ -38,6 +39,7 @@ export default function ClockInControl({
     [busy, setBusy] = useState(false),
     [uncertain, setUncertain] = useState(false),
     [error, setError] = useState(""),
+    [notice, setNotice] = useState<DemoLocationNotice | null>(null),
     [recorded, setRecorded] = useState<ClockInConfirmation | null>(null),
     pending = useRef<PendingRequest | null>(null),
     active = useRef(false),
@@ -120,6 +122,7 @@ export default function ClockInControl({
       preview?.stop()
       setUncertain(false)
       setRecorded(result.attendance)
+      setNotice(result.locationNotice ?? null)
       setOpen(false)
       router.refresh()
     } catch (failure) {
@@ -147,6 +150,11 @@ export default function ClockInControl({
               ? "Clocked in — GPS location recorded."
               : "Clocked In"}
         </Status>
+        {notice && (
+          <Banner tone={notice.status === "within" ? "info" : "warning"}>
+            {notice.message}
+          </Banner>
+        )}
         <p>
           Recorded {formatDateTime(attendance.clockIn)} · {houseName}
         </p>

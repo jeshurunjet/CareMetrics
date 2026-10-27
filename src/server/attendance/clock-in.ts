@@ -1,3 +1,5 @@
+import { googleMapsDemoConfiguration } from "../config/google-maps-demo"
+import { demoLocationNotice } from "../../modules/attendance/demo-reference"
 import "server-only"
 import { createHmac } from "node:crypto"
 import { auth } from "../auth"
@@ -129,6 +131,21 @@ export async function clockIn(value: unknown) {
                 shift.attendance,
                 actor.organisation.isFictionalDemo,
               ),
+              ...(shift.attendance.verification === GPS_RECORDING_DEMO &&
+              googleMapsDemoConfiguration(
+                actor.organisationId,
+                actor.organisation.isFictionalDemo,
+              )
+                ? {
+                    locationNotice: demoLocationNotice(
+                      d,
+                      googleMapsDemoConfiguration(
+                        actor.organisationId,
+                        actor.organisation.isFictionalDemo,
+                      )!.reference,
+                    ),
+                  }
+                : {}),
               replayed: true,
             }
           reject(
@@ -259,6 +276,21 @@ export async function clockIn(value: unknown) {
         )
         return {
           attendance: confirmation(row, actor.organisation.isFictionalDemo),
+          ...(demo &&
+          googleMapsDemoConfiguration(
+            actor.organisationId,
+            actor.organisation.isFictionalDemo,
+          )
+            ? {
+                locationNotice: demoLocationNotice(
+                  d,
+                  googleMapsDemoConfiguration(
+                    actor.organisationId,
+                    actor.organisation.isFictionalDemo,
+                  )!.reference,
+                ),
+              }
+            : {}),
           replayed: false,
         }
       },

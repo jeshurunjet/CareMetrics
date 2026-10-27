@@ -1,5 +1,7 @@
 # Foreground live GPS map before clock-in
 
+> A subsequent [Google Maps / Glenfield Mall evaluation](google-maps-demo.md) is deployed and physically accepted on `google-maps-demo`. This document describes the preserved previous OSM live-preview release and its physical acceptance. The recorded attendance map remains OSM.
+
 Status: deployed and physically accepted after explicit approval, 27 October 2026. Earlier local-only statements below describe the pre-approval checkpoint; final hosted/native results follow. The signed APK/identity and existing data remain preserved.
 
 ## Checkpoint and scope

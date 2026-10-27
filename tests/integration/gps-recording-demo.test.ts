@@ -488,3 +488,51 @@ describe("Recording-only demo, real PostgreSQL", () => {
     }
   })
 })
+
+it("Google evaluation returns a transient outside-reference advisory without enforcing 10m or rewriting evidence/history", async () => {
+  const keys = [
+    "CAREMETRICS_GOOGLE_MAPS_DEMO_ACK",
+    "GOOGLE_MAPS_DEMO_BROWSER_KEY",
+  ] as const
+  const original = Object.fromEntries(keys.map((k) => [k, process.env[k]]))
+  process.env.CAREMETRICS_GOOGLE_MAPS_DEMO_ACK = "no-billing-evaluation-only"
+  process.env.GOOGLE_MAPS_DEMO_BROWSER_KEY = "AIza" + "t".repeat(35)
+  try {
+    const request = position(),
+      result = await clockIn(request)
+    expect(result.locationNotice?.status).toBe("outside")
+    expect(result.locationNotice?.message).toContain(
+      "accepted for demonstration only",
+    )
+    expect(result.attendance?.verification).toBe("GPS_LOCATION_RECORDED_DEMO")
+    const again = await clockIn(request)
+    expect(again.replayed).toBe(true)
+    expect(await db.attendanceRecord.count({ where: { shiftId: shift } })).toBe(
+      1,
+    )
+    const record = await db.attendanceRecord.findUniqueOrThrow({
+      where: { shiftId: shift },
+    })
+    const evidence = await db.attendanceLocationEvidence.findUniqueOrThrow({
+      where: { attendanceId: record.id },
+    })
+    expect(evidence.expiresAt.getTime() - record.measuredAt!.getTime()).toBe(
+      LOCATION_RETENTION_MS,
+    )
+    expect(
+      await db.auditEvent.count({
+        where: { targetId: record.id, action: "attendance.clocked_in" },
+      }),
+    ).toBe(1)
+    const audits = await db.auditEvent.findMany({
+      where: { targetId: record.id },
+      select: { summary: true },
+    })
+    expect(JSON.stringify(audits)).not.toContain("locationNotice")
+    expect(JSON.stringify(record.policySnapshot)).not.toContain("distance")
+  } finally {
+    for (const k of keys)
+      if (original[k] === undefined) delete process.env[k]
+      else process.env[k] = original[k]
+  }
+})
