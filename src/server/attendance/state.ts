@@ -162,6 +162,11 @@ export function clockInState(
     ...base,
     testOnly: !isRecordingDemo(p),
     ...(isRecordingDemo(p) ? { mode: GPS_RECORDING_DEMO } : {}),
+    positionPolicy: {
+      maxAccuracyMetres: p.maxAccuracyMetres,
+      maxAgeMs: p.maxAgeMs,
+      maxFutureSkewMs: p.maxFutureSkewMs,
+    },
     code: "AVAILABLE",
     available: true,
     message: isRecordingDemo(p)

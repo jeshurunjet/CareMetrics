@@ -21,6 +21,7 @@ export interface ClockInConfirmation {
   verification: string | null
 }
 export interface ClockInState {
+  positionPolicy?: import("./foreground-location").PositionPolicy
   mode?: "GPS_LOCATION_RECORDED_DEMO"
   available: boolean
   code: string

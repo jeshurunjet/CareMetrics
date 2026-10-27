@@ -1,4 +1,5 @@
 "use client"
+import { stopLiveLocation } from "@/modules/attendance/foreground-location"
 import { signOut } from "next-auth/react"
 import { useState } from "react"
 export default function SignOut() {
@@ -10,6 +11,7 @@ export default function SignOut() {
         className="cm-btn cm-btn--secondary cm-btn--md"
         disabled={busy}
         onClick={async () => {
+          stopLiveLocation()
           setBusy(true)
           setError(false)
           try {

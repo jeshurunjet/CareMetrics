@@ -4,6 +4,7 @@ import type { StaffSchedule } from "@/modules/scheduling/types"
 import Link from "next/link"
 import { useEffect, useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
+import { stopLiveLocation } from "@/modules/attendance/foreground-location"
 import { signOut } from "next-auth/react"
 import { StaffShellView } from "@/components/layout/StaffShell"
 import {
@@ -51,6 +52,7 @@ export function StaffReadShell({
         houseCount={employee.assignedHouses.length}
         unread={0}
         onLogout={() => {
+          stopLiveLocation()
           setFailed(false)
           void signOut({ redirectTo: "/login" }).catch(() => setFailed(true))
         }}

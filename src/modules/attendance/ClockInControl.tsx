@@ -7,10 +7,16 @@ import ClockOutControl from "./ClockOutControl"
 import { attendanceInstant, formatElapsed } from "./duration"
 import Link from "next/link"
 import { capturePosition, LocationCaptureError } from "./browser"
+import { positionProblem, type PreviewPosition } from "./foreground-location"
 import type { ClockInConfirmation, ClockInState } from "./types"
+interface LocationPreview {
+  current: () => PreviewPosition | null
+  stop: () => void
+}
 interface Props {
   shiftId: string
   houseName: string
+  preview?: LocationPreview
   state?: ClockInState
 }
 interface PendingRequest {
@@ -21,7 +27,12 @@ interface PendingRequest {
   accuracyMetres: number
   measuredAt: number
 }
-export default function ClockInControl({ shiftId, houseName, state }: Props) {
+export default function ClockInControl({
+  shiftId,
+  houseName,
+  state,
+  preview,
+}: Props) {
   const router = useRouter(),
     [open, setOpen] = useState(false),
     [busy, setBusy] = useState(false),
@@ -50,7 +61,28 @@ export default function ClockInControl({ shiftId, houseName, state }: Props) {
     setError("")
     try {
       if (!pending.current) {
-        const position = await capturePosition()
+        if (document.visibilityState !== "visible" || !navigator.onLine)
+          throw new Error(
+            "Keep Clock In visible and reconnect before recording attendance.",
+          )
+        const candidate = preview?.current() ?? null
+        const position =
+          candidate &&
+          !positionProblem(candidate, state.positionPolicy, Date.now())
+            ? candidate
+            : await capturePosition()
+        if (document.visibilityState !== "visible")
+          throw new Error(
+            "Clock-in paused while the app was hidden. Return and retry.",
+          )
+        if (state.positionPolicy) {
+          const problem = positionProblem(
+            position,
+            state.positionPolicy,
+            Date.now(),
+          )
+          if (problem) throw new Error(problem)
+        }
         if (!active.current) return
         pending.current = {
           shiftId,
@@ -68,6 +100,7 @@ export default function ClockInControl({ shiftId, houseName, state }: Props) {
       const result = await response.json().catch(() => null)
       if (!active.current) return
       if (!response.ok) {
+        if (response.status === 401 || response.status === 403) preview?.stop()
         if (response.status < 500 || result?.code) pending.current = null
         throw new Error(
           result?.error ??
@@ -84,6 +117,7 @@ export default function ClockInControl({ shiftId, houseName, state }: Props) {
           "Unable to confirm clock-in. Refresh before starting another request or Contact Management.",
         )
       pending.current = null
+      preview?.stop()
       setUncertain(false)
       setRecorded(result.attendance)
       setOpen(false)
@@ -205,7 +239,7 @@ export default function ClockInControl({ shiftId, houseName, state }: Props) {
         >
           <p>
             {demo
-              ? "Your current location is requested once to record GPS-assisted attendance for this fictional demonstration. Latitude, longitude, accuracy and measurement time are recorded. Precise coordinates are retained for seven days. Distance from the assigned house is not checked. No background tracking is used."
+              ? "A fresh, accurate live preview reading is used, or a fresh position is requested, to record GPS-assisted attendance for this fictional demonstration. Latitude, longitude, accuracy and measurement time are recorded. Precise coordinates are retained for seven days. Distance from the assigned house is not checked. No background tracking is used."
               : "Your current location is requested once to check this clock-in against the assigned house. No background tracking is used. We retain the recorded time, accuracy and validation result; raw coordinates are not stored."}
           </p>
           <p>

@@ -1,5 +1,7 @@
 # GPS recording demo and presentation polish
 
+> **Live GPS preview follow-up — deployed and accepted (27 October 2026):** `live-gps-map-preview` is deployed at the existing staging origin following explicit approval. Real RedMagic native-watch updates, Stop, Home/background cleanup, explicit restart, navigation/logout, one live-fix clock-in, retained map/refresh and clock-out pass. Preview created zero database attendance/evidence; only the accepted event was saved. Previous full app is checkpointed at `6f3faaa`. See [full live-map handover](live-gps-map-preview.md#approved-hosting-and-actual-android-results).
+
 > **GPS/presentation follow-up — Stages A–D complete (27 October 2026):** the approved staging web update and QStash Free cleanup are live. A real scheduled delivery erased expired synthetic coordinates while preserving attendance/audit. The installed RedMagic APK1.0.1/build2 passed genuine GPS clock-in, exact PostgreSQL/evidence comparison, live map, refresh, clock-out, permission denial and presentation checks. Recording-only mode remains pinned to the fictional organisation; this is not house verification or organisational production approval. The separately approved shift cancellation/replacement is audited; other original records/credentials are preserved. No new source push or APK/signing change. See [full handover](gps-demo-and-visual-polish.md#completion-and-operating-handover).
 
 The following Stage A/B sections describe historical checkpoints; the current Stage C section above takes precedence.

@@ -1,5 +1,7 @@
 "use client"
 import { OwnAttendanceSummary } from "../attendance/AttendanceHistoryView"
+import useLiveLocation from "../attendance/useLiveLocation"
+import LiveLocationPanel from "../attendance/LiveLocationPanel"
 import ClockInControl from "../attendance/ClockInControl"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
@@ -51,6 +53,12 @@ export default function StaffScheduleView({
       shiftOnDay(s.startsAt, s.endsAt, data.day),
     ),
     house = params.get("house") ?? ""
+  const previewEnabled =
+    view === "shifts" &&
+    !data.detail &&
+    !!highlighted?.clockIn?.available &&
+    !highlighted.clockIn.attendance
+  const live = useLiveLocation(previewEnabled)
   const cards = (rows: ShiftRead[]) =>
     rows.map((row) => (
       <ShiftCardView
@@ -158,6 +166,7 @@ export default function StaffScheduleView({
                   shiftId={highlighted.id}
                   houseName={highlighted.houseName}
                   state={highlighted.clockIn}
+                  preview={live}
                 />
                 <Btn
                   variant="secondary"
@@ -166,30 +175,21 @@ export default function StaffScheduleView({
                   View shift details
                 </Btn>
               </section>
-              <section className="cm-map-card" aria-label="House location">
-                <div className="cm-map">
-                  <Empty
-                    icon="pin"
-                    title="Live location not shown"
-                    text={highlighted.address}
-                  />
-                </div>
-                <div className="cm-map-legend">
-                  <span>Assigned house</span>
-                  <span>No device location</span>
-                </div>
-                <Banner tone="info">
-                  Location is collected only when you choose to clock in. No
-                  live device location is shown on this page.
-                </Banner>
-              </section>
+              <LiveLocationPanel
+                live={live}
+                enabled={previewEnabled}
+                policy={highlighted.clockIn?.positionPolicy}
+              />
             </div>
           ) : (
-            <Empty
-              icon="calendar"
-              title="No upcoming shifts"
-              text="No active scheduled shifts are assigned to your account."
-            />
+            <>
+              <Empty
+                icon="calendar"
+                title="No upcoming shifts"
+                text="No active scheduled shifts are assigned to your account."
+              />
+              <LiveLocationPanel live={live} enabled={false} />
+            </>
           )}
           <SectionTitle
             title="Upcoming shifts"
