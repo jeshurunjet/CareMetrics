@@ -20,31 +20,31 @@ export const seedEmployees = [
   {
     id: seedIds.admin,
     email: "avery.admin@caremetrics.example.test",
-    name: "Avery Example",
+    name: "Avery Thompson",
     role: "ADMINISTRATOR",
   },
   {
     id: seedIds.manager,
     email: "morgan.manager@caremetrics.example.test",
-    name: "Morgan Fiction",
+    name: "Morgan Bennett",
     role: "MANAGER",
   },
   {
     id: seedIds.staffA,
     email: "robin.staff@caremetrics.example.test",
-    name: "Robin Sample",
+    name: "Robin Walker",
     role: "STAFF",
   },
   {
     id: seedIds.staffB,
     email: "casey.staff@caremetrics.example.test",
-    name: "Casey Example",
+    name: "Casey Mitchell",
     role: "STAFF",
   },
   {
     id: seedIds.senior,
     email: "alex.senior@caremetrics.example.test",
-    name: "Alex Fiction",
+    name: "Alex Sullivan",
     role: "SENIOR_STAFF",
   },
 ] as const

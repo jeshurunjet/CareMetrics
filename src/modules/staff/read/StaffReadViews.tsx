@@ -46,6 +46,7 @@ export function StaffReadShell({
     <>
       <StaffShellView
         backend
+        fictionalDemo={employee.fictionalDemo}
         user={employee}
         houseCount={employee.assignedHouses.length}
         unread={0}
@@ -79,7 +80,7 @@ function EmployeeCard({ employee }: { employee: EmployeeIdentity }) {
   const nav = useNav()
   return (
     <Card className="cm-me-card" onClick={() => nav.go({ page: "profile" })}>
-      <Avatar name={employee.name} size={48} />
+      <Avatar name={employee.name} recordId={employee.id} size={48} />
       <div className="cm-grow">
         <strong>{employee.name}</strong>
         <span>
@@ -208,7 +209,10 @@ export function HouseRead({
         }
       />
       <div className="cm-house-banner">
-        <SourcePhoto alt={`${house.name} exterior`} />
+        <SourcePhoto
+          src={house.photo}
+          alt="Illustrative residential exterior; not the fictional address"
+        />
         <div className="cm-house-banner-info">
           {house.phone ? (
             <a href={`tel:${house.phone.replace(/\s/g, "")}`}>
@@ -316,7 +320,7 @@ export function ClientRead({
       />
       <section className="cm-profile-head">
         <div className="cm-photo-edit">
-          <Avatar name={client.name} size={76} />
+          <Avatar name={client.name} recordId={client.id} size={76} />
           <button
             className="cm-photo-control"
             disabled
@@ -460,7 +464,7 @@ export function ProfileRead({ employee }: { employee: EmployeeIdentity }) {
       />
       <section className="cm-profile-head" aria-label="Current employee">
         <div className="cm-photo-edit">
-          <Avatar name={employee.name} size={84} />
+          <Avatar name={employee.name} recordId={employee.id} size={84} />
           <button
             className="cm-photo-control"
             disabled
@@ -637,7 +641,11 @@ export function SearchRead({ data }: { data: StaffSearch }) {
                     className="cm-result"
                     onClick={() => nav.go({ page: "house", id: h.id })}
                   >
-                    <SourcePhoto alt="" className="cm-result-img" />
+                    <SourcePhoto
+                      src={h.photo}
+                      alt="Illustrative residential exterior"
+                      className="cm-result-img"
+                    />
                     <div className="cm-grow">
                       <strong>{h.name}</strong>
                       <span>{h.address}</span>
@@ -660,7 +668,7 @@ export function SearchRead({ data }: { data: StaffSearch }) {
                     className="cm-result"
                     onClick={() => nav.go({ page: "client", id: c.id })}
                   >
-                    <Avatar name={c.name} size={46} />
+                    <Avatar name={c.name} recordId={c.id} size={46} />
                     <div className="cm-grow">
                       <strong>{c.name}</strong>
                       <span>{c.houseName}</span>

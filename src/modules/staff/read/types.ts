@@ -8,6 +8,7 @@ export interface HouseSummary {
   clientCount: number
 }
 export interface ClientSummary {
+  photo?: string
   id: string
   houseId: string
   name: string
@@ -15,6 +16,8 @@ export interface ClientSummary {
   houseName: string
 }
 export interface EmployeeIdentity {
+  fictionalDemo?: boolean
+  photo?: string
   id: string
   name: string
   role: string

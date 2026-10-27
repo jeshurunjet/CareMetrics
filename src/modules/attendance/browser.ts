@@ -45,7 +45,7 @@ export function capturePosition(): Promise<{
                 ? "POSITION_TIMEOUT"
                 : "POSITION_UNAVAILABLE",
             error.code === 1
-              ? "Location permission was denied. Check your browser settings or Contact Management."
+              ? "Location permission is required to record GPS-assisted attendance. Please enable location access and try again."
               : error.code === 3
                 ? "The location request timed out. Retry or Contact Management."
                 : "Location services are disabled or unavailable. Retry or Contact Management.",

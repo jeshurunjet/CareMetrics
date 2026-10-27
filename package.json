@@ -34,6 +34,7 @@
     "@neon/env": "^1.6.4",
     "@prisma/adapter-pg": "7.10.1",
     "@prisma/client": "7.10.1",
+    "@upstash/qstash": "2.12.1",
     "@vercel/functions": "3.10.3",
     "argon2": "0.45.1",
     "leaflet": "^1.9.4",

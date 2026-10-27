@@ -7,7 +7,7 @@ import { AccessError, entityId } from "../errors"
 import { audit } from "../admin/transaction"
 import { attendanceSelect } from "./clock-in"
 import { confirmation } from "./state"
-import { clockOutPolicy } from "./out-policy"
+import { effectiveClockOutPolicy } from "./out-policy"
 import { reject } from "./validation"
 export function clockOutInput(value: unknown) {
   if (!value || typeof value !== "object" || Array.isArray(value))
@@ -52,6 +52,7 @@ export async function clockOut(value: unknown) {
             role: true,
             email: true,
             status: true,
+            organisation: { select: { isFictionalDemo: true } },
           },
         })
         if (!actor) throw new AccessError(401)
@@ -79,14 +80,21 @@ export async function clockOut(value: unknown) {
             row.clockOutRequestId === input.requestId &&
             row.clockOutRequestDigest === digest
           )
-            return { attendance: confirmation(row), replayed: true }
+            return {
+              attendance: confirmation(row, actor.organisation.isFictionalDemo),
+              replayed: true,
+            }
           reject(
             "ATTENDANCE_COMPLETED",
             "Attendance is already completed. Refresh to view the original result.",
             409,
           )
         }
-        const p = clockOutPolicy(actor.organisationId)
+        const p = effectiveClockOutPolicy(
+          actor.organisationId,
+          row.verification,
+          actor.organisation.isFictionalDemo,
+        )
         if (!p || p.mode === "UNCONFIGURED")
           reject(
             "CLOCK_OUT_POLICY_UNAVAILABLE",
@@ -106,6 +114,10 @@ export async function clockOut(value: unknown) {
             409,
           )
         // Own-record closure deliberately does not restore withdrawn house/client access.
+        const verification =
+          p.approval === "fictional-demo"
+            ? "NO_LOCATION_REQUIRED_DEMO"
+            : "NO_LOCATION_REQUIRED_TEST"
         const saved = await tx.attendanceRecord.update({
           where: { id: row.id },
           data: {
@@ -114,7 +126,7 @@ export async function clockOut(value: unknown) {
             clockOutRequestDigest: digest,
             clockOutPolicyVersion: p.version,
             clockOutPolicySnapshot: { approval: p.approval, mode: p.mode },
-            clockOutVerification: "NO_LOCATION_REQUIRED_TEST",
+            clockOutVerification: verification,
           },
           select: attendanceSelect,
         })
@@ -126,10 +138,13 @@ export async function clockOut(value: unknown) {
           {
             shiftId: row.shiftId,
             policyVersion: p.version,
-            verification: "NO_LOCATION_REQUIRED_TEST",
+            verification,
           },
         )
-        return { attendance: confirmation(saved), replayed: false }
+        return {
+          attendance: confirmation(saved, actor.organisation.isFictionalDemo),
+          replayed: false,
+        }
       },
       { maxWait: 10000, timeout: 15000 },
     )

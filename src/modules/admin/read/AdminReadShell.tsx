@@ -13,9 +13,13 @@ const navigation = [
 ]
 export default function AdminReadShell({
   name,
+  recordId,
+  fictionalDemo = false,
   children,
 }: {
   name: string
+  recordId: string
+  fictionalDemo?: boolean
   children: React.ReactNode
 }) {
   const pathname = usePathname()
@@ -111,7 +115,7 @@ export default function AdminReadShell({
               />
             </div>
             <div className="ad-account">
-              <Avatar name={name} size={30} />
+              <Avatar name={name} recordId={recordId} size={30} />
               <span>{name}</span>
               <SignOut />
             </div>
@@ -119,8 +123,9 @@ export default function AdminReadShell({
           <main className="ad-content">
             <div className="ad-page">
               <p className="cm-hint">
-                CONNECTED DEVELOPMENT DATA · fictional records · core management
-                connected
+                {fictionalDemo
+                  ? "Demonstration environment — fictional records."
+                  : "CONNECTED DEVELOPMENT DATA · fictional records · core management connected"}
               </p>
               {children}
             </div>

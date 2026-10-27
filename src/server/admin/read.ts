@@ -16,6 +16,7 @@ const employeeSelect = {
   },
 } as const
 const houseSelect = {
+  imageKey: true,
   id: true,
   name: true,
   code: true,

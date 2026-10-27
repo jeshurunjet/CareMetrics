@@ -5,7 +5,12 @@ import { requireEmployee } from "../auth/access"
 import { database } from "../db"
 import { AccessError, entityId } from "../errors"
 import { audit } from "../admin/transaction"
-import { attendancePolicy } from "./policy"
+import { effectiveAttendancePolicy } from "./effective-policy"
+import {
+  isRecordingDemo,
+  GPS_RECORDING_DEMO,
+  LOCATION_RETENTION_MS,
+} from "./demo-policy"
 import { clockInInput, eligible, reject, verifyPosition } from "./validation"
 import { confirmation, clockInState, houseApproved } from "./state"
 export const attendanceSelect = {
@@ -29,7 +34,14 @@ const shiftSelect = {
   startsAt: true,
   endsAt: true,
   status: true,
-  house: { select: { active: true, latitude: true, longitude: true } },
+  house: {
+    select: {
+      active: true,
+      latitude: true,
+      longitude: true,
+      organisation: { select: { isFictionalDemo: true } },
+    },
+  },
   attendance: {
     select: { ...attendanceSelect, requestId: true, requestDigest: true },
   },
@@ -76,6 +88,7 @@ export async function clockIn(value: unknown) {
             role: true,
             email: true,
             status: true,
+            organisation: { select: { isFictionalDemo: true } },
           },
         })
         if (!actor) throw new AccessError(401)
@@ -112,7 +125,10 @@ export async function clockIn(value: unknown) {
             shift.attendance.clockIn
           )
             return {
-              attendance: confirmation(shift.attendance),
+              attendance: confirmation(
+                shift.attendance,
+                actor.organisation.isFictionalDemo,
+              ),
               replayed: true,
             }
           reject(
@@ -135,7 +151,7 @@ export async function clockIn(value: unknown) {
             "This request identifier has already been used.",
             409,
           )
-        const p = attendancePolicy(actor.organisationId)
+        const p = effectiveAttendancePolicy(actor.organisationId)
         if (!p)
           reject(
             "POLICY_UNAVAILABLE",
@@ -176,6 +192,10 @@ export async function clockIn(value: unknown) {
             "Another attendance record remains open. Clock-out is not available yet.",
             409,
           )
+        const demo = isRecordingDemo(p)
+        const verification = demo
+          ? GPS_RECORDING_DEMO
+          : "SERVER_VALIDATED_LOCATION_TEST"
         const row = await tx.attendanceRecord.create({
           data: {
             organisationId: actor.organisationId,
@@ -185,23 +205,46 @@ export async function clockIn(value: unknown) {
             clockIn: receivedAt,
             measuredAt: new Date(d.measuredAt),
             accuracyMetres: d.accuracyMetres,
-            verification: "SERVER_VALIDATED_LOCATION_TEST",
+            verification,
             policyVersion: p.version,
-            policySnapshot: {
-              approval: p.approval,
-              maxDistanceMetres: p.maxDistanceMetres,
-              maxAccuracyMetres: p.maxAccuracyMetres,
-              maxAgeMs: p.maxAgeMs,
-              maxFutureSkewMs: p.maxFutureSkewMs,
-              earlyWindowMs: p.earlyWindowMs,
-              lateWindowMs: p.lateWindowMs,
-              boundaryRule: p.boundaryRule,
-            },
+            policySnapshot: isRecordingDemo(p)
+              ? {
+                  approval: p.approval,
+                  mode: p.mode,
+                  retentionDays: p.retentionDays,
+                  maxAccuracyMetres: p.maxAccuracyMetres,
+                  maxAgeMs: p.maxAgeMs,
+                  maxFutureSkewMs: p.maxFutureSkewMs,
+                  earlyWindowMs: p.earlyWindowMs,
+                  lateWindowMs: p.lateWindowMs,
+                }
+              : {
+                  approval: p.approval,
+                  maxDistanceMetres: p.maxDistanceMetres,
+                  maxAccuracyMetres: p.maxAccuracyMetres,
+                  maxAgeMs: p.maxAgeMs,
+                  maxFutureSkewMs: p.maxFutureSkewMs,
+                  earlyWindowMs: p.earlyWindowMs,
+                  lateWindowMs: p.lateWindowMs,
+                  boundaryRule: p.boundaryRule,
+                },
             requestId: d.requestId,
             requestDigest: digest,
           },
           select: attendanceSelect,
         })
+        if (demo)
+          await tx.attendanceLocationEvidence.create({
+            data: {
+              attendanceId: row.id,
+              organisationId: actor.organisationId,
+              latitude: d.latitude,
+              longitude: d.longitude,
+              expiresAt: new Date(
+                new Date(d.measuredAt).getTime() + LOCATION_RETENTION_MS,
+              ),
+            },
+          })
         await audit(
           { tx, actor },
           "attendance.clocked_in",
@@ -211,10 +254,13 @@ export async function clockIn(value: unknown) {
             shiftId: shift.id,
             houseId: shift.houseId,
             policyVersion: p.version,
-            verification: "SERVER_VALIDATED_LOCATION_TEST",
+            verification,
           },
         )
-        return { attendance: confirmation(row), replayed: false }
+        return {
+          attendance: confirmation(row, actor.organisation.isFictionalDemo),
+          replayed: false,
+        }
       },
       { maxWait: 10000, timeout: 15000 },
     )

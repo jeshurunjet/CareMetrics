@@ -1,4 +1,6 @@
 "use client"
+import SourcePhoto from "@/modules/staff/ui/SourcePhoto"
+import { housePhoto } from "@/lib/demo-media"
 import Link from "next/link"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -60,6 +62,14 @@ export default function HouseDetails({ data, directory, tab }: HouseProps) {
       />
       {tab === "overview" ? (
         <Panel title="House details">
+          <SourcePhoto
+            src={housePhoto(row.imageKey)}
+            alt="Illustrative residential exterior; not the fictional address"
+            style={{ width: "100%", height: 220, objectFit: "cover" }}
+          />
+          <p className="cm-hint">
+            Illustrative photograph; not the fictional address.
+          </p>
           <Pill s={row.active ? "Active" : "Inactive"} />
           <KV
             items={[

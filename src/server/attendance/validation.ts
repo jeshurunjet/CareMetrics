@@ -1,5 +1,6 @@
 import { distanceMetres, validCoordinates } from "../../modules/attendance/geo"
-import type { AttendancePolicy } from "./policy"
+import type { ClockInPolicy } from "./effective-policy"
+import { isRecordingDemo } from "./demo-policy"
 export class ClockInError extends Error {
   constructor(
     public status: 400 | 409 | 503,
@@ -67,7 +68,7 @@ export function clockInInput(value: unknown): ClockInInput {
   return d as unknown as ClockInInput
 }
 export function eligible(
-  p: AttendancePolicy,
+  p: ClockInPolicy,
   startsAt: Date,
   endsAt: Date,
   receipt: number,
@@ -79,7 +80,7 @@ export function eligible(
   )
 }
 export function verifyPosition(
-  p: AttendancePolicy,
+  p: ClockInPolicy,
   d: ClockInInput,
   houseLatitude: number,
   houseLongitude: number,
@@ -100,6 +101,7 @@ export function verifyPosition(
       "STALE_MEASUREMENT",
       "The location measurement is too old. Request a new position.",
     )
+  if (isRecordingDemo(p)) return
   const distance = distanceMetres(
     d.latitude,
     d.longitude,

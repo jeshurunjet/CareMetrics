@@ -48,6 +48,10 @@ env.DATABASE_URL_UNPOOLED = env.DATABASE_URL
 env.NEON_BRANCH_NAME = "local-test"
 // Explicit fictional policies apply only inside these guarded test processes.
 Object.assign(env, await testAttendancePolicyEnvironment())
+if (process.env.CAREMETRICS_TEST_DEMO_GPS === "true") {
+  const { demoEnvironment } = await import("../tests/fixtures/demo-policy.ts")
+  Object.assign(env, demoEnvironment("20000000-0000-4000-8000-000000000001"))
+}
 async function run(command, args, overrides = {}) {
   await new Promise((resolve, reject) => {
     const child = spawn(command, args, {

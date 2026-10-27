@@ -94,7 +94,7 @@ describe("isolated migrated PostgreSQL foundation", () => {
     await as(id.staffA)
     expect((await getAssignedHouses()).map((h) => h.id)).toEqual([id.houseA])
     expect((await requireClient(id.clientA)).contacts[0].name).toBe(
-      "Fictional NOK",
+      "Taylor Parker",
     )
     expect((await getHouseClients(id.houseA)).length).toBe(2)
     await expect(requireClient(id.clientB)).rejects.toMatchObject({
@@ -430,12 +430,12 @@ describe("Phase 2B real screen read models", () => {
     expect(overview.clients.map((c) => c.id)).toContain(id.clientA)
     expect(overview.clients.map((c) => c.id)).not.toContain(id.clientB)
     expect(JSON.stringify(overview)).not.toMatch(
-      /passwordHash|sessionVersion|dateOfBirth|Fictional NOK|organisationId/,
+      /passwordHash|sessionVersion|dateOfBirth|Taylor Parker|organisationId/,
     )
     expect((await getHouseProfile(id.houseA)).clients).toEqual(overview.clients)
     const client = await getClientProfile(id.clientA)
     expect(client.houseId).toBe(id.houseA)
-    expect(client.contacts[0].name).toBe("Fictional NOK")
+    expect(client.contacts[0].name).toBe("Taylor Parker")
     await expect(getClientProfile(id.clientB)).rejects.toMatchObject({
       status: 404,
     })
@@ -466,7 +466,7 @@ describe("Phase 2B real screen read models", () => {
       (await searchStaff(own.name.toUpperCase())).clients.map((c) => c.id),
     ).toContain(id.clientA)
     expect(JSON.stringify(all)).not.toMatch(
-      /dateOfBirth|contacts|passwordHash|summary|Fictional NOK|organisationId/,
+      /dateOfBirth|contacts|passwordHash|summary|Taylor Parker|organisationId/,
     )
     expect((await searchStaff("no-match-unique")).houses).toEqual([])
     await expect(searchStaff(["x"])).rejects.toMatchObject({ status: 400 })

@@ -20,14 +20,27 @@ const select = {
   houseId: true,
   clockIn: true,
   clockOut: true,
-  house: { select: { id: true, name: true } },
+  verification: true,
+  house: {
+    select: {
+      id: true,
+      name: true,
+      organisation: { select: { isFictionalDemo: true } },
+    },
+  },
   shift: {
     select: {
       startsAt: true,
       endsAt: true,
       status: true,
       houseId: true,
-      house: { select: { id: true, name: true } },
+      house: {
+        select: {
+          id: true,
+          name: true,
+          organisation: { select: { isFictionalDemo: true } },
+        },
+      },
       employee: { select: { name: true } },
     },
   },
@@ -40,6 +53,7 @@ function dto(
     clockOut = row.clockOut?.toISOString() ?? null
   return {
     id: row.id,
+    verification: row.verification,
     shiftId: row.shiftId,
     employeeId: row.employeeId,
     employeeName: row.shift.employee.name,
@@ -53,7 +67,14 @@ function dto(
     status: clockOut ? "COMPLETED" : clockIn ? "OPEN" : "INCOMPLETE",
     elapsedMilliseconds: elapsedMilliseconds(clockIn, clockOut),
     clockOutAvailability: ownerAction
-      ? clockOutAvailability(row.organisationId, row.clockIn, row.clockOut)
+      ? clockOutAvailability(
+          row.organisationId,
+          row.clockIn,
+          row.clockOut,
+          row.verification,
+          row.house?.organisation.isFictionalDemo ??
+            row.shift.house.organisation.isFictionalDemo,
+        )
       : {
           available: false,
           mode: "UNCONFIGURED",

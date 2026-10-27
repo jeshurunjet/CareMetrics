@@ -71,6 +71,7 @@ async function seed() {
           create: {
             id: id.organisation,
             name: "CareMetrics Fictional Development",
+            isFictionalDemo: true,
           },
           update: {},
         })
@@ -87,8 +88,8 @@ async function seed() {
             update: {},
           })
         for (const [houseId, code, name] of [
-          [id.houseA, "FICTION-A", "Harbour Example House"],
-          [id.houseB, "FICTION-B", "Meadow Sample House"],
+          [id.houseA, "FICTION-A", "Harbour House"],
+          [id.houseB, "FICTION-B", "Meadow House"],
         ])
           await tx.house.upsert({
             where: { id: houseId },
@@ -98,6 +99,7 @@ async function seed() {
               code,
               name,
               address: "Fictional address, New Zealand",
+              imageKey: houseId === id.houseA ? "house-1" : "house-2",
             },
             update: {},
           })
@@ -119,9 +121,9 @@ async function seed() {
             update: {},
           })
         for (const [clientId, houseId, name] of [
-          [id.clientA, id.houseA, "Sam Example"],
-          [id.clientB, id.houseB, "Lee Sample"],
-          [id.clientC, id.houseA, "Drew Fiction"],
+          [id.clientA, id.houseA, "Sam Parker"],
+          [id.clientB, id.houseB, "Lee Wilson"],
+          [id.clientC, id.houseA, "Drew Collins"],
         ]) {
           await tx.client.upsert({
             where: { id: clientId },
@@ -142,8 +144,13 @@ async function seed() {
               id: contactId,
               organisationId: id.organisation,
               clientId,
-              name: "Fictional NOK",
-              relationship: "Example relative",
+              name:
+                clientId === id.clientA
+                  ? "Taylor Parker"
+                  : clientId === id.clientB
+                    ? "Jamie Wilson"
+                    : "Riley Collins",
+              relationship: "Relative",
               isPrimary: true,
               phone: "000 000 0000",
             },

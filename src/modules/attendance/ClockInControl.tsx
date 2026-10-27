@@ -37,6 +37,9 @@ export default function ClockInControl({ shiftId, houseName, state }: Props) {
       active.current = false
     }
   }, [])
+  const demo =
+    state?.mode === "GPS_LOCATION_RECORDED_DEMO" ||
+    recorded?.verification === "GPS_LOCATION_RECORDED_DEMO"
   const attendance = recorded?.clockOut
     ? recorded
     : (state?.attendance ?? recorded)
@@ -104,11 +107,30 @@ export default function ClockInControl({ shiftId, houseName, state }: Props) {
     return (
       <div className="cm-stack" aria-live="polite">
         <Status tone="success">
-          {attendance.clockOut ? "Clocked Out" : "Clocked In"}
+          {attendance.clockOut
+            ? "Clocked Out"
+            : attendance.verification === "GPS_LOCATION_RECORDED_DEMO"
+              ? "Clocked in — GPS location recorded."
+              : "Clocked In"}
         </Status>
         <p>
           Recorded {formatDateTime(attendance.clockIn)} · {houseName}
         </p>
+        {attendance.verification === "GPS_LOCATION_RECORDED_DEMO" && (
+          <Banner tone="info">
+            GPS location recorded for this fictional demonstration. This is not
+            verification at the assigned house. Precise coordinates expire after
+            seven days.
+          </Banner>
+        )}
+        {attendance.verification === "GPS_LOCATION_RECORDED_DEMO" && (
+          <Link
+            className="cm-btn cm-btn--secondary"
+            href={`/roster?tab=timesheets&attendanceId=${attendance.id}`}
+          >
+            View GPS location and attendance
+          </Link>
+        )}
         {attendance.verification === "SERVER_VALIDATED_LOCATION_TEST" && (
           <Banner tone="warning">
             Development test policy. Browser location checks are not conclusive
@@ -182,10 +204,9 @@ export default function ClockInControl({ shiftId, houseName, state }: Props) {
           }
         >
           <p>
-            Your current location is requested once to check this clock-in
-            against the assigned house. No background tracking is used. We
-            retain the recorded time, accuracy and validation result; raw
-            coordinates are not stored.
+            {demo
+              ? "Your current location is requested once to record GPS-assisted attendance for this fictional demonstration. Latitude, longitude, accuracy and measurement time are recorded. Precise coordinates are retained for seven days. Distance from the assigned house is not checked. No background tracking is used."
+              : "Your current location is requested once to check this clock-in against the assigned house. No background tracking is used. We retain the recorded time, accuracy and validation result; raw coordinates are not stored."}
           </p>
           <p>
             Browser location can use GPS, Wi-Fi or network positioning and may

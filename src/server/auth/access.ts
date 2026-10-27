@@ -1,5 +1,6 @@
 import { clockOutPolicy } from "../attendance/out-policy"
 import { attendancePolicy } from "../attendance/policy"
+import { demoAttendancePolicy } from "../attendance/demo-policy"
 import "server-only"
 import { auth } from "./index"
 import { database } from "../db"
@@ -41,7 +42,19 @@ export async function requireManagement() {
 }
 export async function requireCapability(capability: string) {
   const employee = await requireEmployee()
+  const demoAllowed =
+    ["attendance.gpsClockIn", "attendance.clockOut"].includes(capability) &&
+    !!demoAttendancePolicy(employee.organisationId) &&
+    !!(await database().organisation.findFirst({
+      where: {
+        id: employee.organisationId,
+        active: true,
+        isFictionalDemo: true,
+      },
+      select: { id: true },
+    }))
   const allowed =
+    demoAllowed ||
     capability === "staff.assignedData" ||
     capability === "care.clientDiary" ||
     capability === "care.assessments" ||

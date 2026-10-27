@@ -36,15 +36,17 @@ enum TemplateKind {
 }
 
 model Organisation {
-  id          String         @id @default(uuid()) @db.Uuid
-  name        String
-  active      Boolean        @default(true)
-  createdAt   DateTime       @default(now()) @db.Timestamptz(3)
-  updatedAt   DateTime       @updatedAt @db.Timestamptz(3)
-  auditEvents AuditEvent[]
-  employees   User[]
-  templates   CareTemplate[]
-  houses      House[]
+  id              String         @id @default(uuid()) @db.Uuid
+  name            String
+  active          Boolean        @default(true)
+  // Operator-only classification; never accepted by public management forms.
+  isFictionalDemo Boolean        @default(false)
+  createdAt       DateTime       @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime       @updatedAt @db.Timestamptz(3)
+  auditEvents     AuditEvent[]
+  employees       User[]
+  templates       CareTemplate[]
+  houses          House[]
 }
 
 // Credentials + JWT strategy: no OAuth Account/Session/VerificationToken tables are used.
@@ -81,6 +83,7 @@ model House {
   address        String
   phone          String?
   email          String?
+  imageKey       String?
   active         Boolean                   @default(true)
   latitude       Decimal?                  @db.Decimal(10, 7)
   longitude      Decimal?                  @db.Decimal(10, 7)
@@ -178,32 +181,49 @@ model Shift {
 }
 
 model AttendanceRecord {
-  id                     String    @id @default(uuid()) @db.Uuid
-  organisationId         String    @db.Uuid
-  shiftId                String    @unique @db.Uuid
-  employeeId             String    @db.Uuid
-  houseId                String?   @db.Uuid
-  house                  House?    @relation(fields: [organisationId, houseId], references: [organisationId, id], onDelete: Restrict)
-  measuredAt             DateTime? @db.Timestamptz(3)
+  id                     String                      @id @default(uuid()) @db.Uuid
+  organisationId         String                      @db.Uuid
+  shiftId                String                      @unique @db.Uuid
+  employeeId             String                      @db.Uuid
+  houseId                String?                     @db.Uuid
+  house                  House?                      @relation(fields: [organisationId, houseId], references: [organisationId, id], onDelete: Restrict)
+  measuredAt             DateTime?                   @db.Timestamptz(3)
   accuracyMetres         Float?
   verification           String?
   policyVersion          String?
   policySnapshot         Json?
-  requestId              String?   @unique @db.Uuid
+  requestId              String?                     @unique @db.Uuid
   requestDigest          String?
-  clockIn                DateTime? @db.Timestamptz(3)
-  clockOutRequestId      String?   @unique @db.Uuid
+  clockIn                DateTime?                   @db.Timestamptz(3)
+  clockOutRequestId      String?                     @unique @db.Uuid
   clockOutRequestDigest  String?
   clockOutPolicyVersion  String?
   clockOutPolicySnapshot Json?
   clockOutVerification   String?
-  clockOut               DateTime? @db.Timestamptz(3)
-  createdAt              DateTime  @default(now()) @db.Timestamptz(3)
-  updatedAt              DateTime  @updatedAt @db.Timestamptz(3)
-  shift                  Shift     @relation(fields: [organisationId, shiftId, employeeId], references: [organisationId, id, employeeId], onDelete: Restrict)
+  clockOut               DateTime?                   @db.Timestamptz(3)
+  createdAt              DateTime                    @default(now()) @db.Timestamptz(3)
+  updatedAt              DateTime                    @updatedAt @db.Timestamptz(3)
+  shift                  Shift                       @relation(fields: [organisationId, shiftId, employeeId], references: [organisationId, id, employeeId], onDelete: Restrict)
+  locationEvidence       AttendanceLocationEvidence?
 
+  @@unique([organisationId, id])
   @@unique([organisationId, shiftId, employeeId])
   @@index([organisationId, employeeId, createdAt])
+}
+
+// Precise location is deliberately absent from ordinary attendance projections.
+// Metadata is retained; only the two coordinates may be erased after expiry.
+model AttendanceLocationEvidence {
+  attendanceId   String           @id @db.Uuid
+  organisationId String           @db.Uuid
+  latitude       Float?
+  longitude      Float?
+  expiresAt      DateTime         @db.Timestamptz(3)
+  purgedAt       DateTime?        @db.Timestamptz(3)
+  attendance     AttendanceRecord @relation(fields: [organisationId, attendanceId], references: [organisationId, id], onDelete: Restrict)
+
+  @@unique([organisationId, attendanceId])
+  @@index([expiresAt])
 }
 
 model CareTemplate {

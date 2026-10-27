@@ -1,3 +1,4 @@
+import { database } from "@/server/db"
 import AdminReadShell from "@/modules/admin/read/AdminReadShell"
 import { isBackendEnabled } from "@/server/config/backend"
 import {
@@ -17,7 +18,19 @@ export default async function AdminLayout({
   if (isBackendEnabled()) {
     const employee = await entryIdentity(true)
     if (!employee) return <BackendUnavailable />
-    return <AdminReadShell name={employee.name}>{children}</AdminReadShell>
+    const organisation = await database().organisation.findUniqueOrThrow({
+      where: { id: employee.organisationId },
+      select: { isFictionalDemo: true },
+    })
+    return (
+      <AdminReadShell
+        fictionalDemo={organisation.isFictionalDemo}
+        name={employee.name}
+        recordId={employee.id}
+      >
+        {children}
+      </AdminReadShell>
+    )
   }
   if (!isPreviewEnabled()) notFound()
   return (

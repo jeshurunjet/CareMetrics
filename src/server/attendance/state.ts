@@ -6,7 +6,11 @@ import type {
   ClockInState,
 } from "../../modules/attendance/types"
 import { validCoordinates } from "../../modules/attendance/geo"
-import { attendancePolicy, type AttendancePolicy } from "./policy"
+import {
+  effectiveAttendancePolicy,
+  type ClockInPolicy,
+} from "./effective-policy"
+import { isRecordingDemo, GPS_RECORDING_DEMO } from "./demo-policy"
 import { eligible } from "./validation"
 export interface AttendanceEvidence {
   organisationId: string
@@ -25,6 +29,7 @@ interface DecimalCoordinate {
   toNumber: () => number
 }
 interface HouseCoordinates {
+  organisation?: { isFictionalDemo: boolean }
   latitude: number | DecimalCoordinate | null
   longitude: number | DecimalCoordinate | null
   active: boolean
@@ -41,6 +46,7 @@ export interface ClockInShift {
 }
 export function confirmation(
   row: AttendanceEvidence,
+  fictionalOrganisation = false,
 ): ClockInConfirmation | null {
   if (!row.clockIn) return null
   return {
@@ -58,6 +64,8 @@ export function confirmation(
       row.organisationId,
       row.clockIn,
       row.clockOut,
+      row.verification,
+      fictionalOrganisation,
     ),
     measuredAt: row.measuredAt?.toISOString() ?? null,
     accuracyMetres: row.accuracyMetres,
@@ -65,7 +73,11 @@ export function confirmation(
     verification: row.verification,
   }
 }
-export function houseApproved(p: AttendancePolicy, shift: ClockInShift) {
+export function houseApproved(p: ClockInPolicy, shift: ClockInShift) {
+  if (isRecordingDemo(p))
+    return (
+      shift.house.active && shift.house.organisation?.isFictionalDemo === true
+    )
   const h = shift.house
   return (
     h.active &&
@@ -85,13 +97,25 @@ export function clockInState(
   now: Date,
   otherOpen = false,
 ): ClockInState {
-  const recorded = shift.attendance ? confirmation(shift.attendance) : null
+  const recorded = shift.attendance
+    ? confirmation(
+        shift.attendance,
+        shift.house.organisation?.isFictionalDemo === true,
+      )
+    : null
   const base = { available: false, testOnly: false, attendance: recorded }
   if (recorded)
     return {
       ...base,
       code: recorded.clockOut ? "CLOCKED_OUT" : "CLOCKED_IN",
-      message: recorded.clockOut ? "Clocked Out" : "Clocked In",
+      message: recorded.clockOut
+        ? "Clocked Out"
+        : recorded.verification === GPS_RECORDING_DEMO
+          ? "Clocked in — GPS location recorded."
+          : "Clocked In",
+      ...(recorded.verification === GPS_RECORDING_DEMO
+        ? { mode: GPS_RECORDING_DEMO }
+        : {}),
       testOnly: recorded.verification === "SERVER_VALIDATED_LOCATION_TEST",
     }
   if (shift.attendance)
@@ -100,7 +124,7 @@ export function clockInState(
       code: "EXISTING_ATTENDANCE",
       message: "Attendance history already exists. Contact Management.",
     }
-  const p = attendancePolicy(shift.organisationId)
+  const p = effectiveAttendancePolicy(shift.organisationId)
   if (!p)
     return {
       ...base,
@@ -121,7 +145,7 @@ export function clockInState(
   )
     return {
       ...base,
-      testOnly: true,
+      testOnly: !isRecordingDemo(p),
       code: "INELIGIBLE_SHIFT",
       message:
         "This shift is outside the configured clock-in window. Contact Management.",
@@ -129,17 +153,19 @@ export function clockInState(
   if (otherOpen)
     return {
       ...base,
-      testOnly: true,
+      testOnly: !isRecordingDemo(p),
       code: "ACTIVE_ATTENDANCE",
       message:
         "An open attendance record already exists. Complete that attendance under the configured policy or Contact Management.",
     }
   return {
     ...base,
-    testOnly: true,
+    testOnly: !isRecordingDemo(p),
+    ...(isRecordingDemo(p) ? { mode: GPS_RECORDING_DEMO } : {}),
     code: "AVAILABLE",
     available: true,
-    message:
-      "Development test policy only. Location is checked once when you request clock-in.",
+    message: isRecordingDemo(p)
+      ? "Demonstration: GPS location is recorded once, retained for seven days, and is not verified at the assigned house."
+      : "Development test policy only. Location is checked once when you request clock-in.",
   }
 }

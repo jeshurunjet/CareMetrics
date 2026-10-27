@@ -3,7 +3,7 @@ import Link from "next/link"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { PageHead, Panel, KV, SubTabs, Pill } from "../ui/core"
-import { Btn, Empty } from "@/modules/staff/ui"
+import { Avatar, Btn, Empty } from "@/modules/staff/ui"
 import type { clientEditor } from "@/server/admin/read"
 import { clientPresentation } from "./ManagementForms"
 import { ContactsDialog, TransferDialog } from "./ManagementDialogs"
@@ -57,6 +57,7 @@ export default function ClientDetails({ data, tab, diary, care }: ClientProps) {
       />
       {tab === "overview" ? (
         <Panel title="Client details">
+          <Avatar name={row.name} recordId={row.id} size={64} />
           <Pill s={row.active ? "Active" : "Inactive"} />
           <KV
             items={[

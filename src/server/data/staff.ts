@@ -1,4 +1,5 @@
 import "server-only"
+import { illustratedAvatar, housePhoto } from "@/lib/demo-media"
 import { database } from "../db"
 import { requireEmployee } from "../auth/access"
 import { staffScope, requireClient, requireHouse } from "./access"
@@ -11,6 +12,7 @@ import type {
   StaffSearch,
 } from "@/modules/staff/read/types"
 const houseFields = {
+  imageKey: true,
   id: true,
   name: true,
   address: true,
@@ -37,6 +39,7 @@ function houseDto(h: {
   address: string
   phone: string | null
   email: string | null
+  imageKey: string | null
   _count: { clients: number }
 }): HouseSummary {
   return {
@@ -46,6 +49,7 @@ function houseDto(h: {
     phone: h.phone,
     email: h.email,
     clientCount: h._count.clients,
+    photo: housePhoto(h.imageKey),
   }
 }
 function clientDto(c: {
@@ -60,6 +64,7 @@ function clientDto(c: {
     houseId: c.houseId,
     name: c.name,
     preferred: c.preferredName || c.name,
+    photo: illustratedAvatar(c.id),
     houseName: c.house.name,
   }
 }
@@ -75,7 +80,13 @@ export async function getCurrentStaff(): Promise<EmployeeIdentity> {
     select: { house: { select: { id: true, name: true } } },
     orderBy: { house: { name: "asc" } },
   })
+  const organisation = await database().organisation.findUniqueOrThrow({
+    where: { id: employee.organisationId },
+    select: { isFictionalDemo: true },
+  })
   return {
+    fictionalDemo: organisation.isFictionalDemo,
+    photo: illustratedAvatar(employee.id),
     id: employee.id,
     name: employee.name,
     role: roleLabels[employee.role],

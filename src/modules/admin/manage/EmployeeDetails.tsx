@@ -73,7 +73,7 @@ export default function EmployeeDetails({ data, tab }: EmployeeProps) {
           }
         >
           <div className="ad-cell-user">
-            <Avatar name={row.name} size={64} />
+            <Avatar name={row.name} recordId={row.id} size={64} />
             <Pill s={statusNames[row.status]} />
           </div>
           <KV

@@ -1,4 +1,5 @@
 import "server-only"
+import { demoAttendancePolicy, GPS_RECORDING_DEMO } from "./demo-policy"
 import type { ClockOutAvailability } from "../../modules/attendance/types"
 export interface ClockOutPolicy {
   organisationId: string
@@ -56,10 +57,34 @@ export function clockOutPolicy(
     return null
   }
 }
+export function effectiveClockOutPolicy(
+  organisationId: string,
+  verification: string | null | undefined,
+  fictionalOrganisation: boolean,
+  env: Record<string, string | undefined> = process.env,
+) {
+  const demo =
+    fictionalOrganisation && verification === GPS_RECORDING_DEMO
+      ? demoAttendancePolicy(organisationId, env)
+      : null
+  if (demo)
+    return {
+      organisationId,
+      version: demo.version + "-out",
+      approval: "fictional-demo" as const,
+      enabled: true as const,
+      mode: demo.clockOutMode,
+    }
+  return verification === GPS_RECORDING_DEMO
+    ? null
+    : clockOutPolicy(organisationId, env)
+}
 export function clockOutAvailability(
   organisationId: string,
   clockIn: Date | null,
   clockOut: Date | null,
+  verification?: string | null,
+  fictionalOrganisation = false,
 ): ClockOutAvailability {
   if (clockOut)
     return {
@@ -77,7 +102,11 @@ export function clockOutAvailability(
       message: "No open recorded clock-in. Contact Management.",
       testOnly: false,
     }
-  const p = clockOutPolicy(organisationId)
+  const p = effectiveClockOutPolicy(
+    organisationId,
+    verification,
+    fictionalOrganisation,
+  )
   if (!p || p.mode === "UNCONFIGURED")
     return {
       available: false,
@@ -100,7 +129,11 @@ export function clockOutAvailability(
     available: true,
     mode: p.mode,
     code: "AVAILABLE",
-    message: "Development test policy: no location is collected for clock-out.",
-    testOnly: true,
+    message:
+      p.approval === "fictional-demo"
+        ? "Fictional demonstration: no location is collected for clock-out."
+        : "Development test policy: no location is collected for clock-out.",
+    testOnly: p.approval === "test-only",
+    demoRecording: p.approval === "fictional-demo",
   }
 }

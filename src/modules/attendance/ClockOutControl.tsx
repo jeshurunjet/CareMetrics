@@ -121,8 +121,9 @@ export default function ClockOutControl({
             approved payroll timesheet.
           </p>
           <Banner tone="warning">
-            Development test policy only: no location is required or collected
-            for clock-out.
+            {availability.demoRecording
+              ? "Fictional demonstration: no location is required or collected for clock-out."
+              : "Development test policy only: no location is required or collected for clock-out."}
           </Banner>
           {error && (
             <Banner tone="danger" title="Clock-out not confirmed">

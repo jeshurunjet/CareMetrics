@@ -50,6 +50,7 @@ export function StaffShellView({
   unread,
   onLogout,
   backend = false,
+  fictionalDemo = false,
 }: {
   children: React.ReactNode
   user: Employee
@@ -57,6 +58,7 @@ export function StaffShellView({
   unread: number
   onLogout: () => void
   backend?: boolean
+  fictionalDemo?: boolean
 }) {
   const availablePages = backend
     ? ["home", "clock", "houses", "search", "profile", "settings", "roster"]
@@ -141,7 +143,7 @@ export function StaffShellView({
             notificationsAvailable={!backend}
           />
           <main ref={main} className="cm-content" id="main">
-            <StaffPageContainer backend={backend}>
+            <StaffPageContainer backend={backend} fictionalDemo={fictionalDemo}>
               {children}
             </StaffPageContainer>
           </main>

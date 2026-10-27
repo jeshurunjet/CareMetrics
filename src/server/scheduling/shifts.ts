@@ -50,6 +50,7 @@ const select = {
       active: true,
       latitude: true,
       longitude: true,
+      organisation: { select: { isFictionalDemo: true } },
     },
   },
   assignedBy: { select: { name: true } },

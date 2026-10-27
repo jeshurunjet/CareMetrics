@@ -1,4 +1,5 @@
 export interface ClockOutAvailability {
+  demoRecording?: boolean
   available: boolean
   mode: "UNCONFIGURED" | "NO_LOCATION_REQUIRED" | "LOCATION_REQUIRED"
   code: string
@@ -20,6 +21,7 @@ export interface ClockInConfirmation {
   verification: string | null
 }
 export interface ClockInState {
+  mode?: "GPS_LOCATION_RECORDED_DEMO"
   available: boolean
   code: string
   message: string
@@ -28,6 +30,7 @@ export interface ClockInState {
 }
 
 export interface AttendanceRead {
+  verification?: string | null
   id: string
   shiftId: string
   employeeId: string

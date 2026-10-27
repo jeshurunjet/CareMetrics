@@ -1,5 +1,5 @@
 export class AccessError extends Error {
-  constructor(public readonly status: 400 | 401 | 403 | 404 | 503) {
+  constructor(public readonly status: 400 | 401 | 403 | 404 | 429 | 503) {
     super("Request unavailable")
   }
 }
@@ -11,6 +11,7 @@ export function apiError(error: unknown): Response {
     403: "Access unavailable",
     404: "Record unavailable",
     503: "Service unavailable",
+    429: "Too many requests. Please try again shortly.",
   }[status]
   return Response.json({ error: message }, {
     status,

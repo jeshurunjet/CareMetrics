@@ -16,6 +16,7 @@ import Tabs from "@/modules/staff/ui/Tabs"
 import { PageHead, SubTabs, DataTable, Select } from "@/modules/admin/ui/core"
 import Drawer from "@/modules/admin/workforce/Drawer"
 import ClockOutControl from "./ClockOutControl"
+import AttendanceLocationDetails from "./AttendanceLocationDetails"
 import { attendanceInstant, formatElapsed } from "./duration"
 import { formatDate } from "@/lib/time"
 import { shiftTime } from "@/modules/staff/roster/dates"
@@ -344,6 +345,13 @@ export default function AttendanceHistoryView({
             onClose={() => change({ attendanceId: "" })}
           >
             <AttendanceFacts admin record={data.detail} />
+            {data.detail.verification === "GPS_LOCATION_RECORDED_DEMO" && (
+              <AttendanceLocationDetails
+                key={`location-${data.detail.id}`}
+                admin
+                attendanceId={data.detail.id}
+              />
+            )}
             <Banner tone="info">
               Recorded elapsed attendance only. Manual overrides, payroll
               approval and corrections remain unavailable.
@@ -356,6 +364,12 @@ export default function AttendanceHistoryView({
             onClose={() => change({ attendanceId: "" })}
           >
             <AttendanceFacts record={data.detail} />
+            {data.detail.verification === "GPS_LOCATION_RECORDED_DEMO" && (
+              <AttendanceLocationDetails
+                key={`location-${data.detail.id}`}
+                attendanceId={data.detail.id}
+              />
+            )}
             <ClockOutControl
               key={data.detail.id}
               attendanceId={data.detail.id}

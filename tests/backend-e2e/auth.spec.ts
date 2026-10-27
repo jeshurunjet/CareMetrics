@@ -111,9 +111,9 @@ test("genuine login preserves My Shifts → Dashboard without clock-in; scoped r
   await page.getByRole("link", { name: "Continue to dashboard" }).click()
   await expect(page).toHaveURL(/\/dashboard$/)
   await page.reload()
-  await expect(page.locator(".cm-me-card")).toContainText("Robin Sample")
+  await expect(page.locator(".cm-me-card")).toContainText("Robin Walker")
   const houseCard = page.locator(".cm-house-mini").first()
-  await expect(houseCard).toContainText("Harbour Example House")
+  await expect(houseCard).toContainText("Harbour House")
   await expect(houseCard).toBeVisible()
   await expect
     .poll(() =>
@@ -125,8 +125,8 @@ test("genuine login preserves My Shifts → Dashboard without clock-in; scoped r
     )
     .toBe(true)
   const deferredStaff = await (await page.request.get("/houses")).text()
-  expect(deferredStaff).toContain("Harbour Example House")
-  expect(deferredStaff).not.toContain("Meadow Sample House")
+  expect(deferredStaff).toContain("Harbour House")
+  expect(deferredStaff).not.toContain("Meadow House")
   for (const marker of [
     "Jamie Taufa",
     "Taylor Reed",
@@ -268,11 +268,11 @@ test("real Staff journey shares assigned database records across houses, profile
   await expect(page).toHaveURL(/\/clients\//)
   await page.getByRole("link", { name: "View contacts & next of kin" }).click()
   await expect(
-    page.getByText("Fictional NOK", { exact: true }).first(),
+    page.getByText("Taylor Parker", { exact: true }).first(),
   ).toBeVisible()
   await page.reload()
   await expect(
-    page.getByText("Fictional NOK", { exact: true }).first(),
+    page.getByText("Taylor Parker", { exact: true }).first(),
   ).toBeVisible()
   const own = await db.client.findUniqueOrThrow({ where: { id: id.clientA } })
   await page.goto("/search")
@@ -291,7 +291,7 @@ test("real Staff journey shares assigned database records across houses, profile
   await page.goto("/profile")
   await expect(
     page.getByRole("region", { name: "Current employee" }),
-  ).toContainText("Robin Sample")
+  ).toContainText("Robin Walker")
   if (page.viewportSize()?.width === 390)
     await page.screenshot({ path: "/tmp/caremetrics-2b-staff-390.png" })
   await page.goto(`/clients/${id.clientB}`)
@@ -327,22 +327,18 @@ test("second employee and management UI read the same records with different acc
 }) => {
   await login(page, id.staffB)
   await page.goto("/houses")
-  await expect(page.locator(".cm-content")).toContainText("Meadow Sample House")
-  await expect(page.locator(".cm-content")).not.toContainText(
-    "Harbour Example House",
-  )
+  await expect(page.locator(".cm-content")).toContainText("Meadow House")
+  await expect(page.locator(".cm-content")).not.toContainText("Harbour House")
   const search = await (await page.request.get("/api/search")).json()
   expect(search.houses.map((h: { id: string }) => h.id)).toEqual([id.houseB])
   await page.context().clearCookies()
   await login(page, id.manager)
   await page.goto("/admin/employees")
   if ((page.viewportSize()?.width ?? 1280) >= 1024) {
-    await page.getByRole("link", { name: "Robin Sample", exact: true }).click()
-    await expect(page.locator(".ad-main")).toContainText(
-      "Harbour Example House",
-    )
+    await page.getByRole("link", { name: "Robin Walker", exact: true }).click()
+    await expect(page.locator(".ad-main")).toContainText("Harbour House")
     await page.goto(`/admin/clients/${id.clientA}?tab=contacts`)
-    await expect(page.locator(".ad-main")).toContainText("Fictional NOK")
+    await expect(page.locator(".ad-main")).toContainText("Taylor Parker")
     await page.screenshot({ path: "/tmp/caremetrics-2b-admin-1280.png" })
     await expect(
       page.getByRole("button", { name: "Edit", exact: true }),

@@ -1,4 +1,6 @@
 "use client"
+import SourcePhoto from "@/modules/staff/ui/SourcePhoto"
+import { housePhoto } from "@/lib/demo-media"
 import Link from "next/link"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -68,6 +70,7 @@ export default function ManagementDirectory({ data, kind }: Props) {
         clients: location ? row._count.clients : 0,
         staff: location ? row._count.assignments : 0,
         code: location ? row.code : "",
+        photo: location ? housePhoto(row.imageKey) : undefined,
       }
     })
     .filter(
@@ -177,10 +180,15 @@ export default function ManagementDirectory({ data, kind }: Props) {
                 onClick={() => router.push(`/admin/houses/${r.id}`)}
               >
                 <div className="ad-house-card-img">
-                  <div className="ad-empty-inline">
-                    <Icon name="image" />
-                    Photo unavailable
-                  </div>
+                  <SourcePhoto
+                    src={r.photo}
+                    alt="Illustrative residential exterior; not the fictional address"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
                   <Pill s={r.status} />
                 </div>
                 <div className="ad-house-card-body">
@@ -215,7 +223,11 @@ export default function ManagementDirectory({ data, kind }: Props) {
               sort: (r) => r.name,
               render: (r) => (
                 <span className="ad-cell-user">
-                  <Avatar name={r.name} size={32} />
+                  <Avatar
+                    name={r.name}
+                    recordId={kind === "houses" ? undefined : r.id}
+                    size={32}
+                  />
                   <span>
                     <Link href={`/admin/${kind}/${r.id}`}>
                       <b>{r.name}</b>

@@ -82,7 +82,11 @@ export default function TeamSchedule({
                   >
                     <th scope="row">
                       <span className="cm-cell-user">
-                        <Avatar name={sh.employeeName} size={28} />
+                        <Avatar
+                          name={sh.employeeName}
+                          recordId={sh.employeeId}
+                          size={28}
+                        />
                         {sh.employeeName}
                         {sh.employeeId === s.meId && " (you)"}
                       </span>
